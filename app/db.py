@@ -633,6 +633,9 @@ def research_login_or_register(
                     queue_feishu_sync('hci_participant', sync_payload[0], sync_payload[1])
                 return user, participant, False, ''
 
+            conn.rollback()
+            return None, None, False, '未找到已有参与者，请点击“注册”创建新编号'
+
         participant_code = _next_hci_participant_code(conn)
         conn.execute(
             '''
