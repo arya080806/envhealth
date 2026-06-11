@@ -175,10 +175,11 @@ def _migrate_hci_participant_codes(conn: sqlite3.Connection) -> None:
 
 def _get_conn() -> sqlite3.Connection:
     DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    conn = sqlite3.connect(str(DB_PATH), check_same_thread=False)
+    conn = sqlite3.connect(str(DB_PATH), check_same_thread=False, timeout=30)
     conn.row_factory = sqlite3.Row
     conn.execute('PRAGMA journal_mode=WAL')
     conn.execute('PRAGMA foreign_keys=ON')
+    conn.execute('PRAGMA busy_timeout=30000')
     return conn
 
 
@@ -509,16 +510,33 @@ def _clean_gender(value: str) -> str:
 
 
 def _next_hci_participant_code(conn: sqlite3.Connection) -> str:
+    def occupied(code: str) -> bool:
+        legacy_code = _legacy_hci_participant_code(code)
+        return bool(
+            conn.execute(
+                'SELECT 1 FROM hci_participants WHERE participant_code IN (?, ?) LIMIT 1',
+                (code, legacy_code),
+            ).fetchone()
+            or conn.execute(
+                'SELECT 1 FROM users WHERE participant_id IN (?, ?) LIMIT 1',
+                (code, legacy_code),
+            ).fetchone()
+        )
+
     row = conn.execute(
         'SELECT next_number FROM hci_participant_sequence WHERE id = 1'
     ).fetchone()
     if not row:
         max_number = 0
-        rows = conn.execute('SELECT participant_code FROM hci_participants').fetchall()
-        for item in rows:
-            code = normalize_hci_participant_code(item['participant_code'])
-            if code.isdigit():
-                max_number = max(max_number, int(code))
+        for table, column in [
+            ('hci_participants', 'participant_code'),
+            ('users', 'participant_id'),
+        ]:
+            rows = conn.execute(f'SELECT {column} FROM {table}').fetchall()
+            for item in rows:
+                code = normalize_hci_participant_code(item[column])
+                if code.isdigit():
+                    max_number = max(max_number, int(code))
         next_number = max_number + 1
         conn.execute(
             'INSERT INTO hci_participant_sequence (id, next_number) VALUES (1, ?)',
@@ -529,11 +547,7 @@ def _next_hci_participant_code(conn: sqlite3.Connection) -> str:
 
     while True:
         participant_code = f'{next_number:04d}'
-        exists = conn.execute(
-            'SELECT 1 FROM hci_participants WHERE participant_code IN (?, ?)',
-            (participant_code, _legacy_hci_participant_code(participant_code)),
-        ).fetchone()
-        if not exists:
+        if not occupied(participant_code):
             break
         next_number += 1
 
@@ -569,76 +583,88 @@ def research_login_or_register(
 
     conn = _get_conn()
     now = time.time()
+    sync_payload: tuple[str, dict] | None = None
 
-    if not force_new:
-        existing = conn.execute(
+    try:
+        conn.execute('BEGIN IMMEDIATE')
+
+        if not force_new:
+            existing = conn.execute(
+                '''
+                SELECT * FROM users
+                WHERE display_name = ? AND COALESCE(gender, '') = ?
+                ORDER BY id DESC
+                LIMIT 1
+                ''',
+                (name, gender),
+            ).fetchone()
+            if existing:
+                user = dict(existing)
+                participant = _participant_for_user(conn, int(user['id']))
+                if not participant:
+                    user_code = normalize_hci_participant_code(user.get('participant_id'))
+                    participant_code = user_code if user_code.isdigit() else _next_hci_participant_code(conn)
+                    conn.execute(
+                        '''
+                        INSERT INTO hci_participants
+                            (user_id, participant_code, registered_name, gender, created_at, updated_at)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        ''',
+                        (user['id'], participant_code, name, gender, now, now),
+                    )
+                    participant = _participant_for_user(conn, int(user['id']))
+                    sync_payload = (participant_code, _participant_sync_payload(participant))
+                elif participant.get('registered_name') != name or participant.get('gender') != gender:
+                    conn.execute(
+                        '''
+                        UPDATE hci_participants
+                        SET registered_name = ?, gender = ?, updated_at = ?
+                        WHERE id = ?
+                        ''',
+                        (name, gender, now, participant['id']),
+                    )
+                    participant = _participant_for_user(conn, int(user['id']))
+                    sync_payload = (
+                        participant['participant_code'],
+                        _participant_sync_payload(participant),
+                    )
+                conn.commit()
+                if sync_payload:
+                    queue_feishu_sync('hci_participant', sync_payload[0], sync_payload[1])
+                return user, participant, False, ''
+
+        participant_code = _next_hci_participant_code(conn)
+        conn.execute(
             '''
-            SELECT * FROM users
-            WHERE display_name = ? AND COALESCE(gender, '') = ?
-            ORDER BY id DESC
-            LIMIT 1
+            INSERT INTO users (participant_id, display_name, gender, created_at)
+            VALUES (?, ?, ?, ?)
             ''',
-            (name, gender),
-        ).fetchone()
-        if existing:
-            user = dict(existing)
-            participant = _participant_for_user(conn, int(user['id']))
-            if not participant:
-                user_code = normalize_hci_participant_code(user.get('participant_id'))
-                participant_code = user_code if user_code.isdigit() else _next_hci_participant_code(conn)
-                conn.execute(
-                    '''
-                    INSERT INTO hci_participants
-                        (user_id, participant_code, registered_name, gender, created_at, updated_at)
-                    VALUES (?, ?, ?, ?, ?, ?)
-                    ''',
-                    (user['id'], participant_code, name, gender, now, now),
-                )
-                conn.commit()
-                participant = _participant_for_user(conn, int(user['id']))
-                queue_feishu_sync('hci_participant', participant_code, _participant_sync_payload(participant))
-            elif participant.get('registered_name') != name or participant.get('gender') != gender:
-                conn.execute(
-                    '''
-                    UPDATE hci_participants
-                    SET registered_name = ?, gender = ?, updated_at = ?
-                    WHERE id = ?
-                    ''',
-                    (name, gender, now, participant['id']),
-                )
-                conn.commit()
-                participant = _participant_for_user(conn, int(user['id']))
-                queue_feishu_sync(
-                    'hci_participant',
-                    participant['participant_code'],
-                    _participant_sync_payload(participant),
-                )
-            conn.close()
-            return user, participant, False, ''
-
-    participant_code = _next_hci_participant_code(conn)
-    conn.execute(
-        '''
-        INSERT INTO users (participant_id, display_name, gender, created_at)
-        VALUES (?, ?, ?, ?)
-        ''',
-        (participant_code, name, gender, now),
-    )
-    user_id = conn.execute('SELECT last_insert_rowid() AS id').fetchone()['id']
-    conn.execute(
-        '''
-        INSERT INTO hci_participants
-            (user_id, participant_code, registered_name, gender, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ''',
-        (user_id, participant_code, name, gender, now, now),
-    )
-    conn.commit()
-    user = dict(conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone())
-    participant = _participant_for_user(conn, int(user_id))
-    conn.close()
-    queue_feishu_sync('hci_participant', participant_code, _participant_sync_payload(participant))
-    return user, participant, True, ''
+            (participant_code, name, gender, now),
+        )
+        user_id = conn.execute('SELECT last_insert_rowid() AS id').fetchone()['id']
+        conn.execute(
+            '''
+            INSERT INTO hci_participants
+                (user_id, participant_code, registered_name, gender, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            ''',
+            (user_id, participant_code, name, gender, now, now),
+        )
+        user = dict(conn.execute('SELECT * FROM users WHERE id = ?', (user_id,)).fetchone())
+        participant = _participant_for_user(conn, int(user_id))
+        conn.commit()
+        queue_feishu_sync('hci_participant', participant_code, _participant_sync_payload(participant))
+        return user, participant, True, ''
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        return None, None, False, '参与者编号冲突，请重新点击一次'
+    except sqlite3.OperationalError as exc:
+        conn.rollback()
+        if 'locked' in str(exc).lower():
+            return None, None, False, '数据库正忙，请稍后重试'
+        raise
+    finally:
+        conn.close()
 
 
 def create_or_get_user(participant_id: str, display_name: str = '') -> dict:
