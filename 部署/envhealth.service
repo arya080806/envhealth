@@ -1,0 +1,17 @@
+[Unit]
+Description=EnvHealth NiceGUI application
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=zm
+WorkingDirectory=/home/zm/envhealth
+Environment=PORT=6425
+Environment=PATH=/home/zm/.local/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/home/zm/.local/bin/uv run python main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
