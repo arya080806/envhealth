@@ -14,6 +14,7 @@ uploads/
 outputs/
 data/
 *.db
+.env
 
 # Logs
 *.log

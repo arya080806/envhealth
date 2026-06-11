@@ -1,0 +1,63 @@
+- main [ref=e5]:
+  - generic [ref=e7]:
+    - generic [ref=e10] [cursor=pointer]: 用
+    - generic [ref=e11]:
+      - generic [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: home
+        - generic [ref=e14]: 首页
+      - generic [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]: description
+        - generic [ref=e18]: 记录
+      - generic [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: info
+        - generic [ref=e21]: 关于
+    - generic [ref=e22]:
+      - button [ref=e23] [cursor=pointer]:
+        - img [ref=e25]: arrow_back
+      - generic [ref=e26]: 改造详情
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - generic [ref=e31]: 🎨 情绪灵感
+          - generic [ref=e33]: 📍 公园/自然
+          - generic [ref=e34]: 2026-04-22 19:59
+        - generic [ref=e35]: 共生成 2 次
+      - generic [ref=e37]: 改造前 vs 改造后
+      - generic [ref=e39]:
+        - generic [ref=e40]:
+          - img "改造后"
+          - generic [ref=e41]:
+            - img "改造前"
+          - generic:
+            - generic:
+              - img
+          - generic: 改造前
+          - generic: 改造后
+          - slider [ref=e42]: "50"
+        - paragraph [ref=e43]: ← 拖动滑块查看前后对比 →
+      - generic [ref=e44]:
+        - generic [ref=e46]: 🖌️ 创作画布
+        - img [ref=e47]:
+          - img [ref=e50]
+      - generic [ref=e51]:
+        - generic [ref=e53]: 🎯 布置的元素 (2 个)
+        - generic [ref=e54]:
+          - generic [ref=e56]:
+            - text: 🏔️ 远山
+            - generic [ref=e57]: (上左 · 深绿葱郁)
+          - generic [ref=e59]:
+            - text: 🌸 花朵
+            - generic [ref=e60]: (中左 · 深绿葱郁)
+      - generic [ref=e61]:
+        - generic [ref=e63]: 🤖 AI 指令
+        - button "展开查看完整指令 ▼" [ref=e64] [cursor=pointer]:
+          - generic [ref=e66]: 展开查看完整指令 ▼
+      - generic [ref=e67]:
+        - button "继续绘制 ✎" [ref=e68] [cursor=pointer]:
+          - generic [ref=e70]: 继续绘制 ✎
+        - button "重新调整" [ref=e71] [cursor=pointer]:
+          - generic [ref=e73]: 重新调整
+      - button "进入评估 →" [ref=e75] [cursor=pointer]:
+        - generic [ref=e77]: 进入评估 →
+      - link "下载结果图片" [ref=e78] [cursor=pointer]:
+        - /url: /api/image/38cb9eaaa41b_out_457147.png

@@ -134,9 +134,43 @@ def icon_vine(size: int = 48) -> str:
     ''', size)
 
 
+def icon_bamboo(size: int = 48) -> str:
+    """竹林 - 竹节挺拔"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="bm1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#66BB6A"/>
+        <stop offset="100%" stop-color="#2E7D32"/>
+      </linearGradient>
+      <linearGradient id="bm2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#81C784"/>
+        <stop offset="100%" stop-color="#388E3C"/>
+      </linearGradient>
+    </defs>
+    <rect x="12" y="10" width="7" height="52" rx="3" fill="url(#bm1)"/>
+    <rect x="12" y="22" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="12" y="36" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="12" y="50" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="28" y="4" width="7" height="52" rx="3" fill="url(#bm2)"/>
+    <rect x="28" y="16" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="28" y="30" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="28" y="44" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="44" y="8" width="7" height="52" rx="3" fill="url(#bm1)"/>
+    <rect x="44" y="20" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="44" y="34" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <rect x="44" y="48" width="7" height="2" rx="1" fill="#1B5E20" opacity="0.5"/>
+    <path d="M15 22 C8 18 4 12 8 8" stroke="#4CAF50" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="6" cy="7" rx="5" ry="3" fill="#66BB6A" transform="rotate(-20 6 7)"/>
+    <path d="M33 16 C42 10 50 6 54 10" stroke="#81C784" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="56" cy="9" rx="5" ry="3" fill="#A5D6A7" transform="rotate(20 56 9)"/>
+    <path d="M47 20 C40 14 34 12 32 6" stroke="#4CAF50" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    ''', size)
+
+
 # ============================================================
 # 设施类
 # ============================================================
+
 
 def icon_bench(size: int = 48) -> str:
     """长椅"""
@@ -427,19 +461,11 @@ def icon_bird(size: int = 48) -> str:
 def icon_camera_lens(size: int = 48) -> str:
     """相机"""
     return _wrap('''
-    <defs>
-      <linearGradient id="cm1" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#546E7A"/>
-        <stop offset="100%" stop-color="#263238"/>
-      </linearGradient>
-    </defs>
-    <rect x="8" y="18" width="48" height="34" rx="6" fill="url(#cm1)"/>
-    <rect x="22" y="10" width="16" height="10" rx="3" fill="#455A64"/>
-    <circle cx="32" cy="34" r="12" fill="#37474F"/>
-    <circle cx="32" cy="34" r="9" fill="#0288D1"/>
-    <circle cx="32" cy="34" r="5" fill="#01579B"/>
-    <circle cx="35" cy="30" r="2" fill="white" opacity="0.5"/>
-    <circle cx="48" cy="24" r="3" fill="#F44336"/>
+    <g stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.92">
+      <path d="M18 23.5H26L29.5 18H38L41.8 23.5H46C50.4 23.5 53 26.1 53 30.2V43.2C53 47.3 50.4 50 46 50H18C13.6 50 11 47.3 11 43.2V30.2C11 26.1 13.6 23.5 18 23.5Z"/>
+      <circle cx="32" cy="36" r="9"/>
+      <path d="M46 29H46.1"/>
+    </g>
     ''', size)
 
 
@@ -839,6 +865,494 @@ def icon_leaf_hero(size: int = 48) -> str:
 
 
 # ============================================================
+# 扩充元素图标
+# ============================================================
+
+def icon_palm(size: int = 48) -> str:
+    """棕榈树"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="pm1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#66BB6A"/>
+        <stop offset="100%" stop-color="#1B5E20"/>
+      </linearGradient>
+      <linearGradient id="pm2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8D6E63"/>
+        <stop offset="100%" stop-color="#4E342E"/>
+      </linearGradient>
+    </defs>
+    <path d="M30 58 C30 58 28 38 30 22 C32 10 34 22 34 58" fill="url(#pm2)" stroke="#6D4C41" stroke-width="1"/>
+    <path d="M32 22 C32 22 10 20 6 10 C14 8 24 16 32 22Z" fill="url(#pm1)"/>
+    <path d="M32 22 C32 22 54 18 58 8 C50 6 40 14 32 22Z" fill="#4CAF50"/>
+    <path d="M32 20 C32 20 16 28 8 22 C12 14 24 16 32 20Z" fill="#81C784"/>
+    <path d="M32 20 C32 20 48 28 56 22 C52 14 40 16 32 20Z" fill="#66BB6A"/>
+    <path d="M32 24 C32 24 20 36 14 32 C16 24 26 22 32 24Z" fill="#A5D6A7" opacity="0.7"/>
+    <ellipse cx="31" cy="59" rx="6" ry="3" fill="#5D4037" opacity="0.3"/>
+    ''', size)
+
+
+def icon_sakura(size: int = 48) -> str:
+    """樱花树"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="sk1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F8BBD0"/>
+        <stop offset="100%" stop-color="#F06292"/>
+      </linearGradient>
+      <linearGradient id="sk2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#8D6E63"/>
+        <stop offset="100%" stop-color="#4E342E"/>
+      </linearGradient>
+    </defs>
+    <rect x="29" y="36" width="6" height="22" rx="2" fill="url(#sk2)"/>
+    <ellipse cx="32" cy="28" rx="22" ry="18" fill="url(#sk1)"/>
+    <ellipse cx="22" cy="24" rx="13" ry="11" fill="#F48FB1" opacity="0.7"/>
+    <ellipse cx="40" cy="22" rx="11" ry="10" fill="#FCE4EC" opacity="0.6"/>
+    <ellipse cx="32" cy="16" rx="10" ry="8" fill="#F8BBD0" opacity="0.5"/>
+    <circle cx="20" cy="20" r="3" fill="#FFECB3" opacity="0.8"/>
+    <circle cx="36" cy="16" r="2" fill="#FFECB3" opacity="0.8"/>
+    <circle cx="28" cy="30" r="2.5" fill="#FFCDD2" opacity="0.7"/>
+    ''', size)
+
+
+def icon_reed(size: int = 48) -> str:
+    """芦苇"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="rd1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#A5D6A7"/>
+        <stop offset="100%" stop-color="#388E3C"/>
+      </linearGradient>
+      <linearGradient id="rd2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#D7CCC8"/>
+        <stop offset="100%" stop-color="#8D6E63"/>
+      </linearGradient>
+    </defs>
+    <rect x="14" y="8" width="3" height="50" rx="1.5" fill="url(#rd1)"/>
+    <ellipse cx="15" cy="10" rx="4" ry="10" fill="url(#rd2)" opacity="0.85"/>
+    <rect x="28" y="14" width="3" height="46" rx="1.5" fill="#81C784"/>
+    <ellipse cx="29" cy="16" rx="3.5" ry="9" fill="#A1887F" opacity="0.85"/>
+    <rect x="42" y="6" width="3" height="52" rx="1.5" fill="url(#rd1)"/>
+    <ellipse cx="43" cy="8" rx="4" ry="10" fill="url(#rd2)" opacity="0.85"/>
+    <path d="M14 30 C20 28 26 32 29 30" stroke="#66BB6A" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M29 24 C34 22 38 26 43 24" stroke="#81C784" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    ''', size)
+
+
+def icon_cactus(size: int = 48) -> str:
+    """仙人掌"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="ca1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#81C784"/>
+        <stop offset="100%" stop-color="#2E7D32"/>
+      </linearGradient>
+    </defs>
+    <rect x="26" y="14" width="12" height="44" rx="6" fill="url(#ca1)"/>
+    <path d="M16 32 C16 32 16 22 22 22 L26 22 L26 32" fill="#4CAF50"/>
+    <path d="M16 32 C12 30 10 24 14 20" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M48 36 C48 36 48 26 42 26 L38 26 L38 36" fill="#66BB6A"/>
+    <path d="M48 36 C52 34 54 28 50 24" stroke="#388E3C" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="32" cy="14" rx="5" ry="4" fill="#F48FB1"/>
+    <circle cx="30" cy="12" r="2" fill="#F06292"/>
+    <circle cx="34" cy="12" r="2" fill="#F06292"/>
+    <rect x="26" y="56" width="12" height="4" rx="2" fill="#5D4037"/>
+    ''', size)
+
+
+def icon_moss(size: int = 48) -> str:
+    """苔藓"""
+    return _wrap('''
+    <defs>
+      <radialGradient id="mo1" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0%" stop-color="#A5D6A7"/>
+        <stop offset="100%" stop-color="#2E7D32"/>
+      </radialGradient>
+    </defs>
+    <ellipse cx="32" cy="46" rx="28" ry="12" fill="#388E3C" opacity="0.4"/>
+    <ellipse cx="24" cy="44" rx="18" ry="10" fill="url(#mo1)"/>
+    <ellipse cx="40" cy="44" rx="16" ry="9" fill="#66BB6A"/>
+    <ellipse cx="32" cy="40" rx="20" ry="11" fill="url(#mo1)"/>
+    <circle cx="20" cy="38" r="5" fill="#81C784"/>
+    <circle cx="32" cy="34" r="6" fill="#A5D6A7"/>
+    <circle cx="44" cy="38" r="5" fill="#81C784"/>
+    <circle cx="28" cy="30" r="4" fill="#C8E6C9"/>
+    <circle cx="38" cy="32" r="3.5" fill="#A5D6A7"/>
+    ''', size)
+
+
+def icon_swing(size: int = 48) -> str:
+    """秋千"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="sw1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#A1887F"/>
+        <stop offset="100%" stop-color="#5D4037"/>
+      </linearGradient>
+    </defs>
+    <rect x="8" y="6" width="5" height="46" rx="2" fill="url(#sw1)" transform="rotate(-8 10 29)"/>
+    <rect x="51" y="6" width="5" height="46" rx="2" fill="url(#sw1)" transform="rotate(8 54 29)"/>
+    <rect x="6" y="6" width="52" height="5" rx="2" fill="#6D4C41"/>
+    <line x1="20" y1="10" x2="18" y2="36" stroke="#8D6E63" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="44" y1="10" x2="46" y2="36" stroke="#8D6E63" stroke-width="2.5" stroke-linecap="round"/>
+    <rect x="14" y="34" width="36" height="6" rx="3" fill="#A1887F"/>
+    <rect x="16" y="36" width="32" height="3" rx="1.5" fill="#BCAAA4"/>
+    ''', size)
+
+
+def icon_pavilion(size: int = 48) -> str:
+    """凉亭"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="pv1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#FF8A65"/>
+        <stop offset="100%" stop-color="#BF360C"/>
+      </linearGradient>
+      <linearGradient id="pv2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#A1887F"/>
+        <stop offset="100%" stop-color="#5D4037"/>
+      </linearGradient>
+    </defs>
+    <polygon points="32,4 4,26 60,26" fill="url(#pv1)"/>
+    <polygon points="32,10 8,28 56,28" fill="#FF7043" opacity="0.4"/>
+    <rect x="6" y="24" width="52" height="4" rx="1" fill="#E64A19"/>
+    <rect x="10" y="28" width="6" height="28" rx="1.5" fill="url(#pv2)"/>
+    <rect x="48" y="28" width="6" height="28" rx="1.5" fill="url(#pv2)"/>
+    <rect x="24" y="28" width="6" height="28" rx="1.5" fill="#8D6E63" opacity="0.6"/>
+    <rect x="34" y="28" width="6" height="28" rx="1.5" fill="#8D6E63" opacity="0.6"/>
+    <rect x="8" y="54" width="48" height="4" rx="1" fill="#6D4C41"/>
+    ''', size)
+
+
+def icon_boardwalk(size: int = 48) -> str:
+    """木栈道"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="bw1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#BCAAA4"/>
+        <stop offset="100%" stop-color="#795548"/>
+      </linearGradient>
+    </defs>
+    <rect x="4" y="24" width="56" height="8" rx="2" fill="url(#bw1)"/>
+    <rect x="4" y="34" width="56" height="8" rx="2" fill="#A1887F"/>
+    <rect x="4" y="44" width="56" height="6" rx="2" fill="#8D6E63"/>
+    <rect x="10" y="22" width="4" height="32" rx="1" fill="#6D4C41"/>
+    <rect x="24" y="22" width="4" height="32" rx="1" fill="#6D4C41"/>
+    <rect x="38" y="22" width="4" height="32" rx="1" fill="#6D4C41"/>
+    <rect x="52" y="22" width="4" height="32" rx="1" fill="#6D4C41"/>
+    <path d="M4 24 C16 14 32 10 60 24" stroke="#A1887F" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    ''', size)
+
+
+def icon_windmill(size: int = 48) -> str:
+    """风车"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="wm1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#90CAF9"/>
+        <stop offset="100%" stop-color="#1565C0"/>
+      </linearGradient>
+    </defs>
+    <rect x="30" y="32" width="4" height="28" rx="1.5" fill="#78909C"/>
+    <ellipse cx="32" cy="62" rx="8" ry="3" fill="#546E7A"/>
+    <circle cx="32" cy="30" r="4" fill="#546E7A"/>
+    <path d="M32 26 C32 26 28 14 20 8 C24 18 30 24 32 26Z" fill="url(#wm1)" opacity="0.9"/>
+    <path d="M36 30 C36 30 48 28 56 22 C46 24 38 28 36 30Z" fill="#64B5F6" opacity="0.9"/>
+    <path d="M32 34 C32 34 36 46 44 52 C40 42 34 36 32 34Z" fill="#42A5F5" opacity="0.9"/>
+    <path d="M28 30 C28 30 16 32 8 38 C18 36 26 32 28 30Z" fill="#90CAF9" opacity="0.9"/>
+    <circle cx="32" cy="30" r="3" fill="white"/>
+    ''', size)
+
+
+def icon_trashcan(size: int = 48) -> str:
+    """垃圾桶"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="tc1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#80CBC4"/>
+        <stop offset="100%" stop-color="#00695C"/>
+      </linearGradient>
+    </defs>
+    <rect x="16" y="18" width="32" height="38" rx="3" fill="url(#tc1)"/>
+    <rect x="14" y="14" width="36" height="6" rx="2" fill="#00897B"/>
+    <rect x="22" y="8" width="20" height="8" rx="2" fill="#4DB6AC"/>
+    <rect x="26" y="10" width="12" height="4" rx="1" fill="#80CBC4"/>
+    <rect x="24" y="22" width="3" height="26" rx="1.5" fill="#004D40" opacity="0.3"/>
+    <rect x="30" y="22" width="3" height="26" rx="1.5" fill="#004D40" opacity="0.3"/>
+    <rect x="36" y="22" width="3" height="26" rx="1.5" fill="#004D40" opacity="0.3"/>
+    ''', size)
+
+
+def icon_waterfall(size: int = 48) -> str:
+    """瀑布"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="wf1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#B3E5FC"/>
+        <stop offset="100%" stop-color="#0288D1"/>
+      </linearGradient>
+      <linearGradient id="wf2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#78909C"/>
+        <stop offset="100%" stop-color="#37474F"/>
+      </linearGradient>
+    </defs>
+    <path d="M4 14 L28 14 L28 6 L36 6 L36 14 L60 14 L60 22 L4 22Z" fill="url(#wf2)"/>
+    <path d="M14 22 C14 22 12 38 10 50 C14 50 16 40 18 28 C20 40 22 50 24 50 C26 40 26 28 28 22Z" fill="url(#wf1)"/>
+    <path d="M28 22 C28 22 28 34 30 46 C32 46 32 34 34 22Z" fill="#81D4FA"/>
+    <path d="M34 22 C34 22 36 36 38 50 C40 50 42 38 42 22Z" fill="url(#wf1)" opacity="0.9"/>
+    <ellipse cx="28" cy="52" rx="24" ry="8" fill="#4FC3F7" opacity="0.5"/>
+    <ellipse cx="28" cy="50" rx="20" ry="5" fill="#B3E5FC" opacity="0.4"/>
+    ''', size)
+
+
+def icon_lotus(size: int = 48) -> str:
+    """荷花"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="lt1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F8BBD0"/>
+        <stop offset="100%" stop-color="#E91E63"/>
+      </linearGradient>
+      <linearGradient id="lt2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#A5D6A7"/>
+        <stop offset="100%" stop-color="#2E7D32"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="20" cy="52" rx="16" ry="8" fill="url(#lt2)"/>
+    <ellipse cx="44" cy="54" rx="12" ry="6" fill="#4CAF50"/>
+    <ellipse cx="32" cy="38" rx="7" ry="6" fill="#FFF9C4"/>
+    <path d="M32 38 C32 38 22 44 20 36 C22 28 30 34 32 38Z" fill="url(#lt1)"/>
+    <path d="M32 38 C32 38 42 44 44 36 C42 28 34 34 32 38Z" fill="#F48FB1"/>
+    <path d="M32 38 C32 38 24 32 26 22 C30 18 32 30 32 38Z" fill="url(#lt1)"/>
+    <path d="M32 38 C32 38 40 32 38 22 C34 18 32 30 32 38Z" fill="#F48FB1"/>
+    <path d="M32 38 C32 38 28 28 32 20 C36 28 32 38 32 38Z" fill="#FCE4EC"/>
+    <circle cx="32" cy="37" r="4" fill="#FFF176"/>
+    ''', size)
+
+
+def icon_seagrass(size: int = 48) -> str:
+    """水草"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="sg1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#80CBC4"/>
+        <stop offset="100%" stop-color="#00695C"/>
+      </linearGradient>
+    </defs>
+    <path d="M16 58 C16 58 14 44 18 34 C20 26 14 18 18 10 C22 18 20 28 18 36 C20 46 20 58 16 58Z" fill="url(#sg1)"/>
+    <path d="M32 58 C32 58 28 44 34 32 C38 24 32 14 36 6 C40 16 36 26 34 34 C32 44 34 58 32 58Z" fill="#4DB6AC"/>
+    <path d="M48 58 C48 58 46 46 50 36 C52 28 48 18 50 8 C54 16 52 26 50 38 C50 48 50 58 48 58Z" fill="url(#sg1)" opacity="0.9"/>
+    <ellipse cx="18" cy="10" rx="5" ry="3" fill="#80CBC4" transform="rotate(-20 18 10)"/>
+    <ellipse cx="36" cy="6" rx="4" ry="3" fill="#4DB6AC" transform="rotate(15 36 6)"/>
+    <ellipse cx="50" cy="8" rx="4" ry="3" fill="#80CBC4" transform="rotate(-10 50 8)"/>
+    ''', size)
+
+
+def icon_rock(size: int = 48) -> str:
+    """礁石"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="rk1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#90A4AE"/>
+        <stop offset="100%" stop-color="#37474F"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="32" cy="52" rx="28" ry="10" fill="#455A64" opacity="0.5"/>
+    <path d="M8 52 C8 38 14 22 26 18 C32 16 36 20 40 18 C50 16 56 32 56 48Z" fill="url(#rk1)"/>
+    <path d="M12 48 C10 36 16 24 28 20" stroke="#607D8B" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <path d="M36 18 C44 20 52 32 54 44" stroke="#546E7A" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.4"/>
+    <path d="M8 52 C14 44 22 42 30 46 C38 50 48 50 56 48" stroke="#78909C" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.5"/>
+    <ellipse cx="22" cy="30" rx="6" ry="4" fill="#546E7A" opacity="0.3" transform="rotate(-20 22 30)"/>
+    ''', size)
+
+
+def icon_rainbow(size: int = 48) -> str:
+    """彩虹"""
+    return _wrap('''
+    <path d="M4 44 C4 22 16 10 32 10 C48 10 60 22 60 44" stroke="#F44336" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M8 44 C8 24 18 14 32 14 C46 14 56 24 56 44" stroke="#FF9800" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M12 44 C12 26 20 18 32 18 C44 18 52 26 52 44" stroke="#FFEB3B" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M16 44 C16 28 22 22 32 22 C42 22 48 28 48 44" stroke="#4CAF50" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M20 44 C20 30 24 26 32 26 C40 26 44 30 44 44" stroke="#2196F3" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <path d="M24 44 C24 32 26 30 32 30 C38 30 40 32 40 44" stroke="#9C27B0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <ellipse cx="8" cy="46" rx="10" ry="6" fill="white" opacity="0.7"/>
+    <ellipse cx="56" cy="46" rx="10" ry="6" fill="white" opacity="0.7"/>
+    ''', size)
+
+
+def icon_firefly(size: int = 48) -> str:
+    """萤火虫"""
+    return _wrap('''
+    <defs>
+      <radialGradient id="ff1" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0%" stop-color="#F9FBE7" stop-opacity="1"/>
+        <stop offset="60%" stop-color="#CCFF90" stop-opacity="0.7"/>
+        <stop offset="100%" stop-color="#76FF03" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="ff2" cx="0.5" cy="0.5" r="0.5">
+        <stop offset="0%" stop-color="#FFFDE7" stop-opacity="1"/>
+        <stop offset="50%" stop-color="#FFD740" stop-opacity="0.5"/>
+        <stop offset="100%" stop-color="#FFD740" stop-opacity="0"/>
+      </radialGradient>
+    </defs>
+    <circle cx="18" cy="18" r="14" fill="url(#ff1)"/>
+    <circle cx="18" cy="18" r="4" fill="#76FF03" opacity="0.9"/>
+    <ellipse cx="18" cy="20" rx="3" ry="5" fill="#33691E"/>
+    <line x1="14" y1="18" x2="8" y2="14" stroke="#558B2F" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="22" y1="18" x2="28" y2="14" stroke="#558B2F" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="44" cy="38" r="10" fill="url(#ff2)"/>
+    <circle cx="44" cy="38" r="3" fill="#FFD740" opacity="0.9"/>
+    <ellipse cx="44" cy="40" rx="2.5" ry="4" fill="#F57F17"/>
+    <line x1="41" y1="38" x2="36" y2="34" stroke="#F9A825" stroke-width="1.5" stroke-linecap="round"/>
+    <line x1="47" y1="38" x2="52" y2="34" stroke="#F9A825" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="32" cy="52" r="5" fill="url(#ff1)" opacity="0.5"/>
+    ''', size)
+
+
+def icon_butterfly(size: int = 48) -> str:
+    """蝴蝶"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="bt1" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FF8A65"/>
+        <stop offset="100%" stop-color="#FF3D00"/>
+      </linearGradient>
+      <linearGradient id="bt2" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#FFD54F"/>
+        <stop offset="100%" stop-color="#FF6F00"/>
+      </linearGradient>
+    </defs>
+    <path d="M32 28 C26 20 8 10 8 24 C8 34 22 32 32 28Z" fill="url(#bt1)"/>
+    <path d="M32 28 C38 20 56 10 56 24 C56 34 42 32 32 28Z" fill="url(#bt1)"/>
+    <path d="M32 32 C24 36 10 46 14 54 C20 56 28 44 32 32Z" fill="url(#bt2)" opacity="0.9"/>
+    <path d="M32 32 C40 36 54 46 50 54 C44 56 36 44 32 32Z" fill="url(#bt2)" opacity="0.9"/>
+    <circle cx="26" cy="20" r="4" fill="black" opacity="0.15"/>
+    <circle cx="38" cy="20" r="4" fill="black" opacity="0.15"/>
+    <path d="M32 16 C32 16 32 50 32 50" stroke="#3E2723" stroke-width="2" stroke-linecap="round"/>
+    <path d="M30 14 C28 8 24 6 22 8" stroke="#4E342E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <path d="M34 14 C36 8 40 6 42 8" stroke="#4E342E" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    ''', size)
+
+
+def icon_moonlight(size: int = 48) -> str:
+    """月光"""
+    return _wrap('''
+    <defs>
+      <radialGradient id="ml1" cx="0.4" cy="0.4" r="0.6">
+        <stop offset="0%" stop-color="#FFFDE7"/>
+        <stop offset="100%" stop-color="#F9A825"/>
+      </radialGradient>
+    </defs>
+    <path d="M44 32 C44 46 34 56 22 56 C16 56 10 54 6 50 C12 52 18 52 24 50 C36 46 42 36 38 24 C36 18 32 14 28 12 C36 12 44 20 44 32Z" fill="url(#ml1)"/>
+    <circle cx="20" cy="14" r="2" fill="#FFF9C4" opacity="0.9"/>
+    <circle cx="52" cy="20" r="2.5" fill="#FFF9C4" opacity="0.7"/>
+    <circle cx="10" cy="32" r="1.5" fill="#FFF9C4" opacity="0.8"/>
+    <circle cx="56" cy="42" r="2" fill="#FFF9C4" opacity="0.6"/>
+    <circle cx="36" cy="8" r="1.5" fill="#FFF9C4" opacity="0.7"/>
+    <circle cx="8" cy="52" r="1" fill="#FFF9C4" opacity="0.5"/>
+    <path d="M6 44 C14 40 22 42 28 48" stroke="#FFF9C4" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.4"/>
+    ''', size)
+
+
+def icon_cabin(size: int = 48) -> str:
+    """木屋"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="cb1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#BF360C"/>
+        <stop offset="100%" stop-color="#7F2700"/>
+      </linearGradient>
+      <linearGradient id="cb2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#BCAAA4"/>
+        <stop offset="100%" stop-color="#6D4C41"/>
+      </linearGradient>
+    </defs>
+    <polygon points="32,6 6,28 58,28" fill="url(#cb1)"/>
+    <rect x="10" y="26" width="44" height="32" rx="2" fill="url(#cb2)"/>
+    <rect x="14" y="30" width="10" height="10" rx="1" fill="#90CAF9" opacity="0.8"/>
+    <rect x="40" y="30" width="10" height="10" rx="1" fill="#90CAF9" opacity="0.8"/>
+    <rect x="25" y="36" width="14" height="22" rx="1" fill="#5D4037"/>
+    <rect x="28" y="38" width="4" height="10" rx="0.5" fill="#BCAAA4" opacity="0.6"/>
+    <rect x="33" y="38" width="4" height="10" rx="0.5" fill="#BCAAA4" opacity="0.6"/>
+    <circle cx="26" cy="47" r="1.5" fill="#FFB300"/>
+    <path d="M18 6 C18 6 20 0 22 4" stroke="#546E7A" stroke-width="2" stroke-linecap="round" fill="none"/>
+    <path d="M20 4 C22 2 24 4 22 6" stroke="#607D8B" stroke-width="1.5" fill="none"/>
+    ''', size)
+
+
+def icon_stone_wall(size: int = 48) -> str:
+    """石墙"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="sw2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#90A4AE"/>
+        <stop offset="100%" stop-color="#455A64"/>
+      </linearGradient>
+    </defs>
+    <rect x="4" y="14" width="56" height="36" rx="3" fill="#546E7A"/>
+    <rect x="6" y="16" width="24" height="10" rx="2" fill="url(#sw2)"/>
+    <rect x="32" y="16" width="26" height="10" rx="2" fill="#607D8B"/>
+    <rect x="4" y="28" width="16" height="10" rx="2" fill="#607D8B"/>
+    <rect x="22" y="28" width="24" height="10" rx="2" fill="url(#sw2)"/>
+    <rect x="48" y="28" width="14" height="10" rx="2" fill="#607D8B"/>
+    <rect x="6" y="40" width="20" height="8" rx="2" fill="url(#sw2)"/>
+    <rect x="28" y="40" width="20" height="8" rx="2" fill="#78909C"/>
+    <rect x="50" y="40" width="10" height="8" rx="2" fill="url(#sw2)"/>
+    <path d="M4 10 C20 8 44 10 60 8" stroke="#37474F" stroke-width="4" stroke-linecap="round"/>
+    ''', size)
+
+
+def icon_arch_bridge(size: int = 48) -> str:
+    """拱桥"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="ab1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#BCAAA4"/>
+        <stop offset="100%" stop-color="#5D4037"/>
+      </linearGradient>
+      <linearGradient id="ab2" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#81D4FA"/>
+        <stop offset="100%" stop-color="#0288D1"/>
+      </linearGradient>
+    </defs>
+    <ellipse cx="32" cy="54" rx="28" ry="8" fill="url(#ab2)" opacity="0.6"/>
+    <path d="M4 38 C4 38 4 22 32 22 C60 22 60 38 60 38Z" fill="url(#ab1)"/>
+    <rect x="4" y="36" width="56" height="6" rx="2" fill="#8D6E63"/>
+    <rect x="4" y="36" width="56" height="3" rx="1" fill="#A1887F"/>
+    <rect x="6" y="20" width="6" height="18" rx="1" fill="#795548"/>
+    <rect x="52" y="20" width="6" height="18" rx="1" fill="#795548"/>
+    <path d="M8 38 C8 38 8 28 32 28 C56 28 56 38 56 38" fill="none" stroke="#6D4C41" stroke-width="2"/>
+    <rect x="4" y="18" width="56" height="4" rx="1" fill="#6D4C41"/>
+    ''', size)
+
+
+def icon_flower_bed(size: int = 48) -> str:
+    """花圃"""
+    return _wrap('''
+    <defs>
+      <linearGradient id="fb1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#A5D6A7"/>
+        <stop offset="100%" stop-color="#388E3C"/>
+      </linearGradient>
+    </defs>
+    <rect x="6" y="36" width="52" height="18" rx="4" fill="#5D4037"/>
+    <rect x="8" y="34" width="48" height="6" rx="2" fill="#795548"/>
+    <rect x="6" y="38" width="52" height="12" rx="2" fill="url(#fb1)" opacity="0.3"/>
+    <rect x="8" y="34" width="4" height="14" rx="1" fill="#6D4C41"/>
+    <rect x="52" y="34" width="4" height="14" rx="1" fill="#6D4C41"/>
+    <rect x="16" y="18" width="3" height="18" rx="1" fill="#4CAF50"/>
+    <circle cx="17" cy="14" r="6" fill="#F44336"/>
+    <circle cx="15" cy="12" r="2.5" fill="#FFCDD2" opacity="0.7"/>
+    <rect x="28" y="14" width="3" height="22" rx="1" fill="#388E3C"/>
+    <circle cx="29" cy="10" r="7" fill="#FF9800"/>
+    <circle cx="27" cy="8" r="3" fill="#FFE0B2" opacity="0.7"/>
+    <rect x="40" y="20" width="3" height="16" rx="1" fill="#4CAF50"/>
+    <circle cx="41" cy="16" r="6" fill="#E91E63"/>
+    <circle cx="39" cy="14" r="2.5" fill="#FCE4EC" opacity="0.7"/>
+    ''', size)
+
+
+# ============================================================
 # 查找表：emoji -> SVG 函数映射
 # ============================================================
 
@@ -847,6 +1361,7 @@ ICON_MAP = {
     '🌳': icon_tree,
     '🌲': icon_pine,
     '🌿': icon_bush,
+    '🎋': icon_bamboo,
     '🪷': icon_flower,
     '🌺': icon_flower,
     '🌱': icon_lawn,
@@ -859,9 +1374,11 @@ ICON_MAP = {
     '🗿': icon_sculpture,
     '🛤️': icon_path,
     '🚧': icon_fence,
+    '🏗️': icon_fence,        # 围栏 → icon_fence（移除后面重复的 icon_construction 覆盖）
     # 水体
     '💧': icon_stream,
     '🌊': icon_pond,
+    '🏞️': icon_waterscape,   # 池塘/水景 → icon_waterscape（移除后面重复的 icon_park_scene 覆盖）
     # 氛围
     '☀️': icon_sun,
     '🌫️': icon_fog,
@@ -869,11 +1386,10 @@ ICON_MAP = {
     '🌸': icon_petals,
     '🕊️': icon_bird,
     '🦅': icon_bird,
-    # 页面图标
+    # 页面图标（用不同 key，不与元素 emoji 冲突）
     '📷': icon_camera_lens,
     '🎨': icon_palette,
     '💚': icon_heart_heal,
-    '🏞️': icon_park_scene,
     '🏙️': icon_city_scene,
     '🎚️': icon_sliders,
     '✏️': icon_pencil,
@@ -888,11 +1404,40 @@ ICON_MAP = {
     '🧘': icon_meditation,
     '📚': icon_books,
     '💾': icon_save,
-    '🏗️': icon_construction,
+    '🏚️': icon_construction,  # 使用不同 emoji key，避免覆盖 🏗️→fence
     '👥': icon_people,
     '💬': icon_chat,
     '⭐': icon_star,
     '🌿hero': icon_leaf_hero,
+    # 公园场景 - 用专属 key（不与水景 🏞️ 冲突）
+    '🏞️park': icon_park_scene,
+    # 扩充植被
+    '🌴': icon_palm,
+    '🌸tree': icon_sakura,
+    '🌾': icon_reed,
+    '🌵': icon_cactus,
+    '🪨moss': icon_moss,
+    # 扩充设施
+    '🪁': icon_swing,
+    '⛩️': icon_pavilion,
+    '🪵': icon_boardwalk,
+    '🎡': icon_windmill,
+    '🗑️': icon_trashcan,
+    # 扩充水景
+    '💦': icon_waterfall,
+    '🪷lotus': icon_lotus,
+    '🌿water': icon_seagrass,
+    '🪨': icon_rock,
+    # 扩充氛围
+    '🌈': icon_rainbow,
+    '✨bug': icon_firefly,
+    '🦋': icon_butterfly,
+    '🌙': icon_moonlight,
+    # 建筑分类
+    '🏠': icon_cabin,
+    '🧱': icon_stone_wall,
+    '🌉': icon_arch_bridge,
+    '🌻': icon_flower_bed,
 }
 
 

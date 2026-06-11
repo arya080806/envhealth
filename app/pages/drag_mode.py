@@ -1,44 +1,85 @@
-"""自由创作模式页面 — Fabric.js 画布编辑器"""
+"""自由创作模式页面 - Fabric.js 画布编辑器。"""
+from __future__ import annotations
+
 import asyncio
 import base64
 import json
-from pathlib import Path
 
 from nicegui import ui
-from app.theme import COLORS, COMMON_STYLE, META_VIEWPORT, TOP_BAR_STYLE, PRIMARY_BTN_STYLE
-from app.state import get_session, save_output
-from app.components.icons import get_svg
 
-# ──────────────────────────────────────────────
-# 元素分类数据
-# ──────────────────────────────────────────────
+from app.components.icons import get_svg, icon_bench, icon_cabin, icon_pond, icon_sun, icon_tree
+from app.components.nav import bottom_nav, smooth_navigate
+from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_canvas_snapshot, save_output
+from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
+
+
 CATEGORIES = [
-    ('植被', '🌳', [
-        ('🌳', '大树'), ('🌲', '松树'), ('🌿', '灌木'),
-        ('🪷', '花草'), ('🌺', '花朵'), ('🍀', '草坪'), ('🌱', '嫩芽'),
+    ('植被', '🌳', icon_tree, [
+        ('🌳', '大树'),
+        ('🌲', '松树'),
+        ('🌿', '灌木'),
+        ('🎋', '竹林'),
+        ('🌺', '花朵'),
+        ('🌱', '草坪'),
+        ('🌴', '棕榈'),
+        ('🌸tree', '樱花树'),
+        ('🌾', '芦苇'),
+        ('🌵', '仙人掌'),
+        ('🪨moss', '苔藓'),
     ]),
-    ('设施', '🪑', [
-        ('🪑', '长椅'), ('🔦', '路灯'), ('⛲', '喷泉'),
-        ('🗿', '雕塑'), ('🛤️', '小径'), ('🏗️', '围栏'),
+    ('设施', '🪑', icon_bench, [
+        ('🪑', '长椅'),
+        ('🔦', '路灯'),
+        ('⛲', '喷泉'),
+        ('🗿', '雕塑'),
+        ('🛤️', '小径'),
+        ('🚧', '围栏'),
+        ('🪁', '秋千'),
+        ('⛩️', '凉亭'),
+        ('🪵', '木栈道'),
+        ('🎡', '风车'),
+        ('🗑️', '垃圾桶'),
     ]),
-    ('水景', '🌊', [
-        ('🌊', '小溪'), ('🏞️', '池塘'), ('💧', '水面'),
+    ('水景', '🌊', icon_pond, [
+        ('💧', '小溪'),
+        ('🏞️', '池塘'),
+        ('🌊', '水面'),
+        ('💦', '瀑布'),
+        ('🪷lotus', '荷花'),
+        ('🌿water', '水草'),
+        ('🪨', '礁石'),
     ]),
-    ('氛围', '☀️', [
-        ('☀️', '阳光'), ('🌫️', '薄雾'), ('🍂', '落叶'),
-        ('🌸', '花瓣'), ('🦅', '飞鸟'),
+    ('氛围', '☀️', icon_sun, [
+        ('☀️', '阳光'),
+        ('🌫️', '薄雾'),
+        ('🍂', '落叶'),
+        ('🌸', '花瓣'),
+        ('🕊️', '飞鸟'),
+        ('🌈', '彩虹'),
+        ('✨bug', '萤火虫'),
+        ('🦋', '蝴蝶'),
+        ('🌙', '月光'),
+    ]),
+    ('建筑', '🏠', icon_cabin, [
+        ('🏠', '木屋'),
+        ('🧱', '石墙'),
+        ('🌉', '拱桥'),
+        ('🌻', '花圃'),
     ]),
 ]
 
-# ──────────────────────────────────────────────
-# 模块加载时预生成 SVG 数据 URL（只执行一次）
-# ──────────────────────────────────────────────
-def _build_elements_data() -> tuple:
-    items = []
-    for cat_name, cat_icon, elems in CATEGORIES:
+
+def _svg_b64(fn, size: int = 80) -> str:
+    svg = fn(size)
+    return base64.b64encode(svg.encode('utf-8')).decode('ascii')
+
+
+def _build_elements_data() -> tuple[list[dict], str]:
+    items: list[dict] = []
+    for cat_name, cat_icon, _tab_fn, elems in CATEGORIES:
         for icon, name in elems:
             svg = get_svg(icon, 80)
-            b64 = base64.b64encode(svg.encode()).decode() if svg else ''
+            b64 = base64.b64encode(svg.encode('utf-8')).decode('ascii') if svg else ''
             items.append({
                 'idx': len(items),
                 'cat': cat_name,
@@ -53,46 +94,36 @@ def _build_elements_data() -> tuple:
 _ALL_ELEMENTS, _ELEMENTS_JS = _build_elements_data()
 
 
-# ──────────────────────────────────────────────
-# 构建元素选择面板 HTML（onclick 直调 JS，无服务器往返）
-# ──────────────────────────────────────────────
 def _build_picker_html() -> str:
-    cats: dict = {}
+    cats: dict[str, list[dict]] = {}
     for el in _ALL_ELEMENTS:
         cats.setdefault(el['cat'], []).append(el)
 
     tabs = ''
-    for i, (cat_name, items) in enumerate(cats.items()):
+    for i, cat_name in enumerate(cats.keys()):
         active = 'cat-tab-active' if i == 0 else ''
-        cat_icon = items[0]['catIcon']
-        tabs += (
-            f'<button class="cat-tab {active}" '
-            f'data-catidx="{i}">'
-            f'{cat_icon} {cat_name}</button>'
-        )
+        tabs += f'<button type="button" class="cat-tab {active}" data-catidx="{i}">{cat_name}</button>'
 
     grids = ''
     for i, (cat_name, items) in enumerate(cats.items()):
         display = 'grid' if i == 0 else 'none'
         cards = ''
         for el in items:
-            idx = el['idx']
             img_tag = (
                 f'<img src="{el["dataUrl"]}" alt="{el["name"]}" '
-                f'style="width:40px;height:40px;object-fit:contain;pointer-events:none;">'
-                if el['dataUrl'] else
-                f'<span style="font-size:28px;pointer-events:none;">{el["icon"]}</span>'
+                'style="width:40px;height:40px;object-fit:contain;pointer-events:none;">'
+                if el['dataUrl']
+                else f'<span style="font-size:28px;pointer-events:none;">{el["icon"]}</span>'
             )
             cards += (
-                f'<div class="elem-card" data-idx="{idx}">'
+                f'<button type="button" class="elem-card" data-idx="{el["idx"]}">'
                 f'{img_tag}'
                 f'<span class="elem-name">{el["name"]}</span>'
-                f'</div>'
+                '</button>'
             )
         grids += (
             f'<div class="cat-grid" id="cat-grid-{i}" '
-            f'style="display:{display};'
-            f'grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0 8px;">'
+            f'style="display:{display};grid-template-columns:repeat(4,1fr);gap:8px;padding:2px 0 8px;">'
             f'{cards}</div>'
         )
 
@@ -105,39 +136,66 @@ def _build_picker_html() -> str:
     )
 
 
-# ──────────────────────────────────────────────
-# 画布 HTML（含浮动工具栏）
-# ──────────────────────────────────────────────
 _CANVAS_HTML = (
     '<div id="canvas-wrapper">'
+    '<div id="drag-canvas-fallback" class="drag-canvas-fallback">画布正在加载...</div>'
     '<canvas id="env-canvas"></canvas>'
     '<div id="canvas-toolbar">'
-    '<button class="tb-btn tb-delete" onclick="EnvCanvas.deleteSelected()">'
-    '<svg width="11" height="11" viewBox="0 0 11 11" fill="none">'
-    '<path d="M1 1L10 10M10 1L1 10" stroke="white" stroke-width="2" stroke-linecap="round"/>'
-    '</svg> 删除</button>'
-    '<button class="tb-btn" onclick="EnvCanvas.duplicateSelected()">'
-    '<svg width="12" height="12" viewBox="0 0 12 12" fill="none">'
-    '<rect x="3" y="3" width="7" height="7" rx="1.5" stroke="white" stroke-width="1.5"/>'
-    '<rect x="1" y="1" width="7" height="7" rx="1.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>'
-    '</svg> 复制</button>'
-    '<button class="tb-btn" onclick="EnvCanvas.bringToFront()">'
-    '<svg width="12" height="12" viewBox="0 0 12 12" fill="none">'
-    '<path d="M6 1v8M3 4l3-3 3 3" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'
-    '</svg> 置顶</button>'
+    '<button type="button" class="tb-btn tb-delete"'
+    ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.deleteSelected()"'
+    ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.deleteSelected()">删除</button>'
+    '<button type="button" class="tb-btn"'
+    ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.duplicateSelected()"'
+    ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.duplicateSelected()">复制</button>'
+    '<button type="button" class="tb-btn"'
+    ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.bringToFront()"'
+    ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.bringToFront()">置顶</button>'
     '</div>'
     '</div>'
 )
 
-# ──────────────────────────────────────────────
-# 画布专用 CSS（注入 <head>）
-# ──────────────────────────────────────────────
+
 _CANVAS_CSS = '''<style>
+.drag-workbench {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.drag-main-pane,
+.drag-side-pane {
+  width: 100%;
+  min-width: 0;
+}
 #canvas-wrapper {
-  position: relative; width: 100%; overflow: hidden;
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(27,67,50,0.15);
-  background: #e8f0ea;
+  position: relative; width: 100%; max-width: 100%; margin: 0 auto; overflow: hidden;
+  border-radius: 26px;
+  box-shadow: 0 22px 48px rgba(0,0,0,0.24);
+  background: #101D16;
+  border: 1px solid rgba(244,240,230,0.12);
+  min-height: 198px;
+}
+.drag-canvas-fallback {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(244,240,230,0.74);
+  font-size: 13px;
+  background: rgba(16,29,22,0.86);
+}
+#env-canvas {
+  position: relative;
+  display: block;
+}
+.canvas-container .lower-canvas {
+  z-index: 1;
+  pointer-events: none;
+}
+.canvas-container .upper-canvas {
+  z-index: 2;
+  pointer-events: auto;
 }
 #canvas-toolbar {
   position: absolute; display: none;
@@ -148,60 +206,72 @@ _CANVAS_CSS = '''<style>
   gap: 4px; align-items: center; z-index: 100;
   box-shadow: 0 6px 20px rgba(0,0,0,0.25);
   transform: translateX(-50%);
+  pointer-events: none;
 }
 .tb-btn {
   display: inline-flex; align-items: center; gap: 4px;
   background: rgba(255,255,255,0.12); border: none; border-radius: 16px;
   color: white; padding: 5px 11px; font-size: 12px; cursor: pointer;
-  font-weight: 500; transition: background 0.15s; white-space: nowrap;
+  font-weight: 700; transition: background 0.15s; white-space: nowrap;
+  pointer-events: auto;
 }
 .tb-btn:active { background: rgba(255,255,255,0.28); }
 .tb-btn.tb-delete { background: rgba(231,111,81,0.4); }
 .tb-btn.tb-delete:active { background: rgba(231,111,81,0.6); }
 .elem-picker {
-  width: 100%;
-  background: rgba(248,250,245,0.97);
+  width: calc(100% - 24px);
+  margin: 0 auto 0;
+  background:
+    linear-gradient(180deg, rgba(248,250,244,0.96), rgba(232,239,228,0.96)),
+    url('/static/images/bamboo-mist-texture.webp') center/cover no-repeat;
+  background-blend-mode: normal, soft-light;
   backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-  border-top: 1px solid rgba(45,106,79,0.08);
+  border: 1px solid rgba(20,35,26,0.08);
+  border-radius: 30px 30px 0 0;
+  box-shadow: 0 -18px 44px rgba(0,0,0,0.18);
+  overflow: hidden;
 }
 .picker-handle {
-  width: 36px; height: 4px; background: rgba(45,106,79,0.18);
-  border-radius: 2px; margin: 10px auto 2px;
+  width: 46px; height: 5px; background: rgba(20,35,26,0.16);
+  border-radius: 999px; margin: 10px auto 7px;
 }
 .cat-tabs-row {
-  display: flex; gap: 6px; padding: 6px 16px 4px;
+  display: flex; gap: 8px; padding: 5px 16px 7px;
   overflow-x: auto; scrollbar-width: none;
 }
 .cat-tabs-row::-webkit-scrollbar { display: none; }
 .cat-tab {
-  flex-shrink: 0; padding: 6px 14px; border-radius: 20px;
-  border: 1.5px solid rgba(45,106,79,0.15); background: white;
-  font-size: 13px; font-weight: 500; cursor: pointer; color: #6B7280;
+  flex-shrink: 0; min-width: 68px; padding: 8px 15px; border-radius: 999px;
+  border: 1px solid rgba(20,35,26,0.12); background: rgba(255,255,255,0.72);
+  font-size: 13px; font-weight: 800; cursor: pointer; color: rgba(20,35,26,0.62);
   transition: all 0.2s; white-space: nowrap;
 }
-.cat-tab-active { background: #2D6A4F; color: white; border-color: #2D6A4F; }
-.cat-content {
-  padding: 4px 16px 16px; overflow-y: auto; max-height: 215px;
-  scrollbar-width: thin; scrollbar-color: rgba(45,106,79,0.2) transparent;
+.cat-tab-active {
+  background: #2D6A4F;
+  color: #F4F0E6;
+  border-color: #2D6A4F;
+  box-shadow: 0 10px 22px rgba(45,106,79,0.18);
 }
-.cat-content::-webkit-scrollbar { width: 3px; }
-.cat-content::-webkit-scrollbar-thumb { background: rgba(45,106,79,0.2); border-radius: 2px; }
+.cat-content {
+  padding: 2px 16px 14px;
+}
 .elem-card {
-  display: flex; flex-direction: column; align-items: center; gap: 4px;
-  padding: 10px 4px 8px; background: white; border-radius: 14px;
-  border: 2px solid transparent; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+  min-height: 76px;
+  padding: 8px 4px 7px; background: rgba(255,255,255,0.76); border-radius: 18px;
+  border: 1px solid rgba(20,35,26,0.08); cursor: pointer;
   transition: all 0.18s; text-align: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  box-shadow: 0 10px 24px rgba(20,35,26,0.07);
   -webkit-tap-highlight-color: transparent;
 }
 .elem-card:active { transform: scale(0.91); }
 .elem-selected {
-  border-color: #2D6A4F !important;
-  background: rgba(45,106,79,0.06) !important;
-  box-shadow: 0 0 0 3px rgba(45,106,79,0.12) !important;
+  border-color: rgba(45,106,79,0.45) !important;
+  background: rgba(45,106,79,0.08) !important;
+  box-shadow: 0 0 0 3px rgba(45,106,79,0.10), 0 10px 24px rgba(20,35,26,0.08) !important;
 }
 .elem-name {
-  font-size: 11px; color: #1A1A2E; font-weight: 500;
+  font-size: 12px; color: #14231A; font-weight: 800;
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 62px;
 }
 .elem-card[draggable="true"] { cursor: grab; }
@@ -223,178 +293,576 @@ _CANVAS_CSS = '''<style>
               inset 0 0 40px rgba(82,183,136,0.06) !important;
   transition: outline 0.15s, box-shadow 0.15s;
 }
+.drag-stage {
+  background:
+    linear-gradient(180deg, rgba(255,255,248,0.64), rgba(232,240,227,0.90)),
+    url('/static/images/light-bamboo-paper.webp') center/cover no-repeat;
+}
+.drag-stage .q-column {
+  min-height: 0 !important;
+}
+.drag-status-row {
+  color: rgba(23,49,38,0.62);
+}
+.drag-soft-note {
+  color: rgba(23,49,38,0.58) !important;
+}
+.drag-light-actions {
+  width: calc(100% - 24px);
+  margin: 0 auto;
+  padding: 12px 18px 92px;
+  gap: 9px;
+  background: rgba(232,239,228,0.96);
+  border: 1px solid rgba(20,35,26,0.08);
+  border-top: 0;
+  border-radius: 0 0 30px 30px;
+  box-shadow: 0 22px 48px rgba(0,0,0,0.16);
+}
+.drag-ai-progress {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 18px;
+  background: rgba(255,255,248,.82);
+  border: 1px solid rgba(47,123,88,.14);
+  box-shadow: 0 14px 28px rgba(38,70,52,.10);
+}
+.drag-ai-progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #173126;
+  font-size: 12px;
+  font-weight: 900;
+}
+.drag-ai-progress-note {
+  margin-top: 5px;
+  color: rgba(23,49,38,.58);
+  font-size: 11px;
+  line-height: 1.45;
+  font-weight: 700;
+}
+.drag-ai-progress-track {
+  overflow: hidden;
+  height: 8px;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(47,123,88,.13);
+}
+.drag-ai-progress-fill {
+  width: 72%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #2F7B58, #B7F27E);
+  animation: dragAiProgress 2.6s ease-in-out infinite;
+}
+@keyframes dragAiProgress {
+  0% { width: 12%; transform: translateX(-18%); }
+  45% { width: 72%; transform: translateX(0); }
+  100% { width: 92%; transform: translateX(6%); }
+}
+.drag-clear-confirm {
+  position: fixed;
+  inset: 0;
+  z-index: 1240;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(7,18,13,.36);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.drag-clear-confirm.visible {
+  display: flex;
+}
+.drag-clear-sheet {
+  width: min(360px, calc(100vw - 48px));
+  border-radius: 8px;
+  padding: 18px;
+  color: #173126;
+  background: #FFFDF4;
+  border: 1px solid rgba(47,123,88,.16);
+  box-shadow: 0 22px 56px rgba(12,34,24,.24);
+}
+.drag-clear-title {
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 950;
+  margin-bottom: 8px;
+}
+.drag-clear-text {
+  color: rgba(23,49,38,.68);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.drag-clear-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 18px;
+}
+.drag-clear-actions button {
+  border: 0;
+  border-radius: 999px;
+  min-width: 72px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.drag-clear-actions .secondary {
+  background: rgba(47,123,88,.10);
+  color: #2F7B58;
+}
+.drag-clear-actions .danger {
+  background: #E76F51;
+  color: #FFFDF4;
+}
+.drag-save-card {
+  width: min(340px, calc(100vw - 48px));
+  border-radius: 8px;
+  padding: 20px 18px 16px;
+  color: #173126;
+  background: #FFFDF4;
+  border: 1px solid rgba(47,123,88,.16);
+  box-shadow: 0 22px 56px rgba(12,34,24,.24);
+}
+.q-card.drag-save-card,
+.q-dialog__inner > .q-card.drag-save-card {
+  color: #173126 !important;
+  background: #FFFDF4 !important;
+  border: 1px solid rgba(47,123,88,.18) !important;
+}
+.q-card.drag-save-card *,
+.q-dialog__inner > .q-card.drag-save-card * {
+  color: inherit;
+}
+.q-card.drag-save-card .drag-save-copy,
+.q-dialog__inner > .q-card.drag-save-card .drag-save-copy {
+  color: rgba(23,49,38,.76) !important;
+}
+.drag-save-title {
+  font-size: 17px;
+  line-height: 1.35;
+  font-weight: 950;
+  text-align: center;
+}
+.drag-save-copy {
+  margin-top: 8px;
+  color: rgba(23,49,38,.68);
+  font-size: 13px;
+  line-height: 1.55;
+  text-align: center;
+}
+.drag-save-action {
+  margin-top: 16px;
+}
+.q-card.drag-save-card .q-btn.drag-save-action,
+.q-dialog__inner > .q-card.drag-save-card .q-btn.drag-save-action {
+  background: #2F7B58 !important;
+  color: #F8FAF2 !important;
+  border-radius: 999px !important;
+}
+@media (min-width: 900px) and (orientation: landscape) {
+  .drag-workbench {
+    display: grid;
+    grid-template-columns: minmax(0, .62fr) minmax(390px, .38fr);
+    gap: 18px;
+    align-items: start;
+    padding: 20px 28px 122px;
+  }
+
+  .drag-main-pane,
+  .drag-side-pane {
+    min-width: 0;
+  }
+
+  .drag-side-pane {
+    display: grid;
+    gap: 14px;
+    position: sticky;
+    top: 92px;
+  }
+
+  .drag-stage {
+    width: 100% !important;
+    padding: 0 !important;
+    border: 0 !important;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 18px 42px rgba(38,70,52,0.10);
+  }
+
+  #canvas-wrapper {
+    min-height: 0;
+    border-radius: 24px;
+  }
+
+  .drag-status-row {
+    padding: 10px 16px !important;
+  }
+
+  .drag-soft-note {
+    padding: 0 16px 14px !important;
+  }
+
+  .elem-picker {
+    width: 100%;
+    margin: 0;
+    border-radius: 24px;
+    box-shadow: 0 18px 42px rgba(38,70,52,0.10);
+  }
+
+  .cat-tabs-row {
+    padding: 10px 14px 8px;
+  }
+
+  .cat-content {
+    max-height: calc(100vh - 330px);
+    overflow: auto;
+    padding: 2px 14px 14px;
+  }
+
+  .cat-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  .drag-light-actions {
+    width: 100%;
+    margin: 0;
+    padding: 14px;
+    border-radius: 24px;
+    border-top: 1px solid rgba(20,35,26,0.08);
+  }
+}
 </style>'''
 
 
-# ──────────────────────────────────────────────
-# 页面注册
-# ──────────────────────────────────────────────
+def _image_url(session) -> str:
+    return media_url(getattr(session, 'uploaded_image_path', '') if session else '')
+
+
+def _canvas_json_url(session) -> str:
+    return media_url(getattr(session, 'canvas_json_path', '') if session else '')
+
+
+def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_elements: list[dict] | None = None) -> str:
+    img_json = json.dumps(img_url, ensure_ascii=False)
+    sid_json = json.dumps(sid, ensure_ascii=False)
+    canvas_json = json.dumps(canvas_json_url, ensure_ascii=False)
+    placed_json = json.dumps(placed_elements or [], ensure_ascii=False)
+    return f'''<script>
+(function() {{
+  window._ELEMENTS = {_ELEMENTS_JS};
+
+  window.envSwitchCat = function(idx) {{
+    document.querySelectorAll('.cat-grid').forEach(function(g, i) {{
+      g.style.display = (i === idx) ? 'grid' : 'none';
+    }});
+    document.querySelectorAll('.cat-tab').forEach(function(t, i) {{
+      t.classList.toggle('cat-tab-active', i === idx);
+    }});
+  }};
+
+  function showCanvasFailure(message) {{
+    var fallback = document.getElementById('drag-canvas-fallback');
+    if (!fallback) return;
+    fallback.textContent = message || '画布加载失败，请刷新页面';
+    fallback.style.display = 'grid';
+    fallback.style.zIndex = '2';
+  }}
+
+  function loadScriptOnce(src, globalName, marker) {{
+    if (globalName && window[globalName]) return Promise.resolve();
+    return new Promise(function(resolve, reject) {{
+      var existing = document.querySelector('script[data-env-loader="' + marker + '"]');
+      if (existing) {{
+        if (globalName && window[globalName]) {{
+          resolve();
+          return;
+        }}
+        existing.remove();
+      }}
+      var script = document.createElement('script');
+      script.src = src;
+      script.dataset.envLoader = marker;
+      script.onload = function() {{ resolve(); }};
+      script.onerror = function() {{ reject(new Error(src)); }};
+      document.head.appendChild(script);
+    }});
+  }}
+
+  function bindPickerClicks() {{
+    if (window.__envDragClickHandler) {{
+      document.removeEventListener('click', window.__envDragClickHandler);
+    }}
+    window.__envDragClickHandler = function(e) {{
+      var tab = e.target.closest('.cat-tab');
+      if (tab && tab.dataset.catidx !== undefined) {{
+        window.envSwitchCat(parseInt(tab.dataset.catidx, 10));
+      }}
+      var card = e.target.closest('.elem-card');
+      if (card && card.dataset.idx !== undefined && window.EnvCanvas) {{
+        window.EnvCanvas.addByIndex(parseInt(card.dataset.idx, 10));
+      }}
+    }};
+    document.addEventListener('click', window.__envDragClickHandler);
+  }}
+
+  function restoreDraft() {{
+    var canvasJsonUrl = {canvas_json};
+    var fallbackLayout = {placed_json};
+    if ((!canvasJsonUrl && (!fallbackLayout || !fallbackLayout.length)) || !window.EnvCanvas) return;
+    var restoreKey = {sid_json} + '|' + (canvasJsonUrl || 'layout') + '|' + (fallbackLayout ? fallbackLayout.length : 0);
+    if (window.__envDragRestoreKey === restoreKey) return;
+    window.__envDragRestoreKey = restoreKey;
+    var restoreAttempts = 0;
+    function tryRestoreDrag() {{
+      restoreAttempts += 1;
+      if (restoreAttempts > 50) return;
+      if (!EnvCanvas.isBackgroundLoaded || !EnvCanvas.isBackgroundLoaded()) {{
+        setTimeout(tryRestoreDrag, 200);
+        return;
+      }}
+      if (!canvasJsonUrl) {{
+        EnvCanvas.restoreObjects('', fallbackLayout);
+        return;
+      }}
+      fetch(canvasJsonUrl).then(function(r) {{ return r.text(); }}).then(function(jsonStr) {{
+        if (jsonStr && jsonStr !== '[]') EnvCanvas.restoreObjects(jsonStr, fallbackLayout);
+        else if (fallbackLayout && fallbackLayout.length) EnvCanvas.restoreObjects('', fallbackLayout);
+      }}).catch(function() {{}});
+    }}
+    setTimeout(tryRestoreDrag, 300);
+  }}
+
+  function initDrag(attempt) {{
+    var fabricOk = typeof window.fabric !== 'undefined';
+    var envCanvasOk = typeof window.EnvCanvas !== 'undefined';
+    var domOk = !!document.getElementById('env-canvas');
+    if (fabricOk && envCanvasOk && domOk) {{
+      EnvCanvas.init('env-canvas', {img_json}, {sid_json});
+      setTimeout(function() {{ EnvCanvas.initDragDrop(); }}, 200);
+      restoreDraft();
+      bindPickerClicks();
+      return;
+    }}
+    if (attempt < 100) {{
+      setTimeout(function() {{ initDrag(attempt + 1); }}, 80);
+      return;
+    }}
+    showCanvasFailure('画布加载失败，请刷新页面');
+  }}
+
+  loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
+    .then(function() {{
+      if (window.EnvCanvas && !window.EnvCanvas.requestClearAll) {{
+        try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
+        var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
+        if (oldEnvScript) oldEnvScript.remove();
+      }}
+      return loadScriptOnce('/static/canvas_editor.js?v=drag-loader-fit-20260606c', 'EnvCanvas', 'env-canvas');
+    }})
+    .then(function() {{ initDrag(0); }})
+    .catch(function() {{ showCanvasFailure('画布加载失败，请刷新页面'); }});
+}})();
+</script>'''
+
+
 def create_drag_page():
     picker_html = _build_picker_html()
 
     @ui.page('/drag-mode')
-    def drag_mode_page(sid: str = ''):
-
-        # ── 基础 head 注入 ──
+    async def drag_mode_page(sid: str = '', back: str = ''):
         ui.add_head_html(META_VIEWPORT)
         ui.add_head_html(COMMON_STYLE)
-        ui.add_head_html(
-            '<script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"'
-            ' crossorigin="anonymous"></script>'
-        )
-        ui.add_head_html('<script src="/static/canvas_editor.js"></script>')
         ui.add_head_html(_CANVAS_CSS)
 
-        # ── 提前获取会话数据，供 init script 使用 ──
         session = get_session(sid) if sid else None
-        if session:
-            session.mode_used = 'drag'
 
-        img_url = ''
-        if session and session.uploaded_image_path:
-            img_url = f'/api/image/{Path(session.uploaded_image_path).name}'
+        img_url = _image_url(session)
+        canvas_json_url = _canvas_json_url(session)
+        back_url = f'/result?sid={sid}&back=records' if back == 'result' else (
+            '/records' if back == 'records' else f'/mode-select?sid={sid}'
+        )
 
-        # ── 关键：init script 必须放在 add_head_html，不能用 ui.html() ──
-        # ui.html() 底层通过 Vue v-html 渲染，script 标签不会被执行。
-        # add_head_html 直接注入 <head>，脚本正常执行。
-        ui.add_head_html(f'''<script>
-window._ELEMENTS = {_ELEMENTS_JS};
-
-function envSwitchCat(idx) {{
-  document.querySelectorAll('.cat-grid').forEach(function(g, i) {{
-    g.style.display = (i === idx) ? 'grid' : 'none';
-  }});
-  document.querySelectorAll('.cat-tab').forEach(function(t, i) {{
-    t.classList.toggle('cat-tab-active', i === idx);
-  }});
-}}
-
-(function waitAndInit() {{
-  var fabricOk = typeof fabric !== 'undefined';
-  var envCanvasOk = typeof window.EnvCanvas !== 'undefined';
-  var domOk = !!document.getElementById('env-canvas');
-  if (!fabricOk || !envCanvasOk || !domOk) {{
-    setTimeout(waitAndInit, 80);
-    return;
-  }}
-  EnvCanvas.init('env-canvas', {json.dumps(img_url)}, {json.dumps(sid)});
-  setTimeout(function() {{ EnvCanvas.initDragDrop(); }}, 200);
-
-  // 事件委托：分类标签切换
-  document.addEventListener('click', function(e) {{
-    var tab = e.target.closest('.cat-tab');
-    if (tab && tab.dataset.catidx !== undefined) {{
-      envSwitchCat(parseInt(tab.dataset.catidx, 10));
-    }}
-    var card = e.target.closest('.elem-card');
-    if (card && card.dataset.idx !== undefined) {{
-      EnvCanvas.addByIndex(parseInt(card.dataset.idx, 10));
-    }}
-  }});
-}})();
-</script>''')
-
-        # ── 页面布局 ──
-        with ui.column().classes('mobile-page').style('background:#F8FAF5; gap:0'):
-
-            # 顶部导航栏
-            with ui.row().style(TOP_BAR_STYLE):
-                ui.button(
-                    icon='arrow_back',
-                    on_click=lambda: ui.navigate.to(f'/mode-select?sid={sid}'),
-                ).props('flat round dense').style(f'color:{COLORS["primary_dark"]}')
-                ui.label('自由创作').style(
-                    f'font-size:17px;font-weight:600;margin-left:4px;flex:1;color:{COLORS["text"]}'
+        with ui.column().classes('mobile-page light-page').style('gap:0'):
+            bottom_nav(light=True)
+            with ui.row().style(LIGHT_TOP_BAR_STYLE + 'padding-right:68px;gap:8px;'):
+                ui.button(icon='arrow_back', on_click=lambda: smooth_navigate(back_url)).props('flat round dense').style(
+                    'color:#2F7B58'
                 )
-                ui.button(
-                    '清空',
-                    on_click=lambda: ui.run_javascript('EnvCanvas.clearAll()'),
-                ).props('flat dense no-caps').style(
-                    f'color:{COLORS["primary"]};font-size:13px;font-weight:500'
+                ui.label('自由创作').style('font-size:17px;font-weight:800;margin-left:4px;flex:1;color:#173126')
+                ui.button('清除', on_click=lambda: ui.run_javascript('EnvCanvas.requestClearAll()')).props(
+                    'unelevated dense no-caps'
+                ).style(
+                    'min-width:58px;height:34px;border-radius:12px;'
+                    'background:rgba(47,123,88,.10);color:#2F7B58;'
+                    'border:1px solid rgba(47,123,88,.18);font-size:13px;font-weight:900;box-shadow:none;'
+                )
+                save_btn = ui.button('保存').props(
+                    'unelevated dense no-caps'
+                ).style(
+                    'min-width:58px;height:34px;border-radius:12px;'
+                    'background:#2F7B58;color:#F8FAF2;'
+                    'border:1px solid rgba(47,123,88,.28);font-size:13px;font-weight:900;box-shadow:none;'
                 )
 
-            # 主内容区
-            with ui.column().style('padding:16px 20px 0;gap:10px;width:100%'):
+            with ui.element('div').classes('drag-workbench'):
+                with ui.element('div').classes('drag-main-pane'):
+                    with ui.column().classes('drag-stage').style(
+                        'padding:16px 20px 12px;gap:10px;width:100%;'
+                        'border-bottom:1px solid rgba(244,240,230,0.08);'
+                    ):
+                        ui.html(_CANVAS_HTML, sanitize=False).style('width:100%')
 
-                # Fabric.js 画布容器（纯 HTML，含浮动工具栏）
-                ui.html(_CANVAS_HTML).style('width:100%')
+                        with ui.row().classes('drag-status-row').style(
+                            'width:100%;justify-content:space-between;align-items:center;padding:2px 0'
+                        ):
+                            ui.html(
+                                '<span id="element-count" style="font-size:12px;color:rgba(23,49,38,0.62);">'
+                                '已放置: 0 个</span>',
+                                sanitize=False,
+                            )
+                            ui.html(
+                                '<span id="selected-label" '
+                                'style="font-size:12px;color:rgba(23,49,38,0.70);font-weight:700;'
+                                'padding:5px 12px;border-radius:999px;background:rgba(47,123,88,0.09)">未选中</span>',
+                                sanitize=False,
+                            )
 
-                # 状态栏
-                with ui.row().style(
-                    'width:100%;justify-content:space-between;align-items:center;padding:2px 0'
-                ):
-                    ui.html(
-                        '<span id="element-count" style="font-size:12px;color:#6B7280;">'
-                        '已放置: 0 个</span>'
-                    )
-                    ui.html(
-                        '<span id="selected-label" '
-                        'style="font-size:12px;color:#6B7280;font-weight:500;'
-                        'padding:4px 12px;border-radius:12px;'
-                        'background:rgba(107,114,128,0.08)">未选中</span>'
-                    )
+                        ui.label('点击添加或拖拽元素到画布，选中后可缩放 · 旋转').style(
+                            f'font-size:11px;color:{COLORS["text_secondary"]};'
+                            'font-weight:300;text-align:center;padding-bottom:2px'
+                        ).classes('drag-soft-note')
 
-                ui.label('点击添加或拖拽元素到画布，选中后可缩放 · 旋转').style(
-                    f'font-size:11px;color:{COLORS["text_secondary"]};'
-                    'font-weight:300;text-align:center;padding-bottom:2px'
-                )
+                with ui.element('div').classes('drag-side-pane'):
+                    ui.html(picker_html, sanitize=False).style('width:100%;flex-shrink:0')
 
-            # 元素选择面板（纯 HTML + onclick 直调 EnvCanvas.addByIndex）
-            ui.html(picker_html).style('width:100%;flex-shrink:0')
-
-            # 底部操作区
-            with ui.column().style(
-                'width:100%;padding:10px 20px 20px;gap:8px;'
-                'background:rgba(248,250,245,0.97);'
-                'border-top:1px solid rgba(45,106,79,0.06);'
-            ):
-                error_label = ui.label().style(
-                    f'display:none;padding:10px 14px;background:{COLORS["error"]}10;'
-                    f'border:1px solid {COLORS["error"]}30;border-radius:14px;'
-                    f'font-size:13px;color:{COLORS["error"]};width:100%'
-                )
-
-                loading_row = ui.element('div').style('display:none;width:100%')
-                with loading_row:
-                    with ui.row().style('width:100%;align-items:center;gap:10px;padding:8px 0'):
-                        ui.spinner('dots', size='sm', color=COLORS['primary'])
-                        ui.label('AI 正在融合元素...').style(
-                            f'font-size:14px;color:{COLORS["text"]};font-weight:500'
+                    with ui.column().classes('drag-light-actions'):
+                        error_label = ui.label().style(
+                            f'display:none;padding:10px 14px;background:{COLORS["error"]}10;'
+                            f'border:1px solid {COLORS["error"]}30;border-radius:14px;'
+                            f'font-size:13px;color:{COLORS["error"]};width:100%'
                         )
 
-                gen_btn = ui.button(
-                    '✦ AI 融合生成',
-                    on_click=lambda: generate_inpaint(),
-                ).props('no-caps unelevated').style(PRIMARY_BTN_STYLE)
+                        loading_row = ui.element('div').style('display:none;width:100%')
+                        with loading_row:
+                            ui.html(
+                                '<div class="drag-ai-progress">'
+                                '<div class="drag-ai-progress-head">'
+                                '<span>AI 正在生成</span><span>请稍候</span>'
+                                '</div>'
+                                '<div class="drag-ai-progress-note">'
+                                'AI 会在后台生成，可前往其他页面；生成完成后会在草稿箱通知你。'
+                                '</div>'
+                                '<div class="drag-ai-progress-track"><div class="drag-ai-progress-fill"></div></div>'
+                                '</div>',
+                                sanitize=False,
+                            )
 
-        # ── 生成处理逻辑 ──
-        async def generate_inpaint():
-            layout_json = await ui.run_javascript(
-                'EnvCanvas.getLayoutJSON()', timeout=5.0
+                        gen_btn = ui.button('✦ AI 融合生成', on_click=lambda: generate_inpaint()).props(
+                            'no-caps unelevated'
+                        ).style(LIGHT_PRIMARY_BTN_STYLE)
+
+        ui.add_body_html(_build_drag_bootstrap(img_url, sid, canvas_json_url, getattr(session, 'placed_elements', []) if session else []))
+
+        with ui.dialog() as save_dialog, ui.card().classes('drag-save-card'):
+            save_dialog_title = ui.label('已保存进度').classes('drag-save-title')
+            save_dialog_copy = ui.label('当前画布和元素位置已同步到草稿箱。').classes('drag-save-copy')
+            ui.button('知道了', on_click=save_dialog.close).props('unelevated no-caps').classes('drag-save-action').style(
+                'width:100%;background:#2F7B58;color:#F8FAF2;font-weight:900;'
             )
-            elements = json.loads(layout_json) if layout_json else []
 
+        def _show_save_dialog(title: str, copy: str) -> None:
+            save_dialog_title.set_text(title)
+            save_dialog_copy.set_text(copy)
+            save_dialog.open()
+
+        async def save_draft():
+            if not session:
+                _show_save_dialog('无法保存', '当前会话无效，请返回重新进入。')
+                return
+
+            save_btn.disable()
+            try:
+                session.mode_used = 'drag'
+                canvas_data_url = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getCanvasDataURL()) || ""', timeout=8.0)
+                objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=8.0)
+
+                if canvas_data_url and canvas_data_url.startswith('data:image'):
+                    save_canvas_snapshot(sid, canvas_data_url)
+                if objects_json is not None:
+                    save_canvas_json(sid, objects_json or '[]')
+
+                try:
+                    layout_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getLayoutJSON()) || "[]"', timeout=5.0)
+                    raw_elements = json.loads(layout_json) if layout_json else []
+                    session.placed_elements = raw_elements if isinstance(raw_elements, list) else []
+                except Exception:
+                    pass
+
+                _show_save_dialog('已保存进度', '当前画布和元素位置已同步到草稿箱。')
+            except Exception as exc:
+                _show_save_dialog('保存失败', str(exc)[:160])
+            finally:
+                save_btn.enable()
+
+        async def generate_inpaint():
+            upload_path = resolve_media_path(session.uploaded_image_path if session else '')
+            if not session or not upload_path:
+                ui.notify('请先上传原始图片，再进入自由创作', type='warning')
+                return
+
+            try:
+                layout_json = await ui.run_javascript('EnvCanvas.getLayoutJSON()', timeout=5.0)
+                raw_elements = json.loads(layout_json) if layout_json else []
+                from app.routers.api import _normalize_inpaint_elements
+                elements = _normalize_inpaint_elements(raw_elements)
+            except Exception:
+                ui.notify('画布数据解析失败，请重试', type='negative')
+                return
             if not elements:
                 ui.notify('请先放置至少一个元素', type='warning')
                 return
 
-            gen_btn.set_visibility(False)
+            canvas_data_url = ''
+            try:
+                canvas_data_url = await ui.run_javascript('EnvCanvas.getCanvasDataURL()', timeout=10.0)
+            except Exception:
+                pass
+
+            gen_btn.disable()
             loading_row.style('display:block')
             error_label.style('display:none')
 
-            if session:
-                session.placed_elements = elements
-                session.generation_count = getattr(session, 'generation_count', 0) + 1
+            session.mode_used = 'drag'
+            session.placed_elements = elements
+            if canvas_data_url:
+                try:
+                    save_canvas_snapshot(sid, canvas_data_url)
+                except Exception:
+                    pass
 
             try:
-                from app.services.sd_service import generate_inpainting
-                result_bytes = await asyncio.to_thread(
-                    generate_inpainting,
-                    session.uploaded_image_path,
+                objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=10.0)
+                if objects_json is not None:
+                    save_canvas_json(sid, objects_json or '[]')
+            except Exception:
+                pass
+
+            try:
+                from app.routers.api import start_inpaint_generation_job
+                started = start_inpaint_generation_job(
+                    sid,
+                    str(upload_path),
                     elements,
                 )
-                save_output(sid, result_bytes)
-                ui.navigate.to(f'/result?sid={sid}')
+                if not started:
+                    raise RuntimeError('AI 已在后台生成中，请稍候。')
+                _show_save_dialog('AI 会在后台生成', '可以前往其他页面，生成完成后会在草稿箱通知你。')
+                gen_btn.set_text('后台生成中')
             except Exception as e:
                 error_label.set_text(f'生成失败: {str(e)}')
                 error_label.style(
@@ -402,5 +870,7 @@ function envSwitchCat(idx) {{
                     f'border:1px solid {COLORS["error"]}30;border-radius:14px;'
                     f'font-size:13px;color:{COLORS["error"]};width:100%'
                 )
-                gen_btn.set_visibility(True)
+                gen_btn.enable()
                 loading_row.style('display:none')
+
+        save_btn.on('click', save_draft)

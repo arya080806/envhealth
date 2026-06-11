@@ -1,0 +1,65 @@
+- main [ref=e5]:
+  - generic [ref=e7]:
+    - generic [ref=e10] [cursor=pointer]: 用
+    - generic [ref=e11]:
+      - generic [ref=e12] [cursor=pointer]:
+        - generic [ref=e13]: home
+        - generic [ref=e14]: 首页
+      - generic [ref=e16] [cursor=pointer]:
+        - generic [ref=e17]: description
+        - generic [ref=e18]: 记录
+      - generic [ref=e19] [cursor=pointer]:
+        - generic [ref=e20]: info
+        - generic [ref=e21]: 关于
+    - generic [ref=e22]:
+      - button [ref=e23] [cursor=pointer]:
+        - img [ref=e25]: arrow_back
+      - generic [ref=e26]: 灵感创想
+      - button "清除" [ref=e27] [cursor=pointer]:
+        - generic [ref=e29]: 清除
+    - generic [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]: ✦ 在画布上随意画几笔
+        - generic [ref=e33]: 画在上方 = 天空 · 中间 = 植被 · 下方 = 地面水景
+        - generic [ref=e35]:
+          - generic "试试画闭合形" [ref=e36] [cursor=pointer]:
+            - img [ref=e37]
+            - generic [ref=e39]: 画闭合形 → 池塘
+          - generic "圆+竖线=完整的树" [ref=e40] [cursor=pointer]:
+            - img [ref=e41]
+            - generic [ref=e43]: 圆+竖线 → 树
+          - generic "试试画锯齿线" [ref=e44] [cursor=pointer]:
+            - img [ref=e45]
+            - generic [ref=e47]: 画锯齿 → 远山
+          - generic "试试画竖线" [ref=e48] [cursor=pointer]:
+            - img [ref=e49]
+            - generic [ref=e50]: 画竖线 → 树干
+          - generic "试试涂大面积" [ref=e51] [cursor=pointer]:
+            - img [ref=e52]
+            - generic [ref=e56]: 涂满 → 草地
+          - generic "横线+竖线=小径路灯" [ref=e57] [cursor=pointer]:
+            - img [ref=e58]
+            - generic [ref=e61]: 路+竖线 → 路灯
+          - generic "试试画横线" [ref=e62] [cursor=pointer]:
+            - img [ref=e63]
+            - generic [ref=e66]: 画横线 → 草坪
+      - generic [ref=e73]:
+        - generic "深绿" [ref=e75] [cursor=pointer]
+        - generic "浅绿" [ref=e77] [cursor=pointer]
+        - generic "橙红" [ref=e79] [cursor=pointer]
+        - generic "蓝色" [ref=e81] [cursor=pointer]
+        - generic "紫色" [ref=e83] [cursor=pointer]
+        - generic "黑色" [ref=e85] [cursor=pointer]
+        - generic [ref=e87]:
+          - textbox: "#52b788"
+          - generic "自定义颜色" [ref=e88] [cursor=pointer]: +
+        - button "↩" [ref=e90] [cursor=pointer]
+        - slider [ref=e94] [cursor=pointer]: "4"
+      - generic [ref=e96]:
+        - generic [ref=e97]: 已绘制 0 笔
+        - generic [ref=e98]: 画完后系统自动分析
+      - generic [ref=e101]:
+        - generic [ref=e102]: 🎨
+        - generic [ref=e103]: 在画布上画几笔，AI 将识别你的意图并生成改造效果
+    - button "✦ AI 生成效果图" [ref=e105] [cursor=pointer]:
+      - generic [ref=e107]: ✦ AI 生成效果图

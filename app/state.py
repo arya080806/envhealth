@@ -1,8 +1,14 @@
 """应用全局状态管理 - SQLite 持久化 + 兼容层"""
 import uuid
 import time
-from pathlib import Path
+import base64
+import binascii
+import io
+import json
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Optional
+
+from PIL import Image, UnidentifiedImageError
 
 from app.db import (
     init_db,
@@ -19,9 +25,73 @@ UPLOAD_DIR = Path(__file__).parent.parent / 'uploads'
 OUTPUT_DIR = Path(__file__).parent.parent / 'outputs'
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
+MEDIA_ROOTS = tuple(path.resolve() for path in (UPLOAD_DIR, OUTPUT_DIR))
+MAX_IMAGE_BYTES = 20 * 1024 * 1024
+MAX_CANVAS_JSON_BYTES = 2 * 1024 * 1024
+MAX_IMAGE_PIXELS = 24_000_000
+IMAGE_EXTENSIONS = {
+    'JPEG': '.jpg',
+    'PNG': '.png',
+    'WEBP': '.webp',
+}
 
 # 初始化数据库
 init_db()
+
+
+def media_filename(path_value: str | Path | None) -> str:
+    """Return a basename from paths saved on either Windows or Linux."""
+    if not path_value:
+        return ''
+    raw = str(path_value).strip()
+    if not raw:
+        return ''
+    for path_cls in (Path, PurePosixPath, PureWindowsPath):
+        try:
+            name = path_cls(raw).name
+            if name:
+                return name
+        except Exception:
+            pass
+    return raw.replace('\\', '/').rstrip('/').rsplit('/', 1)[-1]
+
+
+def _is_within_media_roots(path: Path) -> bool:
+    try:
+        resolved = path.resolve()
+    except Exception:
+        return False
+    return any(resolved == root or root in resolved.parents for root in MEDIA_ROOTS)
+
+
+def resolve_media_path(path_value: str | Path | None) -> Path | None:
+    """Resolve stored media paths after moving the app between machines."""
+    if not path_value:
+        return None
+    raw = str(path_value).strip()
+    if raw:
+        direct_path = Path(raw)
+        if direct_path.exists() and _is_within_media_roots(direct_path):
+            return direct_path
+
+    name = media_filename(path_value)
+    if not name:
+        return None
+    if name != Path(name).name or name != PureWindowsPath(name).name:
+        return None
+    for directory in (UPLOAD_DIR, OUTPUT_DIR):
+        candidate = directory / name
+        if candidate.exists() and _is_within_media_roots(candidate):
+            return candidate
+    return None
+
+
+def media_url(path_value: str | Path | None, *, thumb: bool = False) -> str:
+    path = resolve_media_path(path_value)
+    if not path:
+        return ''
+    suffix = '?thumb=1' if thumb else ''
+    return f'/api/image/{path.name}{suffix}'
 
 
 class SessionProxy:
@@ -89,9 +159,29 @@ def create_session(user_id: int | None = None) -> str:
     return sid
 
 
+def _verified_image_format(file_bytes: bytes) -> str:
+    if not file_bytes or len(file_bytes) > MAX_IMAGE_BYTES:
+        raise ValueError('invalid image size')
+    try:
+        with Image.open(io.BytesIO(file_bytes)) as img:
+            img.verify()
+            image_format = (img.format or '').upper()
+            width, height = img.size
+    except (UnidentifiedImageError, OSError, ValueError) as exc:
+        raise ValueError('invalid image data') from exc
+    if image_format not in IMAGE_EXTENSIONS:
+        raise ValueError('unsupported image format')
+    if width <= 0 or height <= 0 or width * height > MAX_IMAGE_PIXELS:
+        raise ValueError('image dimensions out of range')
+    return image_format
+
+
 def save_upload(session_id: str, file_bytes: bytes, filename: str) -> str:
     """保存上传的图片，返回路径"""
-    ext = Path(filename).suffix or '.jpg'
+    if not db_get_session(session_id):
+        raise ValueError('invalid session')
+    image_format = _verified_image_format(file_bytes)
+    ext = IMAGE_EXTENSIONS[image_format]
     safe_name = f"{session_id}_{uuid.uuid4().hex[:6]}{ext}"
     path = UPLOAD_DIR / safe_name
     path.write_bytes(file_bytes)
@@ -101,10 +191,87 @@ def save_upload(session_id: str, file_bytes: bytes, filename: str) -> str:
 
 def save_output(session_id: str, image_bytes: bytes, suffix: str = '.png') -> str:
     """保存AI生成的输出图片，返回路径"""
+    session = db_get_session(session_id)
+    if not session:
+        raise ValueError('invalid session')
+    _verified_image_format(image_bytes)
+    suffix = suffix.lower()
+    if suffix not in IMAGE_EXTENSIONS.values():
+        suffix = '.png'
     safe_name = f"{session_id}_out_{uuid.uuid4().hex[:6]}{suffix}"
     path = OUTPUT_DIR / safe_name
     path.write_bytes(image_bytes)
-    db_update_session(session_id, generated_image_path=str(path))
+    history = session.get('generation_history') or []
+    if not isinstance(history, list):
+        history = []
+    history.append({
+        'path': str(path),
+        'created_at': time.time(),
+        'mode': session.get('mode_used', ''),
+        'prompt': session.get('llm_prompt', ''),
+        'canvas_path': session.get('canvas_snapshot_path', ''),
+    })
+    db_update_session(
+        session_id,
+        generated_image_path=str(path),
+        generation_history=history[-20:],
+        generation_status='done',
+        generation_error='',
+        generation_finished_at=time.time(),
+    )
+    return str(path)
+
+
+SNAPSHOT_DIR = Path(__file__).parent.parent / 'outputs'
+
+
+def save_canvas_snapshot(session_id: str, data_url: str) -> str:
+    """保存画布快照（base64 data URL），返回路径"""
+    session = db_get_session(session_id)
+    if not session:
+        raise ValueError('invalid session')
+    if not isinstance(data_url, str) or ',' not in data_url:
+        raise ValueError('invalid canvas snapshot')
+    header, encoded = data_url.split(',', 1)
+    if not header.startswith('data:image/'):
+        raise ValueError('invalid canvas snapshot type')
+    if len(encoded) > MAX_IMAGE_BYTES * 2:
+        raise ValueError('canvas snapshot is too large')
+    try:
+        img_bytes = base64.b64decode(encoded, validate=True)
+    except (binascii.Error, ValueError) as exc:
+        raise ValueError('invalid canvas snapshot encoding') from exc
+    _verified_image_format(img_bytes)
+    safe_name = f"{session_id}_canvas_{uuid.uuid4().hex[:6]}.png"
+    path = SNAPSHOT_DIR / safe_name
+    path.write_bytes(img_bytes)
+    history = session.get('canvas_history') or []
+    if not isinstance(history, list):
+        history = []
+    history.append({
+        'path': str(path),
+        'created_at': time.time(),
+        'mode': session.get('mode_used', ''),
+    })
+    db_update_session(session_id, canvas_snapshot_path=str(path), canvas_history=history[-30:])
+    return str(path)
+
+
+def save_canvas_json(session_id: str, json_str: str) -> str:
+    """保存画布 Fabric.js 对象 JSON（用于恢复编辑状态），返回路径"""
+    if not db_get_session(session_id):
+        raise ValueError('invalid session')
+    if not isinstance(json_str, str):
+        raise ValueError('invalid canvas json')
+    if len(json_str.encode('utf-8')) > MAX_CANVAS_JSON_BYTES:
+        raise ValueError('canvas json is too large')
+    parsed = json.loads(json_str)
+    if not isinstance(parsed, (dict, list)):
+        raise ValueError('invalid canvas json shape')
+    safe_name = f"{session_id}_canvas_objs_{uuid.uuid4().hex[:6]}.json"
+    path = OUTPUT_DIR / safe_name
+    path.write_text(json_str, encoding='utf-8')
+    db_update_session(session_id, canvas_json_path=str(path))
     return str(path)
 
 
