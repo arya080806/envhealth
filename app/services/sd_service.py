@@ -902,19 +902,124 @@ def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> li
     return merged
 
 
+def _shape_type_to_language(shape_type: str) -> str:
+    shape_map = {
+        'round': '圆润团簇',
+        'tall': '竖向生长',
+        'wide': '横向延展',
+        'dot': '点状聚焦',
+        'wave': '波浪延展',
+        'enclosure': '围合边界',
+        'zigzag': '折线动势',
+        'spiral': '旋转中心',
+        'free': '自由曲线',
+    }
+    return shape_map.get(str(shape_type or '').strip(), '自由曲线')
+
+
+def _expanded_element_phrase(name: str, desc: str) -> str:
+    if name in {'花朵', '花点', '花坛', '花圃', '螺旋花坛'}:
+        return '连续花境、花带和成片花丛'
+    if name in {'灌木', '灌木带', '灌木围合', '树丛', '植被', '绿化带'}:
+        return '连续的灌木与植被群落'
+    if name in {'小溪', '溪流', '水景', '水面', '池塘', '喷泉', '喷泉池'}:
+        return '顺着笔触展开的水景系统'
+    if name in {'藤蔓', '竹子', '叶片'}:
+        return '顺着笔触攀附和蔓延的植物层'
+    return desc or name
+
+
+def _find_stroke_context(el: dict, stroke_log: list[dict], used_indices: set[int]) -> dict | None:
+    if not stroke_log:
+        return None
+
+    name = el.get('elemName') or el.get('name') or ''
+    x_pct = _safe_float(el.get('x'), 50)
+    y_pct = _safe_float(el.get('y'), 50)
+    best_idx = None
+    best_score = 9999.0
+
+    for idx, stroke in enumerate(stroke_log[:80]):
+        if idx in used_indices or not isinstance(stroke, dict):
+            continue
+        sx = _safe_float(stroke.get('x'), 50)
+        sy = _safe_float(stroke.get('y'), 50)
+        dist = ((sx - x_pct) ** 2 + (sy - y_pct) ** 2) ** 0.5
+        label = stroke.get('userLabel') or stroke.get('autoLabel') or ''
+        label_bonus = -12 if name and label == name else 0
+        area_bonus = -min(18, (_safe_float(stroke.get('bboxW'), 0) * _safe_float(stroke.get('bboxH'), 0)) / 80)
+        score = dist + label_bonus + area_bonus
+        if score < best_score:
+            best_score = score
+            best_idx = idx
+
+    if best_idx is None:
+        return None
+    if best_score > 38:
+        return None
+    used_indices.add(best_idx)
+    return stroke_log[best_idx]
+
+
+def _stroke_guided_line(name: str, desc: str, spatial: str, tint: str, stroke: dict) -> str:
+    bbox_w = _safe_float(stroke.get('bboxW'), 0)
+    bbox_h = _safe_float(stroke.get('bboxH'), 0)
+    area = bbox_w * bbox_h
+    max_dim = max(bbox_w, bbox_h)
+    shape = _shape_type_to_language(stroke.get('shapeType'))
+    element_phrase = _expanded_element_phrase(name, desc)
+    tint_text = f'，色调呼应{tint}' if tint else ''
+
+    if max_dim >= 24 or area >= 260:
+        return (
+            f'- 在{spatial}沿用户这条{shape}大笔触生成{element_phrase}{tint_text}；'
+            f'覆盖或贯穿宽约画面{bbox_w:.1f}%、高约画面{bbox_h:.1f}%的区域，'
+            '必须成为一眼可见的主景改造，不能只做小点缀或轻微调色'
+        )
+    if max_dim >= 14 or area >= 100:
+        return (
+            f'- 在{spatial}顺着用户{shape}笔触布置{element_phrase}{tint_text}；'
+            f'影响范围约宽{bbox_w:.1f}%、高{bbox_h:.1f}%，需要有清楚的前后差异'
+        )
+    return f'- 在{spatial}按用户笔触位置添加{desc}{tint_text}，新元素需要清晰可见'
+
+
 def _build_sketch_prompt(
     elements: list[dict],
     scene_intent: dict,
     mood_params: dict,
     complexity: str = 'medium',
+    stroke_log: list[dict] | None = None,
 ) -> str:
     """三段式 Prompt 构建器（增强版）：保留段 / 添加段 / 氛围段"""
     lines = []
+    stroke_log = [s for s in (stroke_log or []) if isinstance(s, dict)]
 
     lines.append('请基于这张照片，生成一张改造后的场景图。')
-    lines.append('[保留] 保持以下原有内容不变：原始视角、地平线位置、建筑轮廓、整体空间尺度。')
+    lines.append('[保留] 保持原始视角、地平线位置、主体建筑轮廓和整体空间尺度；未被笔触覆盖的区域尽量稳定。')
+
+    if stroke_log:
+        large_strokes = [
+            s for s in stroke_log
+            if max(_safe_float(s.get('bboxW'), 0), _safe_float(s.get('bboxH'), 0)) >= 24
+            or _safe_float(s.get('bboxW'), 0) * _safe_float(s.get('bboxH'), 0) >= 260
+        ]
+        lines.append('[笔触执行] 用户手绘笔触是明确的空间改造指令，不只是氛围参考。')
+        if large_strokes:
+            largest = max(
+                large_strokes,
+                key=lambda s: _safe_float(s.get('bboxW'), 0) * _safe_float(s.get('bboxH'), 0),
+            )
+            lines.append(
+                '- 检测到大范围笔触：'
+                f'约覆盖宽{_safe_float(largest.get("bboxW"), 0):.1f}%、高{_safe_float(largest.get("bboxH"), 0):.1f}%，'
+                f'形态为{_shape_type_to_language(largest.get("shapeType"))}；'
+                '改造后该区域必须出现肉眼可辨的新增景观层次。'
+            )
+        lines.append('- 不要只调整亮度、色温或轻微增加细节；用户画过的区域必须产生可比较的结构或元素变化。')
 
     add_lines = []
+    used_stroke_indices: set[int] = set()
 
     for el in elements:
         name = el.get('elemName') or el.get('name', '')
@@ -941,7 +1046,10 @@ def _build_sketch_prompt(
             continue
 
         desc = _get_element_desc(name)
-        if tint:
+        stroke_context = _find_stroke_context(el, stroke_log, used_stroke_indices)
+        if stroke_context:
+            add_lines.append(_stroke_guided_line(name, desc, spatial, tint, stroke_context))
+        elif tint:
             add_lines.append(f'- 在{spatial}自然融入{desc}，色调呈现{tint}的视觉效果')
         else:
             add_lines.append(f'- 在{spatial}自然融入{desc}')
@@ -1017,19 +1125,19 @@ def _build_sketch_prompt(
         if ai_agency <= 40:
             lines.append('[用户能动性] AI 只做低强度辅助，尽量保留用户笔迹位置和原图结构，避免过度发挥。')
         elif ai_agency >= 85:
-            lines.append('[用户能动性] 可进行更大胆的环境想象，但必须尊重用户标注内容和笔迹位置。')
+            lines.append('[用户能动性] 可进行更大胆的环境想象，用户画过的区域应被转化为清晰可见的主景或次主景。')
         else:
-            lines.append('[用户能动性] 在用户笔迹和标注基础上适度扩展，保持可解释、可追溯的改造关系。')
+            lines.append('[用户能动性] 在用户笔迹和标注基础上积极扩展，保持可解释、可追溯，同时保证前后图有明显差异。')
 
     if complexity == 'simple':
-        lines.append('[要求] 照片写实风格，新元素与原环境自然融合，无文字水印。')
+        lines.append('[要求] 照片写实风格，新元素与原环境自然融合；但笔触区域必须清楚可见地改变，无文字水印。')
     elif complexity == 'rich':
         lines.append(
             '[要求] 与原图光影方向保持一致，照片写实风格，新元素与原环境无缝融合，'
-            '注意远近透视关系，前景清晰、远景略有空气透视感，无文字水印。'
+            '注意远近透视关系，前景清晰、远景略有空气透视感；笔触覆盖区需要成为主要视觉变化来源，无文字水印。'
         )
     else:
-        lines.append('[要求] 与原图光影方向保持一致，照片写实风格，新元素与原环境无缝融合，无文字水印。')
+        lines.append('[要求] 与原图光影方向保持一致，照片写实风格，新元素与原环境无缝融合；笔触覆盖区要有明确变化，无文字水印。')
 
     return '\n'.join(lines)
 
@@ -1061,7 +1169,7 @@ def generate_from_sketch(image_path: str, sketch_data: dict) -> tuple[bytes, str
         f'strokeLog={len(stroke_log)} strokes'
     )
 
-    prompt = _build_sketch_prompt(elements, scene_intent, mood_params, complexity)
+    prompt = _build_sketch_prompt(elements, scene_intent, mood_params, complexity, stroke_log)
     logger.info(f'Prompt:\n{prompt}')
 
     image_ref = _call_image_edit(image_path, prompt)

@@ -1209,7 +1209,7 @@ def _build_inspire_bootstrap(init_payload: str) -> str:
         .then(function() {{ return loadScriptOnce('/static/sketch_composer.js', 'SketchComposer', 'sketch-composer'); }})
         .then(function() {{
             return loadScriptOnce(
-                '/static/inspire_canvas.js?v=inspire-select-group-20260609',
+                '/static/inspire_canvas.js?v=inspire-prompt-force-20260612',
                 'InspireCanvas',
                 'inspire-canvas'
             );
