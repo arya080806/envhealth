@@ -9,10 +9,10 @@ logging.basicConfig(
 
 from nicegui import ui, app
 
-from app.nicegui_compat import install_importmap_polyfill
+from app.nicegui_compat import install_legacy_runtime, patch_legacy_component_paths
 
 
-install_importmap_polyfill()
+install_legacy_runtime()
 
 
 _navigate_to = ui.navigate.to
@@ -161,6 +161,8 @@ create_account_page()
 create_participant_info_page()
 create_export_page()
 
+patch_legacy_component_paths()
+
 ui.run(
     title='灵感世界',
     host='0.0.0.0',
@@ -168,6 +170,7 @@ ui.run(
     reload=False,
     favicon='🌿',
     dark=False,
+    tailwind=False,
     language='zh-CN',
     storage_secret=(
         os.getenv('HEALING_STORAGE_SECRET')
