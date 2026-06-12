@@ -137,9 +137,29 @@ body.body--light {
     animation: pageEnter 0.26s ease-out both;
 }
 
+#app:empty::before {
+    content: "Loading...";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(244,240,230,0.78);
+    font-family: var(--font);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0;
+    background:
+        linear-gradient(180deg, rgba(7,18,13,0.62), rgba(7,18,13,0.94)),
+        url('/static/images/nature-texture-dark.webp') center/cover no-repeat,
+        #07120D;
+}
+
 .mobile-page {
     width: min(100%, var(--mobile-page-width)) !important;
     max-width: var(--mobile-page-width) !important;
+    min-height: 100vh !important;
     min-height: 100dvh !important;
     margin: 0 auto !important;
     position: relative !important;
@@ -160,6 +180,14 @@ body.body--light {
         width: 100% !important;
         max-width: none !important;
         box-shadow: none !important;
+    }
+}
+
+@supports (-webkit-touch-callout: none) {
+    html,
+    body,
+    body.body--light {
+        background-attachment: scroll !important;
     }
 }
 

@@ -8,7 +8,7 @@ from nicegui import client as nicegui_client
 
 _IMPORTMAP_ANCHOR = '    <script type="importmap">\n'
 _POLYFILL_TAG = (
-    '    <script async src="{{ prefix | safe }}/static/vendor/es-module-shims.js"></script>\n'
+    '    <script src="{{ prefix | safe }}/static/vendor/es-module-shims.js?v=20260612-compat2"></script>\n'
 )
 
 

@@ -12,6 +12,7 @@ HOME_PAGE_STYLE = '''
 .home-page {
     position: relative;
     width: min(100%, 430px);
+    min-height: 100vh;
     min-height: 100dvh;
     margin: 0 auto;
     overflow: hidden;
@@ -45,6 +46,7 @@ HOME_PAGE_STYLE = '''
 .home-shell {
     position: relative;
     z-index: 1;
+    min-height: 100vh;
     min-height: 100dvh;
     display: flex;
     flex-direction: column;
