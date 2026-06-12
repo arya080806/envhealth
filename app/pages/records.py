@@ -8,7 +8,7 @@ from html import escape
 from nicegui import app, ui
 
 from app.components.nav import bottom_nav, smooth_navigate
-from app.db import delete_session, get_all_sessions, get_user_sessions, update_session
+from app.db import delete_session, get_user_sessions, update_session
 from app.state import media_url, resolve_media_path
 from app.theme import COMMON_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
@@ -363,6 +363,13 @@ def _format_time(value) -> str:
         return ''
 
 
+def _safe_int(value, default: int = 0) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def _record_title(session: dict) -> str:
     return (session.get('record_title') or '').strip()
 
@@ -391,7 +398,7 @@ def _record_status_text(session: dict) -> tuple[str, str]:
         return '生成失败，可继续编辑', 'error'
     if _is_generation_ready(session):
         return 'AI 已生成完成', 'ready'
-    generations = int(session.get('generation_count') or 0)
+    generations = _safe_int(session.get('generation_count') or 0)
     return f'已生成 {generations} 次', ''
 
 
@@ -442,7 +449,7 @@ def _load_sessions() -> list[dict]:
     user_id = user.get('id')
     if user_id:
         return get_user_sessions(user_id)
-    return get_all_sessions()
+    return []
 
 
 def create_records_page():
@@ -451,6 +458,10 @@ def create_records_page():
         ui.add_head_html(META_VIEWPORT)
         ui.add_head_html(COMMON_STYLE)
         ui.add_head_html(RECORDS_CSS)
+
+        if not (app.storage.user.get('user', {}) or {}).get('id'):
+            smooth_navigate('/login')
+            return
 
         sessions = [
             session for session in _load_sessions()
@@ -492,7 +503,7 @@ def create_records_page():
                         title = _record_title(session)
                         title_label = title or '点击命名'
                         created = escape(_format_time(session.get('created_at')))
-                        generations = int(session.get('generation_count') or 0)
+                        generations = _safe_int(session.get('generation_count') or 0)
                         image_url = _record_image(session)
                         target = _record_target(session)
                         status_text, status_class = _record_status_text(session)

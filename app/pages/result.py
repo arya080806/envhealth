@@ -6,7 +6,7 @@ import time
 from html import escape
 from pathlib import Path
 
-from nicegui import ui
+from nicegui import app, ui
 
 from app.components.nav import bottom_nav, smooth_navigate
 from app.state import get_session, media_url, resolve_media_path
@@ -125,6 +125,42 @@ RESULT_CSS = '''
     border-radius: 8px;
     border: 1px solid rgba(47,123,88,.10);
     background: rgba(47,123,88,.06);
+}
+.canvas-elements {
+    margin-top: 12px;
+    display: grid;
+    gap: 8px;
+}
+.canvas-elements-title {
+    color: rgba(23,49,38,.78);
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 950;
+}
+.canvas-element-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.canvas-element-pill {
+    max-width: 100%;
+    min-height: 34px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: #173126;
+    background: rgba(47,123,88,.08);
+    border: 1px solid rgba(47,123,88,.14);
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 850;
+}
+.canvas-element-meta {
+    color: rgba(23,49,38,.56);
+    font-size: 10px;
+    font-weight: 750;
 }
 .slider-list {
     display: grid;
@@ -317,8 +353,107 @@ RESULT_LIGHTBOX_JS = '''
 '''
 
 
-def _path_url(path_value: str | None, *, thumb: bool = False) -> str:
-    return media_url(path_value or '', thumb=thumb)
+def _path_url(path_value: str | None, *, thumb: bool = False, display: bool = False) -> str:
+    return media_url(path_value or '', thumb=thumb, display=display)
+
+
+def _current_user_id() -> int | None:
+    user = app.storage.user.get('user', {}) or {}
+    try:
+        return int(user.get('id')) if user.get('id') is not None else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _can_view_session(session, user_id: int) -> bool:
+    owner_id = getattr(session, 'user_id', None)
+    if owner_id in (None, ''):
+        return True
+    try:
+        return int(owner_id) == int(user_id)
+    except (TypeError, ValueError):
+        return False
+
+
+def _json_value(value, fallback):
+    if isinstance(value, str):
+        try:
+            return json.loads(value)
+        except Exception:
+            return fallback
+    return value if value is not None else fallback
+
+
+def _canvas_elements(session) -> list[dict]:
+    sketch_data = _json_value(getattr(session, 'sketch_data', {}) or {}, {})
+    placed_elements = _json_value(getattr(session, 'placed_elements', []) or [], [])
+    items: list[dict] = []
+
+    if isinstance(sketch_data, dict):
+        results = _json_value(sketch_data.get('results'), [])
+        if isinstance(results, list):
+            items.extend(item for item in results if isinstance(item, dict))
+
+    if not items and isinstance(placed_elements, list):
+        items.extend(item for item in placed_elements if isinstance(item, dict))
+
+    seen = set()
+    unique_items: list[dict] = []
+    for item in items:
+        name = str(item.get('elemName') or item.get('name') or item.get('label') or item.get('type') or '').strip()
+        key = (name, str(item.get('x') or ''), str(item.get('y') or ''))
+        if key in seen:
+            continue
+        seen.add(key)
+        unique_items.append(item)
+    return unique_items[:32]
+
+
+def _element_label(item: dict) -> str:
+    return str(
+        item.get('elemName')
+        or item.get('name')
+        or item.get('label')
+        or item.get('title')
+        or item.get('type')
+        or '元素'
+    ).strip()
+
+
+def _element_meta(item: dict) -> str:
+    parts: list[str] = []
+    zone = item.get('zone') or item.get('category')
+    if zone:
+        parts.append(str(zone))
+    confidence = item.get('confidence')
+    if isinstance(confidence, (int, float)):
+        confidence_value = confidence * 100 if 0 <= confidence <= 1 else confidence
+        parts.append(f'{round(confidence_value)}%')
+    x = item.get('x')
+    y = item.get('y')
+    if isinstance(x, (int, float)) and isinstance(y, (int, float)):
+        parts.append(f'{round(x)}%, {round(y)}%')
+    return ' / '.join(parts)
+
+
+def _render_canvas_elements(elements: list[dict]) -> None:
+    if not elements:
+        return
+    pills = []
+    for item in elements:
+        icon = escape(str(item.get('icon') or item.get('emoji') or '').strip())
+        label = escape(_element_label(item))
+        meta = escape(_element_meta(item))
+        meta_html = f'<span class="canvas-element-meta">{meta}</span>' if meta else ''
+        icon_html = f'<span>{icon}</span>' if icon else ''
+        pills.append(f'<span class="canvas-element-pill">{icon_html}<span>{label}</span>{meta_html}</span>')
+    ui.html(
+        '<div class="canvas-elements">'
+        '<div class="canvas-elements-title">创作元素</div>'
+        f'<div class="canvas-element-list">{"".join(pills)}</div>'
+        '</div>',
+        sanitize=False,
+    )
 
 
 def _history(session) -> list[dict]:
@@ -367,6 +502,8 @@ def _format_time(value) -> str:
 def _render_compare(session) -> None:
     original_url = _path_url(getattr(session, 'uploaded_image_path', '') if session else '')
     generated_url = _path_url(getattr(session, 'generated_image_path', '') if session else '')
+    original_display_url = _path_url(getattr(session, 'uploaded_image_path', '') if session else '', display=True)
+    generated_display_url = _path_url(getattr(session, 'generated_image_path', '') if session else '', display=True)
     if not original_url and not generated_url:
         ui.html('<div class="result-empty">暂无可显示的结果图片。</div>', sanitize=False)
         return
@@ -378,14 +515,14 @@ def _render_compare(session) -> None:
             if original_url:
                 ui.html(
                     f'<a class="compare-mini-card compare-mini-link result-image-link" href="{original_url}">'
-                    f'<img src="{original_url}" alt="改造前">'
+                    f'<img src="{original_display_url or original_url}" alt="改造前">'
                     '<div class="compare-mini-label">改造前</div></a>',
                     sanitize=False,
                 )
             if generated_url:
                 ui.html(
                     f'<a class="compare-mini-card compare-mini-link result-image-link" href="{generated_url}">'
-                    f'<img src="{generated_url}" alt="改造后">'
+                    f'<img src="{generated_display_url or generated_url}" alt="改造后">'
                     '<div class="compare-mini-label">改造后</div></a>',
                     sanitize=False,
                 )
@@ -400,11 +537,12 @@ def _render_history(session) -> None:
         with ui.element('div').classes('history-grid'):
             for index, item in enumerate(items):
                 full_url = _path_url(item.get('path'))
+                display_url = _path_url(item.get('path'), display=True)
                 label = f'第 {len(items) - index} 次生成'
                 stamp = _format_time(item.get('created_at'))
                 ui.html(
                     f'<a class="history-card history-link result-image-link" href="{full_url}">'
-                    f'<img src="{full_url}" alt="{escape(label)}">'
+                    f'<img src="{display_url or full_url}" alt="{escape(label)}">'
                     f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>',
                     sanitize=False,
                 )
@@ -412,31 +550,37 @@ def _render_history(session) -> None:
 
 def _render_canvas_snapshot(session, mode: str) -> None:
     items = _canvas_history(session)
-    if not items:
+    elements = _canvas_elements(session)
+    if not items and not elements:
         return
     title = '元素布局' if mode == 'drag' else '创作画布'
     with ui.column().classes('result-section').style('gap:0'):
         ui.html(f'<div class="detail-section-title">{escape(title)}</div>', sanitize=False)
         if len(items) == 1:
             snap_url = _path_url(items[0].get('path'))
+            snap_display_url = _path_url(items[0].get('path'), display=True)
             ui.html(
                 f'<a class="history-link result-image-link" href="{snap_url}">'
-                f'<img class="canvas-snapshot" src="{snap_url}" alt="{escape(title)}"></a>',
+                f'<img class="canvas-snapshot" src="{snap_display_url or snap_url}" alt="{escape(title)}"></a>',
                 sanitize=False,
             )
+            _render_canvas_elements(elements)
             return
-        with ui.element('div').classes('history-grid'):
-            total = len(items)
-            for index, item in enumerate(items):
-                full_url = _path_url(item.get('path'))
-                label = f'第 {total - index} 次操作'
-                stamp = _format_time(item.get('created_at'))
-                ui.html(
-                    f'<a class="history-card history-link result-image-link" href="{full_url}">'
-                    f'<img src="{full_url}" alt="{escape(label)}">'
-                    f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>',
-                    sanitize=False,
-                )
+        if items:
+            with ui.element('div').classes('history-grid'):
+                total = len(items)
+                for index, item in enumerate(items):
+                    full_url = _path_url(item.get('path'))
+                    display_url = _path_url(item.get('path'), display=True)
+                    label = f'第 {total - index} 次操作'
+                    stamp = _format_time(item.get('created_at'))
+                    ui.html(
+                        f'<a class="history-card history-link result-image-link" href="{full_url}">'
+                        f'<img src="{display_url or full_url}" alt="{escape(label)}">'
+                        f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>',
+                        sanitize=False,
+                    )
+        _render_canvas_elements(elements)
 
 
 def _render_slider_detail(session) -> None:
@@ -500,7 +644,15 @@ def create_result_page():
         ui.add_head_html(RESULT_CSS)
         ui.add_head_html(RESULT_LIGHTBOX_JS)
 
+        user_id = _current_user_id()
+        if not user_id:
+            smooth_navigate('/login')
+            return
+
         session = get_session(sid) if sid else None
+        access_denied = bool(session and not _can_view_session(session, user_id))
+        if access_denied:
+            session = None
         mode = (getattr(session, 'mode_used', '') or '') if session else ''
 
         with ui.column().classes('mobile-page light-page result-bg').style('gap:0'):
@@ -516,6 +668,10 @@ def create_result_page():
                 )
 
             with ui.column().classes('result-shell'):
+                if access_denied:
+                    ui.html('<div class="result-empty">没有权限查看这条创作记录。</div>', sanitize=False)
+                    return
+
                 if not session:
                     ui.html('<div class="result-empty">没有找到这条创作记录。</div>', sanitize=False)
                     return

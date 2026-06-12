@@ -86,11 +86,16 @@ def resolve_media_path(path_value: str | Path | None) -> Path | None:
     return None
 
 
-def media_url(path_value: str | Path | None, *, thumb: bool = False) -> str:
+def media_url(path_value: str | Path | None, *, thumb: bool = False, display: bool = False) -> str:
     path = resolve_media_path(path_value)
     if not path:
         return ''
-    suffix = '?thumb=1' if thumb else ''
+    if thumb:
+        suffix = '?thumb=1'
+    elif display:
+        suffix = '?display=1'
+    else:
+        suffix = ''
     return f'/api/image/{path.name}{suffix}'
 
 
@@ -167,7 +172,7 @@ def _verified_image_format(file_bytes: bytes) -> str:
             img.verify()
             image_format = (img.format or '').upper()
             width, height = img.size
-    except (UnidentifiedImageError, OSError, ValueError) as exc:
+    except (UnidentifiedImageError, OSError, ValueError, SyntaxError) as exc:
         raise ValueError('invalid image data') from exc
     if image_format not in IMAGE_EXTENSIONS:
         raise ValueError('unsupported image format')

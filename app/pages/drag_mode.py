@@ -540,7 +540,7 @@ _CANVAS_CSS = '''<style>
 
 
 def _image_url(session) -> str:
-    return media_url(getattr(session, 'uploaded_image_path', '') if session else '')
+    return media_url(getattr(session, 'uploaded_image_path', '') if session else '', display=True)
 
 
 def _canvas_json_url(session) -> str:

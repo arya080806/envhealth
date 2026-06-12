@@ -107,15 +107,46 @@ PARTICIPANT_INFO_CSS = '''
     background-image: none !important;
     color: #FFFFFF !important;
 }
+.participant-radio-card {
+    width: 100%;
+    padding: 13px 18px 12px;
+    border-radius: 24px;
+    background: rgba(255,255,248,.90);
+    border: 1px solid rgba(16,37,26,.16);
+}
+.participant-radio-title {
+    color: rgba(16,37,26,.62);
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 650;
+    margin-bottom: 8px;
+}
+.participant-radio {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px 12px;
+}
+.participant-radio .q-radio {
+    margin: 0 !important;
+}
+.participant-radio .q-radio__label {
+    color: var(--ink) !important;
+    font-size: 14px !important;
+    font-weight: 750 !important;
+}
+@media (min-width: 720px) {
+    .participant-radio {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
 </style>
 '''
 
 
-STUDY_PHASES = ['未填写', 'pilot', 'study2', 'study3']
-DIAGNOSIS_GROUPS = [
-    'jf',
-    '自定义',
-]
+DEFAULT_STUDY_PHASE = '未填写'
+DEFAULT_DIAGNOSIS_GROUP = '其他/未填写'
+AGE_BANDS = ['18~29', '30~39', '40~49', '50~59', '60~69', '70及以上']
 GENDERS = ['女', '男', '其他/未填写']
 EDUCATION_BANDS = ['小学及以下', '初中', '高中/中专', '大专', '本科', '研究生及以上', '未填写']
 
@@ -127,14 +158,27 @@ def _safe_next_path(path: str) -> str:
     return path
 
 
-def _validate_birth_date(value: str) -> str:
+def _age_band_from_birth_date(value: str) -> str:
     text = str(value or '').strip()
-    if not text:
-        return ''
+    if text in AGE_BANDS:
+        return text
     try:
-        return date.fromisoformat(text).isoformat()
-    except ValueError as exc:
-        raise ValueError('出生日期格式需要为 YYYY-MM-DD') from exc
+        birth_day = date.fromisoformat(text)
+    except ValueError:
+        return ''
+    today = date.today()
+    age = today.year - birth_day.year - ((today.month, today.day) < (birth_day.month, birth_day.day))
+    if age < 30:
+        return '18~29'
+    if age < 40:
+        return '30~39'
+    if age < 50:
+        return '40~49'
+    if age < 60:
+        return '50~59'
+    if age < 70:
+        return '60~69'
+    return '70及以上'
 
 
 def create_participant_info_page():
@@ -159,35 +203,25 @@ def create_participant_info_page():
             except Exception:
                 default_code = '0000'
         default_name = existing.get('registered_name') or user.get('display_name') or ''
-        existing_diagnosis = str(existing.get('diagnosis_group') or '').strip()
-        existing_diagnosis_is_custom = bool(
-            existing_diagnosis
-            and existing_diagnosis not in DIAGNOSIS_GROUPS
-            and existing_diagnosis != '其他/未填写'
+        initial_age_band = str(existing.get('age_band') or '').strip() or _age_band_from_birth_date(
+            existing.get('birth_date', '')
         )
-        initial_diagnosis = (
-            '自定义'
-            if existing_diagnosis_is_custom
-            else (existing_diagnosis if existing_diagnosis in DIAGNOSIS_GROUPS else 'jf')
-        )
-        initial_custom_diagnosis = existing_diagnosis if existing_diagnosis_is_custom else ''
 
         async def save_profile():
-            selected_diagnosis = diagnosis_group.value
-            if selected_diagnosis == '自定义':
-                selected_diagnosis = str(custom_diagnosis.value or '').strip()
-                if not selected_diagnosis:
-                    ui.notify('请填写自定义诊断大类', type='warning')
-                    return
+            selected_age_band = str(age_band.value or '').strip()
+            if selected_age_band not in AGE_BANDS:
+                ui.notify('请选择年龄段', type='warning')
+                return
             try:
                 participant = upsert_hci_participant(
                     user_id=user_id,
                     participant_code=participant_code.value,
                     registered_name=registered_name.value,
                     site_id=site_id.value,
-                    study_phase=study_phase.value,
-                    diagnosis_group=selected_diagnosis,
-                    birth_date=_validate_birth_date(birth_date.value),
+                    study_phase=existing.get('study_phase') or DEFAULT_STUDY_PHASE,
+                    diagnosis_group=existing.get('diagnosis_group') or DEFAULT_DIAGNOSIS_GROUP,
+                    age_band=selected_age_band,
+                    birth_date=existing.get('birth_date') if existing.get('birth_date') not in AGE_BANDS else '',
                     gender=gender.value,
                     education_band=education_band.value,
                 )
@@ -234,29 +268,13 @@ def create_participant_info_page():
                         '中心/社区编号',
                         value=existing.get('site_id', ''),
                     ).props('outlined dense')
-                    study_phase = ui.select(
-                        STUDY_PHASES,
-                        label='研究阶段',
-                        value=existing.get('study_phase') or '未填写',
-                    ).props('outlined dense popup-content-class=participant-select-menu')
-                    diagnosis_group = ui.select(
-                        DIAGNOSIS_GROUPS,
-                        label='诊断大类',
-                        value=initial_diagnosis,
-                    ).props('outlined dense popup-content-class=participant-select-menu')
-                    custom_diagnosis = ui.input(
-                        '自定义诊断大类',
-                        value=initial_custom_diagnosis,
-                    ).props('outlined dense')
-                    custom_diagnosis.bind_visibility_from(
-                        diagnosis_group,
-                        'value',
-                        backward=lambda value: value == '自定义',
-                    )
-                    birth_date = ui.input(
-                        '出生日期',
-                        value=existing.get('birth_date', ''),
-                    ).props('outlined dense type=date')
+                    with ui.element('div').classes('participant-radio-card'):
+                        ui.html('<div class="participant-radio-title">年龄段</div>', sanitize=False)
+                        if initial_age_band:
+                            age_band = ui.radio(AGE_BANDS, value=initial_age_band)
+                        else:
+                            age_band = ui.radio(AGE_BANDS)
+                        age_band.classes('participant-radio')
                     gender = ui.select(
                         GENDERS,
                         label='性别',

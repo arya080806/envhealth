@@ -71,10 +71,13 @@ HCI_PARTICIPANT_COLUMNS = {
     'site_id',
     'study_phase',
     'diagnosis_group',
+    'age_band',
     'birth_date',
     'gender',
     'education_band',
 }
+
+AGE_BANDS = {'18~29', '30~39', '40~49', '50~59', '60~69', '70及以上'}
 
 
 def normalize_hci_participant_code(value: str | int | None) -> str:
@@ -283,6 +286,7 @@ def init_db():
             site_id TEXT DEFAULT '',
             study_phase TEXT DEFAULT '',
             diagnosis_group TEXT DEFAULT '',
+            age_band TEXT DEFAULT '',
             birth_date TEXT DEFAULT '',
             gender TEXT DEFAULT '',
             education_band TEXT DEFAULT '',
@@ -350,6 +354,49 @@ def init_db():
             FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
         );
 
+        CREATE TABLE IF NOT EXISTS hci_chat_mode_summaries (
+            session_id TEXT PRIMARY KEY,
+            user_id INTEGER,
+            participant_code TEXT DEFAULT '',
+            display_name TEXT DEFAULT '',
+            scene_type TEXT DEFAULT '',
+            mood_tag_count INTEGER NOT NULL DEFAULT 0,
+            mood_tags TEXT DEFAULT '',
+            user_prompt TEXT DEFAULT '',
+            extra_text_length INTEGER NOT NULL DEFAULT 0,
+            has_extra_text TEXT DEFAULT '',
+            chat_green_level REAL,
+            chat_urban_level REAL,
+            chat_vitality_level REAL,
+            chat_light_warmth REAL,
+            generation_count INTEGER NOT NULL DEFAULT 0,
+            generation_status TEXT DEFAULT '',
+            generation_error TEXT DEFAULT '',
+            llm_prompt TEXT DEFAULT '',
+            generated_image_path TEXT DEFAULT '',
+            updated_at REAL NOT NULL,
+            FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+        );
+
+        CREATE TABLE IF NOT EXISTS hci_slider_mode_summaries (
+            session_id TEXT PRIMARY KEY,
+            user_id INTEGER,
+            participant_code TEXT DEFAULT '',
+            display_name TEXT DEFAULT '',
+            scene_type TEXT DEFAULT '',
+            selected_recommend TEXT DEFAULT '',
+            green_level REAL,
+            urban_level REAL,
+            vitality_level REAL,
+            light_warmth REAL,
+            generation_count INTEGER NOT NULL DEFAULT 0,
+            generation_status TEXT DEFAULT '',
+            generation_error TEXT DEFAULT '',
+            generated_image_path TEXT DEFAULT '',
+            updated_at REAL NOT NULL,
+            FOREIGN KEY (session_id) REFERENCES sessions(id) ON DELETE CASCADE
+        );
+
         CREATE TABLE IF NOT EXISTS hci_mode_usage_counts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             user_id INTEGER NOT NULL,
@@ -357,6 +404,12 @@ def init_db():
             display_name TEXT DEFAULT '',
             mode_used TEXT NOT NULL,
             usage_count INTEGER NOT NULL DEFAULT 0,
+            total_usage_count INTEGER NOT NULL DEFAULT 0,
+            drag_usage_count INTEGER NOT NULL DEFAULT 0,
+            inspire_usage_count INTEGER NOT NULL DEFAULT 0,
+            chat_usage_count INTEGER NOT NULL DEFAULT 0,
+            slider_usage_count INTEGER NOT NULL DEFAULT 0,
+            last_mode_used TEXT DEFAULT '',
             last_session_id TEXT DEFAULT '',
             updated_at REAL NOT NULL,
             UNIQUE(user_id, mode_used)
@@ -396,12 +449,28 @@ def init_db():
 
     for col, defn in [
         ('registered_name', "TEXT DEFAULT ''"),
+        ('age_band', "TEXT DEFAULT ''"),
     ]:
         try:
             conn.execute(f'ALTER TABLE hci_participants ADD COLUMN {col} {defn}')
             conn.commit()
         except Exception:
             pass
+
+    try:
+        placeholders = ','.join('?' for _ in AGE_BANDS)
+        conn.execute(
+            f'''
+            UPDATE hci_participants
+            SET age_band = birth_date, birth_date = ''
+            WHERE COALESCE(age_band, '') = ''
+              AND birth_date IN ({placeholders})
+            ''',
+            tuple(AGE_BANDS),
+        )
+        conn.commit()
+    except Exception:
+        pass
 
     # 迁移：sessions 表新增列
     for col, defn in [
@@ -422,6 +491,30 @@ def init_db():
     ]:
         try:
             conn.execute(f'ALTER TABLE sessions ADD COLUMN {col} {defn}')
+            conn.commit()
+        except Exception:
+            pass
+
+    for col, defn in [
+        ('llm_prompt', "TEXT DEFAULT ''"),
+        ('user_prompt', "TEXT DEFAULT ''"),
+    ]:
+        try:
+            conn.execute(f'ALTER TABLE hci_chat_mode_summaries ADD COLUMN {col} {defn}')
+            conn.commit()
+        except Exception:
+            pass
+
+    for col, defn in [
+        ('total_usage_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('drag_usage_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('inspire_usage_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('chat_usage_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('slider_usage_count', 'INTEGER NOT NULL DEFAULT 0'),
+        ('last_mode_used', "TEXT DEFAULT ''"),
+    ]:
+        try:
+            conn.execute(f'ALTER TABLE hci_mode_usage_counts ADD COLUMN {col} {defn}')
             conn.commit()
         except Exception:
             pass
@@ -722,6 +815,7 @@ def _participant_sync_payload(row: dict) -> dict:
         'site_id': row.get('site_id', ''),
         'study_phase': row.get('study_phase', ''),
         'diagnosis_group': row.get('diagnosis_group', ''),
+        'age_band': row.get('age_band', '') or (row.get('birth_date', '') if row.get('birth_date', '') in AGE_BANDS else ''),
         'birth_date': row.get('birth_date', ''),
         'gender': row.get('gender', ''),
         'education_band': row.get('education_band', ''),
@@ -767,6 +861,7 @@ def upsert_hci_participant(**kwargs) -> dict:
         'site_id': str(kwargs.get('site_id') or '').strip(),
         'study_phase': str(kwargs.get('study_phase') or '').strip(),
         'diagnosis_group': str(kwargs.get('diagnosis_group') or '').strip(),
+        'age_band': str(kwargs.get('age_band') or '').strip(),
         'birth_date': str(kwargs.get('birth_date') or '').strip(),
         'gender': str(kwargs.get('gender') or '').strip(),
         'education_band': str(kwargs.get('education_band') or '').strip(),
@@ -785,12 +880,12 @@ def upsert_hci_participant(**kwargs) -> dict:
             SET user_id = ?, participant_code = ?,
                 registered_name = COALESCE(NULLIF(?, ''), registered_name),
                 site_id = ?, study_phase = ?, diagnosis_group = ?,
-                birth_date = ?, gender = ?, education_band = ?, updated_at = ?
+                age_band = ?, birth_date = ?, gender = ?, education_band = ?, updated_at = ?
             WHERE id = ?
             ''',
             (
                 values['user_id'], participant_code, values['registered_name'], values['site_id'], values['study_phase'],
-                values['diagnosis_group'], values['birth_date'], values['gender'],
+                values['diagnosis_group'], values['age_band'], values['birth_date'], values['gender'],
                 values['education_band'], now, row['id'],
             ),
         )
@@ -799,12 +894,12 @@ def upsert_hci_participant(**kwargs) -> dict:
             '''
             INSERT INTO hci_participants
                 (user_id, participant_code, registered_name, site_id, study_phase, diagnosis_group,
-                 birth_date, gender, education_band, created_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                 age_band, birth_date, gender, education_band, created_at, updated_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
             (
                 values['user_id'], values['participant_code'], values['registered_name'], values['site_id'],
-                values['study_phase'], values['diagnosis_group'], values['birth_date'],
+                values['study_phase'], values['diagnosis_group'], values['age_band'], values['birth_date'],
                 values['gender'], values['education_band'], now, now,
             ),
         )
@@ -964,8 +1059,18 @@ def _session_summary_payload(session_id: str) -> dict | None:
     conn = _get_conn()
     row = conn.execute(
         '''
-        SELECT s.*, u.participant_id, u.display_name
-        FROM sessions s LEFT JOIN users u ON s.user_id = u.id
+        SELECT s.*,
+               COALESCE(NULLIF(hp.participant_code, ''), u.participant_id) AS participant_code,
+               COALESCE(NULLIF(hp.registered_name, ''), u.display_name) AS display_name
+        FROM sessions s
+        LEFT JOIN users u ON s.user_id = u.id
+        LEFT JOIN hci_participants hp ON hp.id = (
+            SELECT hp2.id
+            FROM hci_participants hp2
+            WHERE hp2.user_id = u.id
+            ORDER BY hp2.updated_at DESC, hp2.id DESC
+            LIMIT 1
+        )
         WHERE s.id = ?
         ''',
         (session_id,),
@@ -981,7 +1086,7 @@ def _session_summary_payload(session_id: str) -> dict | None:
     return {
         'session_id': data.get('id', ''),
         'user_id': data.get('user_id'),
-        'participant_id': normalize_hci_participant_code(data.get('participant_id', '')),
+        'participant_code': normalize_hci_participant_code(data.get('participant_code', '')),
         'display_name': data.get('display_name', ''),
         'scene_type': data.get('scene_type', ''),
         'mode_used': data.get('mode_used', ''),
@@ -1222,70 +1327,301 @@ def queue_inspire_element_summary_sync(session_id: str):
     queue_feishu_sync('inspire_element_summary', payload['session_id'], payload)
 
 
+def _mode_param_payload(data: dict, *, include_defaults: bool) -> dict[str, float | None]:
+    values = {
+        'green': data.get('green_level'),
+        'urban': data.get('urban_level'),
+        'vitality': data.get('vitality_level'),
+        'light': data.get('light_warmth'),
+    }
+    if not include_defaults:
+        try:
+            def normalize_param(value):
+                return 50.0 if value in (None, '') else float(value)
+
+            is_default = all(normalize_param(value) == 50.0 for value in values.values())
+        except (TypeError, ValueError):
+            is_default = True
+        if is_default:
+            return {'green': None, 'urban': None, 'vitality': None, 'light': None}
+    return values
+
+
+def _chat_prompt_for_summary(data: dict, mood_tags: list[str], extra_text: str) -> str:
+    saved_prompt = str(data.get('llm_prompt') or '').strip()
+    if saved_prompt:
+        return saved_prompt[:10000]
+    history = _json_loads_safe(data.get('generation_history'), [])
+    if isinstance(history, list):
+        for item in reversed(history):
+            if isinstance(item, dict):
+                prompt = str(item.get('prompt') or '').strip()
+                if prompt:
+                    return prompt[:10000]
+    if not mood_tags and not extra_text:
+        return ''
+    try:
+        from app.services.chat_service import _build_chat_prompt
+
+        return _build_chat_prompt(mood_tags, extra_text)[:10000]
+    except Exception:
+        return ''
+
+
+def _chat_mode_summary_payload(session_id: str) -> dict | None:
+    data = _session_context(session_id)
+    if not data or data.get('mode_used') != 'chat':
+        return None
+    mood_tags = _json_loads_safe(data.get('chat_moods'), [])
+    if not isinstance(mood_tags, list):
+        mood_tags = []
+    mood_tags = [str(tag).strip() for tag in mood_tags if str(tag).strip()]
+    extra_text = str(data.get('chat_extra') or '').strip()
+    params = _mode_param_payload(data, include_defaults=False)
+    return {
+        'session_id': data.get('id', ''),
+        'user_id': data.get('user_id'),
+        'participant_code': normalize_hci_participant_code(
+            data.get('participant_code') or data.get('participant_id') or ''
+        ),
+        'display_name': data.get('display_name', ''),
+        'scene_type': data.get('scene_type', ''),
+        'mood_tag_count': len(mood_tags),
+        'mood_tags': '; '.join(mood_tags)[:500],
+        'user_prompt': extra_text[:2000],
+        'extra_text_length': len(extra_text),
+        'has_extra_text': bool(extra_text),
+        'chat_green_level': params['green'],
+        'chat_urban_level': params['urban'],
+        'chat_vitality_level': params['vitality'],
+        'chat_light_warmth': params['light'],
+        'generation_count': int(data.get('generation_count') or 0),
+        'generation_status': data.get('generation_status', ''),
+        'generation_error': str(data.get('generation_error') or '')[:500],
+        'llm_prompt': _chat_prompt_for_summary(data, mood_tags, extra_text),
+        'generated_image_path': data.get('generated_image_path', ''),
+        'updated_at': _iso_time(time.time()),
+    }
+
+
+def queue_chat_mode_summary_sync(session_id: str):
+    payload = _chat_mode_summary_payload(session_id)
+    if not payload:
+        return
+    now = time.time()
+    conn = _get_conn()
+    conn.execute(
+        '''
+        INSERT INTO hci_chat_mode_summaries
+            (session_id, user_id, participant_code, display_name, scene_type,
+             mood_tag_count, mood_tags, user_prompt, extra_text_length, has_extra_text,
+             chat_green_level, chat_urban_level, chat_vitality_level, chat_light_warmth,
+             generation_count, generation_status, generation_error, llm_prompt, generated_image_path, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(session_id) DO UPDATE SET
+            user_id = excluded.user_id,
+            participant_code = excluded.participant_code,
+            display_name = excluded.display_name,
+            scene_type = excluded.scene_type,
+            mood_tag_count = excluded.mood_tag_count,
+            mood_tags = excluded.mood_tags,
+            user_prompt = excluded.user_prompt,
+            extra_text_length = excluded.extra_text_length,
+            has_extra_text = excluded.has_extra_text,
+            chat_green_level = excluded.chat_green_level,
+            chat_urban_level = excluded.chat_urban_level,
+            chat_vitality_level = excluded.chat_vitality_level,
+            chat_light_warmth = excluded.chat_light_warmth,
+            generation_count = excluded.generation_count,
+            generation_status = excluded.generation_status,
+            generation_error = excluded.generation_error,
+            llm_prompt = excluded.llm_prompt,
+            generated_image_path = excluded.generated_image_path,
+            updated_at = excluded.updated_at
+        ''',
+        (
+            payload['session_id'], payload['user_id'], payload['participant_code'],
+            payload['display_name'], payload['scene_type'], payload['mood_tag_count'],
+            payload['mood_tags'], payload['user_prompt'], payload['extra_text_length'], payload['has_extra_text'],
+            payload['chat_green_level'], payload['chat_urban_level'], payload['chat_vitality_level'],
+            payload['chat_light_warmth'], payload['generation_count'], payload['generation_status'],
+            payload['generation_error'], payload['llm_prompt'], payload['generated_image_path'], now,
+        ),
+    )
+    conn.commit()
+    conn.close()
+    queue_feishu_sync('chat_mode_summary', payload['session_id'], payload)
+
+
+def _slider_mode_summary_payload(session_id: str) -> dict | None:
+    data = _session_context(session_id)
+    if not data or data.get('mode_used') not in ('slider', 'ai'):
+        return None
+    params = _mode_param_payload(data, include_defaults=True)
+    return {
+        'session_id': data.get('id', ''),
+        'user_id': data.get('user_id'),
+        'participant_code': normalize_hci_participant_code(
+            data.get('participant_code') or data.get('participant_id') or ''
+        ),
+        'display_name': data.get('display_name', ''),
+        'scene_type': data.get('scene_type', ''),
+        'selected_recommend': data.get('selected_recommend', ''),
+        'green_level': params['green'],
+        'urban_level': params['urban'],
+        'vitality_level': params['vitality'],
+        'light_warmth': params['light'],
+        'generation_count': int(data.get('generation_count') or 0),
+        'generation_status': data.get('generation_status', ''),
+        'generation_error': str(data.get('generation_error') or '')[:500],
+        'generated_image_path': data.get('generated_image_path', ''),
+        'updated_at': _iso_time(time.time()),
+    }
+
+
+def queue_slider_mode_summary_sync(session_id: str):
+    payload = _slider_mode_summary_payload(session_id)
+    if not payload:
+        return
+    now = time.time()
+    conn = _get_conn()
+    conn.execute(
+        '''
+        INSERT INTO hci_slider_mode_summaries
+            (session_id, user_id, participant_code, display_name, scene_type,
+             selected_recommend, green_level, urban_level, vitality_level, light_warmth,
+             generation_count, generation_status, generation_error, generated_image_path, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(session_id) DO UPDATE SET
+            user_id = excluded.user_id,
+            participant_code = excluded.participant_code,
+            display_name = excluded.display_name,
+            scene_type = excluded.scene_type,
+            selected_recommend = excluded.selected_recommend,
+            green_level = excluded.green_level,
+            urban_level = excluded.urban_level,
+            vitality_level = excluded.vitality_level,
+            light_warmth = excluded.light_warmth,
+            generation_count = excluded.generation_count,
+            generation_status = excluded.generation_status,
+            generation_error = excluded.generation_error,
+            generated_image_path = excluded.generated_image_path,
+            updated_at = excluded.updated_at
+        ''',
+        (
+            payload['session_id'], payload['user_id'], payload['participant_code'],
+            payload['display_name'], payload['scene_type'], payload['selected_recommend'],
+            payload['green_level'], payload['urban_level'], payload['vitality_level'],
+            payload['light_warmth'], payload['generation_count'], payload['generation_status'],
+            payload['generation_error'], payload['generated_image_path'], now,
+        ),
+    )
+    conn.commit()
+    conn.close()
+    queue_feishu_sync('slider_mode_summary', payload['session_id'], payload)
+
+
+MODE_USAGE_MODES = ('drag', 'inspire', 'chat', 'slider', 'ai')
+
+
 def queue_mode_usage_sync_for_session(session_id: str):
     data = _session_context(session_id)
     if not data or not data.get('user_id') or not data.get('mode_used'):
         return
     user_id = int(data['user_id'])
     mode_used = str(data.get('mode_used') or '').strip()
-    if not mode_used:
+    if mode_used not in MODE_USAGE_MODES:
         return
 
     conn = _get_conn()
-    count_row = conn.execute(
+    rows = conn.execute(
         '''
-        SELECT COUNT(*) AS c
+        SELECT id, mode_used, created_at
         FROM sessions
-        WHERE user_id = ? AND mode_used = ?
-        ''',
-        (user_id, mode_used),
-    ).fetchone()
-    last_row = conn.execute(
-        '''
-        SELECT id
-        FROM sessions
-        WHERE user_id = ? AND mode_used = ?
+        WHERE user_id = ? AND mode_used IN ('drag', 'inspire', 'chat', 'slider', 'ai')
         ORDER BY created_at DESC
+        ''',
+        (user_id,),
+    ).fetchall()
+    participant_row = conn.execute(
+        '''
+        SELECT COALESCE(NULLIF(hp.participant_code, ''), u.participant_id) AS participant_code,
+               COALESCE(NULLIF(hp.registered_name, ''), u.display_name) AS display_name
+        FROM users u
+        LEFT JOIN hci_participants hp ON hp.user_id = u.id
+        WHERE u.id = ?
+        ORDER BY hp.updated_at DESC, hp.id DESC
         LIMIT 1
         ''',
-        (user_id, mode_used),
+        (user_id,),
     ).fetchone()
     now = time.time()
+    counts = {
+        'drag_usage_count': 0,
+        'inspire_usage_count': 0,
+        'chat_usage_count': 0,
+        'slider_usage_count': 0,
+    }
+    for row in rows:
+        mode = str(row['mode_used'] or '').strip()
+        if mode == 'ai':
+            mode = 'slider'
+        if mode in ('drag', 'inspire', 'chat', 'slider'):
+            counts[f'{mode}_usage_count'] += 1
+    last_row = rows[0] if rows else None
+    last_mode_used = str(last_row['mode_used'] or '') if last_row else mode_used
+    if last_mode_used == 'ai':
+        last_mode_used = 'slider'
+    participant_code = normalize_hci_participant_code(
+        (participant_row['participant_code'] if participant_row else '')
+        or data.get('participant_code')
+        or data.get('participant_id')
+        or ''
+    )
     payload = {
-        'usage_key': f'{user_id}:{mode_used}',
-        'user_id': user_id,
-        'participant_code': normalize_hci_participant_code(
-            data.get('participant_code') or data.get('participant_id') or ''
-        ),
-        'display_name': data.get('display_name', ''),
-        'mode_used': mode_used,
-        'usage_count': int(count_row['c'] if count_row else 0),
+        'summary_key': str(user_id),
+        'participant_code': participant_code,
+        'display_name': (participant_row['display_name'] if participant_row else '') or data.get('display_name', ''),
+        'total_usage_count': sum(counts.values()),
+        **counts,
+        'last_mode_used': last_mode_used,
         'last_session_id': last_row['id'] if last_row else session_id,
         'updated_at': _iso_time(now),
     }
     conn.execute(
         '''
         INSERT INTO hci_mode_usage_counts
-            (user_id, participant_code, display_name, mode_used, usage_count, last_session_id, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+            (user_id, participant_code, display_name, mode_used, usage_count,
+             total_usage_count, drag_usage_count, inspire_usage_count, chat_usage_count,
+             slider_usage_count, last_mode_used, last_session_id, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ON CONFLICT(user_id, mode_used) DO UPDATE SET
             participant_code = excluded.participant_code,
             display_name = excluded.display_name,
             usage_count = excluded.usage_count,
+            total_usage_count = excluded.total_usage_count,
+            drag_usage_count = excluded.drag_usage_count,
+            inspire_usage_count = excluded.inspire_usage_count,
+            chat_usage_count = excluded.chat_usage_count,
+            slider_usage_count = excluded.slider_usage_count,
+            last_mode_used = excluded.last_mode_used,
             last_session_id = excluded.last_session_id,
             updated_at = excluded.updated_at
         ''',
         (
-            user_id, payload['participant_code'], payload['display_name'], mode_used,
-            payload['usage_count'], payload['last_session_id'], now,
+            user_id, payload['participant_code'], payload['display_name'], 'all',
+            payload['total_usage_count'], payload['total_usage_count'],
+            payload['drag_usage_count'], payload['inspire_usage_count'],
+            payload['chat_usage_count'], payload['slider_usage_count'],
+            payload['last_mode_used'], payload['last_session_id'], now,
         ),
     )
     conn.commit()
     conn.close()
-    queue_feishu_sync('mode_usage_count', payload['usage_key'], payload)
+    queue_feishu_sync('mode_usage_count', payload['summary_key'], payload)
 
 
-WORK_SUMMARY_MODES = ('drag', 'inspire', 'chat', 'slider')
+WORK_SUMMARY_MODES = ('drag', 'inspire', 'chat', 'slider', 'ai')
 
 
 def _row_get(row: sqlite3.Row | dict, key: str, default=None):
@@ -1333,7 +1669,8 @@ def _work_count_summary_payload(user_id: int) -> dict | None:
     conn = _get_conn()
     participant = conn.execute(
         '''
-        SELECT hp.participant_code, COALESCE(NULLIF(hp.registered_name, ''), u.display_name) AS display_name
+        SELECT COALESCE(NULLIF(hp.participant_code, ''), u.participant_id) AS participant_code,
+               COALESCE(NULLIF(hp.registered_name, ''), u.display_name) AS display_name
         FROM users u
         LEFT JOIN hci_participants hp ON hp.user_id = u.id
         WHERE u.id = ?
@@ -1373,6 +1710,8 @@ def _work_count_summary_payload(user_id: int) -> dict | None:
         mode = str(row['mode_used'] or '').strip()
         if mode not in WORK_SUMMARY_MODES:
             continue
+        if mode == 'ai':
+            mode = 'slider'
         counts['total_draft_work_count'] += 1
         counts[f'{mode}_work_count'] += 1
         counts[f'{mode}_revision_generation_count'] += _revision_generation_count_for_session(row)
@@ -1444,6 +1783,8 @@ def queue_hci_core_summaries(session_id: str):
     queue_mode_usage_sync_for_session(session_id)
     queue_drag_element_summary_sync(session_id)
     queue_inspire_element_summary_sync(session_id)
+    queue_chat_mode_summary_sync(session_id)
+    queue_slider_mode_summary_sync(session_id)
     queue_work_count_summary_sync_for_session(session_id)
 
 
@@ -1459,7 +1800,6 @@ def create_session(session_id: str, user_id: int | None = None) -> dict:
     row = conn.execute('SELECT * FROM sessions WHERE id = ?', (session_id,)).fetchone()
     conn.close()
     result = dict(row)
-    queue_session_summary_sync(session_id)
     return result
 
 
@@ -1495,7 +1835,6 @@ def update_session(session_id: str, **kwargs):
         conn.execute(f'UPDATE sessions SET {key} = ? WHERE id = ?', (value, session_id))
     conn.commit()
     conn.close()
-    queue_session_summary_sync(session_id)
     queue_hci_core_summaries(session_id)
 
 
@@ -1524,9 +1863,21 @@ def get_all_sessions() -> list[dict]:
     """获取所有 session（用于导出）"""
     conn = _get_conn()
     rows = conn.execute(
-        'SELECT s.*, u.participant_id, u.display_name '
-        'FROM sessions s LEFT JOIN users u ON s.user_id = u.id '
-        'ORDER BY s.created_at DESC'
+        '''
+        SELECT s.*,
+               COALESCE(NULLIF(hp.participant_code, ''), u.participant_id) AS participant_id,
+               COALESCE(NULLIF(hp.registered_name, ''), u.display_name) AS display_name
+        FROM sessions s
+        LEFT JOIN users u ON s.user_id = u.id
+        LEFT JOIN hci_participants hp ON hp.id = (
+            SELECT hp2.id
+            FROM hci_participants hp2
+            WHERE hp2.user_id = u.id
+            ORDER BY hp2.updated_at DESC, hp2.id DESC
+            LIMIT 1
+        )
+        ORDER BY s.created_at DESC
+        '''
     ).fetchall()
     conn.close()
     results = []

@@ -9,6 +9,11 @@ logging.basicConfig(
 
 from nicegui import ui, app
 
+from app.nicegui_compat import install_importmap_polyfill
+
+
+install_importmap_polyfill()
+
 
 _navigate_to = ui.navigate.to
 
@@ -23,6 +28,8 @@ def _smooth_navigate_to(target, *args, **kwargs):
 
 
 ui.navigate.to = _smooth_navigate_to
+
+MAX_UPLOAD_BODY_BYTES = int(os.getenv('MAX_UPLOAD_BODY_BYTES', str(24 * 1024 * 1024)))
 
 
 class UploadBodyPreReadMiddleware:
@@ -40,9 +47,27 @@ class UploadBodyPreReadMiddleware:
             and scope.get('path', '') == '/api/upload'
         ):
             chunks = []
+            total_size = 0
             while True:
                 msg = await receive()
-                chunks.append(msg.get('body', b''))
+                chunk = msg.get('body', b'')
+                if chunk:
+                    chunks.append(chunk)
+                    total_size += len(chunk)
+                    if total_size > MAX_UPLOAD_BODY_BYTES:
+                        await send({
+                            'type': 'http.response.start',
+                            'status': 413,
+                            'headers': [
+                                (b'content-type', b'application/json; charset=utf-8'),
+                                (b'cache-control', b'no-store'),
+                            ],
+                        })
+                        await send({
+                            'type': 'http.response.body',
+                            'body': '{"error":"文件过大，请选择小于20MB的图片"}'.encode('utf-8'),
+                        })
+                        return
                 if not msg.get('more_body', False):
                     break
             body = b''.join(chunks)
@@ -61,6 +86,30 @@ class UploadBodyPreReadMiddleware:
 
 
 app.add_middleware(UploadBodyPreReadMiddleware)
+
+
+class StaticCacheHeaderMiddleware:
+    """Add browser cache headers for static assets loaded on every page."""
+
+    def __init__(self, asgi_app):
+        self.app = asgi_app
+
+    async def __call__(self, scope, receive, send):
+        is_static = scope.get('type') == 'http' and scope.get('path', '').startswith('/static/')
+
+        async def cached_send(message):
+            if is_static and message.get('type') == 'http.response.start':
+                headers = list(message.get('headers') or [])
+                has_cache_control = any(k.lower() == b'cache-control' for k, _ in headers)
+                if not has_cache_control:
+                    headers.append((b'cache-control', b'public, max-age=604800, stale-while-revalidate=86400'))
+                    message['headers'] = headers
+            await send(message)
+
+        await self.app(scope, receive, cached_send if is_static else send)
+
+
+app.add_middleware(StaticCacheHeaderMiddleware)
 
 # 静态文件服务（canvas_editor.js 等前端资源）
 app.add_static_files('/static', 'app/static')

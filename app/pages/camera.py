@@ -1,4 +1,5 @@
 """Camera/upload page with generated preset environments."""
+import json
 from pathlib import Path
 
 from nicegui import app, ui
@@ -6,7 +7,7 @@ from nicegui import app, ui
 from app.components.icons import get_svg
 from app.components.nav import bottom_nav, smooth_navigate
 from app.db import get_hci_participant_by_user_id
-from app.state import create_session, get_session, save_upload
+from app.state import create_session, get_session, media_url, save_upload
 from app.theme import COLORS, COMMON_STYLE, META_VIEWPORT, PRIMARY_BTN_STYLE, TOP_BAR_STYLE
 
 
@@ -54,7 +55,7 @@ PRESET_DIR = Path(__file__).resolve().parent.parent / 'static' / 'images' / 'pre
 
 
 def _preset_url(filename: str) -> str:
-    return f'/static/images/presets/{filename}'
+    return f'/api/preset-image/{filename}?display=1'
 
 
 def _camera_page_css() -> str:
@@ -68,6 +69,7 @@ def _camera_page_css() -> str:
     }}
 
     .camera-upload-box {{
+        position: relative;
         width: 100%;
         min-height: 220px;
         border-radius: 24px;
@@ -78,6 +80,7 @@ def _camera_page_css() -> str:
         cursor: pointer;
         transition: border-color 0.22s ease, background 0.22s ease, transform 0.22s ease;
         background: rgba(183,242,126,0.045);
+        overflow: hidden;
     }}
 
     .camera-upload-box:hover {{
@@ -101,6 +104,21 @@ def _camera_page_css() -> str:
         width: 58px;
         height: 58px;
         display: block;
+    }}
+
+    .camera-file-input {{
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+        z-index: 2;
+        font-size: 100px;
+    }}
+
+    .camera-file-input:disabled {{
+        cursor: progress;
     }}
 
     .preset-grid {{
@@ -289,8 +307,10 @@ def create_camera_page():
                 session.scene_type = scene['scene_type']
 
             state['uploaded'] = True
-            preview_img.set_source(f'/api/image/{Path(saved_path).name}')
-            smooth_navigate(f'/mode-select?sid={state["session_id"]}')
+            display_url = media_url(saved_path, display=True)
+            preview_img.set_source(display_url)
+            ui.run_javascript(f'new Image().src = {json.dumps(display_url)};')
+            ui.timer(0.12, lambda: smooth_navigate(f'/mode-select?sid={state["session_id"]}'), once=True)
 
         with ui.column().classes('mobile-page'):
             bottom_nav()
@@ -332,7 +352,7 @@ def create_camera_page():
                         ui.notify(data['error'], type='negative')
                         return
                     if 'image_url' in data:
-                        preview_img.set_source(data['image_url'])
+                        preview_img.set_source(data.get('display_url') or data['image_url'])
                         preview_img.style(
                             'display:block; width:100%; border-radius:20px; object-fit:contain;'
                             'box-shadow:0 8px 32px rgba(0,0,0,0.24);'
@@ -364,12 +384,14 @@ def create_camera_page():
                             支持 jpg/png，最大 20MB
                         </div>
                     </div>
-                    <input type="file" id="fileIn{trigger_id}" accept="image/*" style="display:none">
+                    <input
+                        type="file"
+                        id="fileIn{trigger_id}"
+                        class="camera-file-input"
+                        accept="image/jpeg,image/png,image/webp,image/*"
+                        aria-label="拍照或选择环境照片"
+                    >
                     ''')
-                upload_area.on(
-                    'click',
-                    js_handler=f'() => document.getElementById("fileIn{trigger_id}").click()',
-                )
 
                 ui.add_head_html(f'''<script>
                 document.addEventListener("DOMContentLoaded", function() {{
@@ -386,6 +408,7 @@ def create_camera_page():
                                     alert("文件过大，请选择小于 20MB 的图片"); }}
                                 this.value = ""; return;
                             }}
+                            fi.disabled = true;
                             var lbl = document.getElementById("upLabel{trigger_id}");
                             var prg = document.getElementById("upProgress{trigger_id}");
                             var pct = document.getElementById("upPct{trigger_id}");
@@ -416,6 +439,7 @@ def create_camera_page():
                                 }}
                                 if (lbl) lbl.style.display = "block";
                                 if (prg) prg.style.display = "none";
+                                fi.disabled = false;
                             }};
                             xhr.onerror = function() {{
                                 try {{ getElement({trigger_id}).$emit("upload_done",
@@ -423,6 +447,7 @@ def create_camera_page():
                                     alert("网络错误，请重试"); }}
                                 if (lbl) lbl.style.display = "block";
                                 if (prg) prg.style.display = "none";
+                                fi.disabled = false;
                             }};
                             var fd = new FormData();
                             fd.append("file", file);
@@ -435,8 +460,7 @@ def create_camera_page():
                 </script>''')
 
                 if existing_upload:
-                    img_name = Path(existing_upload).name
-                    preview_img.set_source(f'/api/image/{img_name}')
+                    preview_img.set_source(media_url(existing_upload, display=True))
                     preview_img.style(
                         'display:block; width:100%; border-radius:20px; object-fit:contain;'
                         'box-shadow:0 8px 32px rgba(0,0,0,0.24);'

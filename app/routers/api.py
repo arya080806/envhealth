@@ -9,6 +9,7 @@ from datetime import date
 from pathlib import Path
 
 from nicegui import app
+from PIL import Image
 from starlette.requests import Request
 from starlette.responses import JSONResponse, FileResponse, Response
 
@@ -25,6 +26,25 @@ from app.state import (
 from app.db import get_export_summary
 
 logger = logging.getLogger(__name__)
+
+MEDIA_CACHE_HEADERS = {
+    'Cache-Control': 'private, max-age=31536000, immutable',
+    'X-Content-Type-Options': 'nosniff',
+}
+PRESET_IMAGE_DIR = Path(__file__).resolve().parent.parent / 'static' / 'images' / 'presets'
+
+
+def _cached_file_response(path: Path, *, media_type: str | None = None) -> FileResponse:
+    return FileResponse(str(path), media_type=media_type, headers=MEDIA_CACHE_HEADERS)
+
+
+def _safe_child_file(directory: Path, filename: str) -> Path | None:
+    if not filename or filename != Path(filename).name:
+        return None
+    path = directory / filename
+    if not path.exists() or not path.is_file():
+        return None
+    return path
 
 
 def _load_dotenv_once() -> None:
@@ -386,18 +406,42 @@ def register_api_routes():
         return JSONResponse({
             'session_id': session_id,
             'image_url': f'/api/image/{Path(saved_path).name}',
+            'display_url': media_url(saved_path, display=True),
+            'thumbnail_url': media_url(saved_path, thumb=True),
         })
 
     @app.get('/api/image/{filename}')
     async def serve_image(filename: str, request: Request):
         thumb = request.query_params.get('thumb')
+        display = request.query_params.get('display') or request.query_params.get('preview')
         path = resolve_media_path(filename)
         if path:
             if thumb:
                 thumb_path = _get_thumb(path)
                 if thumb_path:
-                    return FileResponse(str(thumb_path), media_type='image/jpeg')
-            return FileResponse(str(path))
+                    return _cached_file_response(thumb_path, media_type='image/jpeg')
+            if display:
+                display_path = _get_display_image(path)
+                if display_path:
+                    return _cached_file_response(display_path, media_type='image/jpeg')
+            return _cached_file_response(path)
+        return JSONResponse({'error': '图片不存在'}, status_code=404)
+
+    @app.get('/api/preset-image/{filename}')
+    async def serve_preset_image(filename: str, request: Request):
+        thumb = request.query_params.get('thumb')
+        display = request.query_params.get('display') or request.query_params.get('preview')
+        path = _safe_child_file(PRESET_IMAGE_DIR, filename)
+        if path:
+            if thumb:
+                thumb_path = _get_thumb(path)
+                if thumb_path:
+                    return _cached_file_response(thumb_path, media_type='image/jpeg')
+            if display:
+                display_path = _get_display_image(path)
+                if display_path:
+                    return _cached_file_response(display_path, media_type='image/jpeg')
+            return _cached_file_response(path)
         return JSONResponse({'error': '图片不存在'}, status_code=404)
 
     @app.get('/api/download/{filename}')
@@ -816,20 +860,60 @@ def register_api_routes():
 
 
 THUMB_SIZE = (176, 176)
+DISPLAY_SIZE = (1280, 1280)
+DISPLAY_QUALITY = 82
 THUMB_DIR = Path(__file__).resolve().parent.parent.parent / 'outputs' / 'thumbs'
+DISPLAY_DIR = Path(__file__).resolve().parent.parent.parent / 'outputs' / 'display'
 THUMB_DIR.mkdir(parents=True, exist_ok=True)
+DISPLAY_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def _variant_name(original: Path, label: str) -> str:
+    try:
+        stat = original.stat()
+        fingerprint = f'{stat.st_size:x}_{stat.st_mtime_ns:x}'
+    except OSError:
+        fingerprint = '0'
+    return f'{original.stem}_{fingerprint}_{label}.jpg'
+
+
+def _image_to_rgb(img):
+    if img.mode == 'RGB':
+        return img
+    if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
+        base = Image.new('RGB', img.size, (255, 255, 248))
+        base.paste(img.convert('RGBA'), mask=img.convert('RGBA').split()[-1])
+        return base
+    return img.convert('RGB')
 
 
 def _get_thumb(original: Path) -> Path | None:
-    thumb_path = THUMB_DIR / f'{original.stem}_thumb.jpg'
+    thumb_path = THUMB_DIR / _variant_name(original, 'thumb')
     if thumb_path.exists():
         return thumb_path
     try:
-        from PIL import Image
-        img = Image.open(original)
-        img.thumbnail(THUMB_SIZE)
-        img = img.convert('RGB')
-        img.save(thumb_path, 'JPEG', quality=70)
+        from PIL import ImageOps
+        with Image.open(original) as opened:
+            img = ImageOps.exif_transpose(opened)
+            img.thumbnail(THUMB_SIZE)
+            img = _image_to_rgb(img)
+            img.save(thumb_path, 'JPEG', quality=70, optimize=True)
         return thumb_path
+    except Exception:
+        return None
+
+
+def _get_display_image(original: Path) -> Path | None:
+    display_path = DISPLAY_DIR / _variant_name(original, 'display')
+    if display_path.exists():
+        return display_path
+    try:
+        from PIL import ImageOps
+        with Image.open(original) as opened:
+            img = ImageOps.exif_transpose(opened)
+            img.thumbnail(DISPLAY_SIZE)
+            img = _image_to_rgb(img)
+            img.save(display_path, 'JPEG', quality=DISPLAY_QUALITY, optimize=True, progressive=True)
+        return display_path
     except Exception:
         return None
