@@ -35,6 +35,15 @@ MAX_REMOTE_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_INLINE_IMAGE_CHARS = 36 * 1024 * 1024
 
 
+def _quality_safety_requirements(visible_focus: str) -> str:
+    return (
+        f'[安全与质量] {visible_focus}；整体必须安全、稳定、温和，适合精神分裂症患者使用。'
+        '不要加入任何可能被患者感到威胁的高风险物件、惊吓感、暴力感、压迫感、'
+        '破损失控的设施、高处风险、拥挤混乱人群或超现实扭曲画面。'
+        '保持照片写实质量，光影方向、透视、材质颗粒、遮挡关系和景深都要与原图自然融合，无文字水印。'
+    )
+
+
 def _request_timeout(default: int) -> int:
     try:
         value = int(os.getenv('HEALING_IMAGE_TIMEOUT', str(default or IMAGE_API_TIMEOUT)))
@@ -49,7 +58,7 @@ def _raise_timeout(exc: Exception) -> None:
 
 def _build_prompt(green: float, urban: float, vitality: float, light: float) -> str:
     """根据滑杆参数构建中文改造描述 prompt"""
-    parts = ['请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，按以下要求修改环境：']
+    parts = ['请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，但改造结果必须与原图有肉眼可见差异，按以下要求修改环境：']
 
     if green > 70:
         parts.append('- 大幅增加绿化：添加大量树木、灌木、藤蔓和草坪，让绿色植被覆盖大部分可用区域')
@@ -66,7 +75,7 @@ def _build_prompt(green: float, urban: float, vitality: float, light: float) -> 
         parts.append('- 减少人工痕迹：尽量减少人造设施，保持自然原生状态')
 
     if vitality > 70:
-        parts.append('- 高活力氛围：场景中有多个行人在散步、交谈，整体热闹有活力')
+        parts.append('- 高活力氛围：用鲜活植被、明亮动线和少量平静活动痕迹营造生机，避免拥挤或嘈杂')
     elif vitality > 40:
         parts.append('- 适度活力：场景中有少量行人，氛围平和')
     else:
@@ -79,7 +88,7 @@ def _build_prompt(green: float, urban: float, vitality: float, light: float) -> 
     else:
         parts.append('- 冷色光线：阴天柔和光线，色调偏蓝灰，氛围清冷')
 
-    parts.append('要求：真实感强，风格统一，无文字水印，像真实照片一样自然。')
+    parts.append(_quality_safety_requirements('不要只调整亮度或色温，至少让绿化、设施、材质或空间层次产生清楚可比较的变化'))
     return '\n'.join(parts)
 
 
@@ -308,12 +317,51 @@ _ELEMENT_PROMPTS_POOL: dict[str, list[str]] = {
 }
 
 
+_SAFE_ELEMENT_PROMPTS: dict[str, list[str]] = {
+    '仙人掌': ['无刺多肉植物组合，边缘圆润柔和'],
+    '瀑布': ['低矮缓流的浅水景观，边缘平缓安全'],
+    '礁石': ['圆润的自然景观石，表面平稳不尖锐'],
+    '闪电': ['柔和明亮的天光层次'],
+    '漩涡云': ['柔和层叠的云带'],
+    '光环': ['柔和漫射的自然光晕'],
+    '塔尖': ['柔和的屋顶或景观轮廓'],
+    '台阶': ['低矮防滑台阶，边缘圆润清晰'],
+    '碎石路': ['平整防滑的自然步道'],
+}
+
+_UNSAFE_LABEL_PATTERNS = (
+    '刀', '枪', '武器', '血', '火灾', '明火', '爆炸', '闪电', '悬崖', '坠落',
+    '尖刺', '尖锐', '破损', '危险', '恐怖', '鬼', '怪物', '混乱',
+)
+
+
+def _safe_element_name(name: str) -> str:
+    clean = str(name or '').strip()
+    if not clean:
+        return clean
+    if clean in _SAFE_ELEMENT_PROMPTS:
+        return clean
+    if any(pattern in clean for pattern in _UNSAFE_LABEL_PATTERNS):
+        return '安全自然景观元素'
+    return clean
+
+
+def _sanitize_user_design_text(text: str) -> str:
+    clean = str(text or '').strip()
+    if not clean:
+        return ''
+    if any(pattern in clean for pattern in _UNSAFE_LABEL_PATTERNS):
+        return '希望保持安全、稳定、温和的疗愈环境，并用自然景观元素表达用户意图。'
+    return clean
+
+
 def _get_element_desc(name: str) -> str:
     """从多变描述池中随机选取一条元素描述"""
-    pool = _ELEMENT_PROMPTS_POOL.get(name)
+    safe_name = _safe_element_name(name)
+    pool = _SAFE_ELEMENT_PROMPTS.get(safe_name) or _ELEMENT_PROMPTS_POOL.get(safe_name)
     if pool:
         return random.choice(pool)
-    return name
+    return safe_name
 
 
 def _decode_image_data(value: str) -> bytes | None:
@@ -722,17 +770,24 @@ def generate_inpainting(image_path: str, elements: list[dict]) -> tuple[bytes, s
 
     element_descriptions = []
     for el in elements:
-        name = el.get('name', '')
+        name = _safe_element_name(el.get('name', ''))
         x_pct = max(0.0, min(100.0, _safe_float(el.get('x'), 50)))
         y_pct = max(0.0, min(100.0, _safe_float(el.get('y'), 50)))
+        scale = max(0.05, min(8.0, _safe_float(el.get('scale'), 1)))
         spatial = coords_to_spatial_language(x_pct, y_pct)
         desc = _get_element_desc(name)
-        element_descriptions.append(f'在{spatial}位置自然融入{desc}')
+        if scale >= 1.6:
+            size_hint = '作为清晰可见的较大主体'
+        elif scale <= 0.7:
+            size_hint = '作为精致但能看清的局部点缀'
+        else:
+            size_hint = '作为明确可见的环境元素'
+        element_descriptions.append(f'在{spatial}位置按用户放置意图生成{desc}，{size_hint}，不要缩成难以察觉的小变化')
 
     prompt = (
-        '请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，按以下要求添加元素：\n'
+        '请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，但用户放置的元素必须形成肉眼可见的实际改造，按以下要求添加元素：\n'
         + '\n'.join(f'- {d}' for d in element_descriptions)
-        + '\n要求：新添加的元素要与原有环境自然融合，光影一致，真实感强，无文字水印。'
+        + '\n' + _quality_safety_requirements('不要只做轻微调色，所有用户放置的元素都要在对应位置生成清楚、写实、可比较的环境变化')
     )
     logger.info(f'Prompt:\n{prompt}')
 
@@ -844,7 +899,14 @@ def _safe_float(value, default: float = 0.0) -> float:
 
 def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> list[dict]:
     """用户标注优先覆盖自动识别结果，支持 groupId 合并多笔为一条 prompt"""
-    merged = [dict(el, source=el.get('source', 'auto')) for el in (elements or []) if isinstance(el, dict)]
+    merged = [
+        dict(
+            el,
+            elemName=_safe_element_name(el.get('elemName') or el.get('name', '')),
+            source=el.get('source', 'auto'),
+        )
+        for el in (elements or []) if isinstance(el, dict)
+    ]
     if not annotations:
         return merged
 
@@ -870,7 +932,7 @@ def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> li
         stroke_ids = ann.get('strokeIds', [])
 
         merged_ann = {
-            'elemName': ann.get('userLabel', ''),
+            'elemName': _safe_element_name(ann.get('userLabel', '')),
             'icon': '✎',
             'confidence': 1.0,
             'x': ann_x,
@@ -1022,7 +1084,7 @@ def _build_sketch_prompt(
     used_stroke_indices: set[int] = set()
 
     for el in elements:
-        name = el.get('elemName') or el.get('name', '')
+        name = _safe_element_name(el.get('elemName') or el.get('name', ''))
         x_pct = el.get('x', 50)
         y_pct = el.get('y', 50)
         tint = el.get('tint', '')
@@ -1130,14 +1192,15 @@ def _build_sketch_prompt(
             lines.append('[用户能动性] 在用户笔迹和标注基础上积极扩展，保持可解释、可追溯，同时保证前后图有明显差异。')
 
     if complexity == 'simple':
-        lines.append('[要求] 照片写实风格，新元素与原环境自然融合；但笔触区域必须清楚可见地改变，无文字水印。')
+        lines.append(_quality_safety_requirements('笔触区域必须清楚可见地改变，不能只是轻微调色'))
     elif complexity == 'rich':
         lines.append(
-            '[要求] 与原图光影方向保持一致，照片写实风格，新元素与原环境无缝融合，'
-            '注意远近透视关系，前景清晰、远景略有空气透视感；笔触覆盖区需要成为主要视觉变化来源，无文字水印。'
+            _quality_safety_requirements(
+                '笔触覆盖区需要成为主要视觉变化来源，前景清晰、远景略有空气透视感'
+            )
         )
     else:
-        lines.append('[要求] 与原图光影方向保持一致，照片写实风格，新元素与原环境无缝融合；笔触覆盖区要有明确变化，无文字水印。')
+        lines.append(_quality_safety_requirements('笔触覆盖区要有明确变化，前后图需要能直接比较出改造内容'))
 
     return '\n'.join(lines)
 
