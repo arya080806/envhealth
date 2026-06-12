@@ -43,7 +43,7 @@ export default {
       if (this.editor) {
         if (name.startsWith(":")) {
           name = name.slice(1);
-          args = args.map((arg) => new Function("return (".concat(arg, ")"))());
+          args = args.map((arg) => new Function(`return (${arg})`)());
         }
         return runMethod(this.editor, name, args);
       }

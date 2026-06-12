@@ -1,5 +1,5 @@
 export default {
-  template: '<component :is="tag"></component>',
+  template: `<component :is="tag"></component>`,
   data() {
     return { previousInnerHTML: null };
   },

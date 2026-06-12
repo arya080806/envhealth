@@ -1,5 +1,11 @@
 export default {
-  template: '\n    <component :is="tag || \'q-img\'" ref="qRef" :src="computed_src">\n      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">\n        <slot :name="slot" v-bind="slotProps || {}" />\n      </template>\n    </component>\n  ',
+  template: `
+    <component :is="tag || 'q-img'" ref="qRef" :src="computed_src">
+      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">
+        <slot :name="slot" v-bind="slotProps || {}" />
+      </template>
+    </component>
+  `,
   props: {
     src: String,
     t: String,

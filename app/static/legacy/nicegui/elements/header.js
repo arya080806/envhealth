@@ -1,9 +1,9 @@
 export default {
-  template: '<q-header ref="qRef"><slot></slot></q-header>',
+  template: `<q-header ref="qRef"><slot></slot></q-header>`,
   mounted() {
     if (this.addScrollPadding) {
       this.resizeObserver = new ResizeObserver(() => {
-        document.documentElement.style.scrollPaddingTop = "".concat(this.$el.offsetHeight, "px");
+        document.documentElement.style.scrollPaddingTop = `${this.$el.offsetHeight}px`;
       }).observe(this.$el);
     }
   },

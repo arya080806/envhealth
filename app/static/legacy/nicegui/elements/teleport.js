@@ -1,5 +1,5 @@
 export default {
-  template: '<Teleport v-if="isLoaded" :to="to" :key="key"><slot></slot></Teleport>',
+  template: `<Teleport v-if="isLoaded" :to="to" :key="key"><slot></slot></Teleport>`,
   props: {
     to: String
   },

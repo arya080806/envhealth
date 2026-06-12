@@ -1,5 +1,9 @@
 export default {
-  template: '\n    <q-dialog @show="addClass" @hide="removeClass">\n      <slot />\n    </q-dialog>\n  ',
+  template: `
+    <q-dialog @show="addClass" @hide="removeClass">
+      <slot />
+    </q-dialog>
+  `,
   methods: {
     addClass() {
       document.documentElement.classList.add("nicegui-dialog-open");

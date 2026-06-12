@@ -1,5 +1,11 @@
 export default {
-  template: '\n    <q-editor ref="qRef" :id="id" v-model="inputValue">\n      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">\n        <slot :name="slot" v-bind="slotProps || {}" />\n      </template>\n    </q-editor>\n  ',
+  template: `
+    <q-editor ref="qRef" :id="id" v-model="inputValue">
+      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">
+        <slot :name="slot" v-bind="slotProps || {}" />
+      </template>
+    </q-editor>
+  `,
   props: {
     value: String,
     id: String

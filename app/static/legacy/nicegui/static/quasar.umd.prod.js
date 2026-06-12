@@ -1,3 +1,35 @@
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __pow = Math.pow;
+var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __objRest = (source, exclude) => {
+  var target = {};
+  for (var prop in source)
+    if (__hasOwnProp.call(source, prop) && exclude.indexOf(prop) < 0)
+      target[prop] = source[prop];
+  if (source != null && __getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(source)) {
+      if (exclude.indexOf(prop) < 0 && __propIsEnum.call(source, prop))
+        target[prop] = source[prop];
+    }
+  return target;
+};
 /*!
  * Quasar Framework v2.18.5
  * (c) 2015-present Razvan Stoenescu
@@ -32,7 +64,7 @@
     if (a === true || t.indexOf("mobile") !== -1 ? n.mobile = true : n.desktop = true, n["windows phone"] && (n.winphone = true, delete n["windows phone"]), n.edga || n.edgios || n.edg ? (n.edge = true, r.browser = "edge") : n.crios ? (n.chrome = true, r.browser = "chrome") : n.fxios && (n.firefox = true, r.browser = "firefox"), (n.ipod || n.ipad || n.iphone) && (n.ios = true), n.vivaldi && (r.browser = "vivaldi", n.vivaldi = true), (n.chrome || n.opr || n.safari || n.vivaldi || n.mobile === true && n.ios !== true && a !== true) && (n.webkit = true), n.opr && (r.browser = "opera", n.opera = true), n.safari && (n.blackberry || n.bb ? (r.browser = "blackberry", n.blackberry = true) : n.playbook ? (r.browser = "playbook", n.playbook = true) : n.android ? (r.browser = "android", n.android = true) : n.kindle ? (r.browser = "kindle", n.kindle = true) : n.silk && (r.browser = "silk", n.silk = true)), n.name = r.browser, n.platform = r.platform, t.indexOf("electron") !== -1) n.electron = true;
     else if (document.location.href.indexOf("-extension://") !== -1) n.bex = true;
     else {
-      if (window.Capacitor !== void 0 ? (n.capacitor = true, n.nativeMobile = true, n.nativeMobileWrapper = "capacitor") : (window._cordovaNative !== void 0 || window.cordova !== void 0) && (n.cordova = true, n.nativeMobile = true, n.nativeMobileWrapper = "cordova"), xt.value === true && (Sl = { is: { ...n } }), Vu === true && n.mac === true && (n.desktop === true && n.safari === true || n.nativeMobile === true && n.android !== true && n.ios !== true && n.ipad !== true)) {
+      if (window.Capacitor !== void 0 ? (n.capacitor = true, n.nativeMobile = true, n.nativeMobileWrapper = "capacitor") : (window._cordovaNative !== void 0 || window.cordova !== void 0) && (n.cordova = true, n.nativeMobile = true, n.nativeMobileWrapper = "cordova"), xt.value === true && (Sl = { is: __spreadValues({}, n) }), Vu === true && n.mac === true && (n.desktop === true && n.safari === true || n.nativeMobile === true && n.android !== true && n.ios !== true && n.ipad !== true)) {
         delete n.mac, delete n.desktop;
         let l = Math.min(window.innerHeight, window.innerWidth) > 414 ? "ipad" : "iphone";
         Object.assign(n, { mobile: true, ios: true, platform: l, [l]: true });
@@ -53,7 +85,7 @@
       if (e !== void 0) return e;
       try {
         if (window.localStorage) return e = true, true;
-      } catch {
+      } catch (e2) {
       }
       return e = false, false;
     }), Object.assign(xl, Ae), xt.value === true && (Object.assign(xl, Sl, mv), Sl = null);
@@ -78,7 +110,7 @@
       Object.assign(et, { hasPassive: true, passive: { passive: true }, notPassive: { passive: false }, passiveCapture: { passive: true, capture: true }, notPassiveCapture: { passive: false, capture: true } });
     } });
     window.addEventListener("qtest", null, e), window.removeEventListener("qtest", null, e);
-  } catch {
+  } catch (e) {
   }
   function Ye() {
   }
@@ -131,13 +163,13 @@
     e.querySelectorAll("a, img").forEach(o);
   }
   function vt(e, t, o) {
-    let r = "__q_".concat(t, "_evt");
+    let r = `__q_${t}_evt`;
     e[r] = e[r] !== void 0 ? e[r].concat(o) : o, o.forEach((n) => {
       n[0].addEventListener(n[1], e[n[2]], et[n[3]]);
     });
   }
   function Tt(e, t) {
-    let o = "__q_".concat(t, "_evt");
+    let o = `__q_${t}_evt`;
     e[o] !== void 0 && (e[o].forEach((r) => {
       r[0].removeEventListener(r[1], e[r[2]], et[r[3]]);
     }), e[o] = void 0);
@@ -158,7 +190,7 @@
   var Cl = ["sm", "md", "lg", "xl"], { passive: Iu } = et, Ta = Wt({ width: 0, height: 0, name: "xs", sizes: { sm: 600, md: 1024, lg: 1440, xl: 1920 }, lt: { sm: true, md: true, lg: true, xl: true }, gt: { xs: false, sm: false, md: false, lg: false }, xs: true, sm: false, md: false, lg: false, xl: false }, { setSizes: Ye, setDebounce: Ye, install({ $q: e, onSSRHydrated: t }) {
     var _a2;
     if (e.screen = this, this.__installed === true) {
-      e.config.screen !== void 0 && (e.config.screen.bodyClasses === false ? document.body.classList.remove("screen--".concat(this.name)) : this.__update(true));
+      e.config.screen !== void 0 && (e.config.screen.bodyClasses === false ? document.body.classList.remove(`screen--${this.name}`) : this.__update(true));
       return;
     }
     let { visualViewport: o } = window, r = o || window, n = document.scrollingElement || document.documentElement, a = o === void 0 || Ae.is.mobile === true ? () => [Math.max(window.innerWidth, n.clientWidth), Math.max(window.innerHeight, n.clientHeight)] : () => [o.width * o.scale + window.innerWidth - n.clientWidth, o.height * o.scale + window.innerHeight - n.clientHeight], l = ((_a2 = e.config.screen) == null ? void 0 : _a2.bodyClasses) === true;
@@ -167,7 +199,7 @@
       if (m !== this.height && (this.height = m), g !== this.width) this.width = g;
       else if (p !== true) return;
       let v = this.sizes;
-      this.gt.xs = g >= v.sm, this.gt.sm = g >= v.md, this.gt.md = g >= v.lg, this.gt.lg = g >= v.xl, this.lt.sm = g < v.sm, this.lt.md = g < v.md, this.lt.lg = g < v.lg, this.lt.xl = g < v.xl, this.xs = this.lt.sm, this.sm = this.gt.xs === true && this.lt.md === true, this.md = this.gt.sm === true && this.lt.lg === true, this.lg = this.gt.md === true && this.lt.xl === true, this.xl = this.gt.lg, v = this.xs === true && "xs" || this.sm === true && "sm" || this.md === true && "md" || this.lg === true && "lg" || "xl", v !== this.name && (l === true && (document.body.classList.remove("screen--".concat(this.name)), document.body.classList.add("screen--".concat(v))), this.name = v);
+      this.gt.xs = g >= v.sm, this.gt.sm = g >= v.md, this.gt.md = g >= v.lg, this.gt.lg = g >= v.xl, this.lt.sm = g < v.sm, this.lt.md = g < v.md, this.lt.lg = g < v.lg, this.lt.xl = g < v.xl, this.xs = this.lt.sm, this.sm = this.gt.xs === true && this.lt.md === true, this.md = this.gt.sm === true && this.lt.lg === true, this.lg = this.gt.md === true && this.lt.xl === true, this.xl = this.gt.lg, v = this.xs === true && "xs" || this.sm === true && "sm" || this.md === true && "md" || this.lg === true && "lg" || "xl", v !== this.name && (l === true && (document.body.classList.remove(`screen--${this.name}`), document.body.classList.add(`screen--${v}`)), this.name = v);
     };
     let u, c = {}, f = 16;
     this.setSizes = (p) => {
@@ -180,7 +212,7 @@
     let d = () => {
       let p = getComputedStyle(document.body);
       p.getPropertyValue("--q-size-sm") && Cl.forEach((g) => {
-        this.sizes[g] = parseInt(p.getPropertyValue("--q-size-".concat(g)), 10);
+        this.sizes[g] = parseInt(p.getPropertyValue(`--q-size-${g}`), 10);
       }), this.setSizes = (g) => {
         Cl.forEach((m) => {
           g[m] && (this.sizes[m] = g[m]);
@@ -194,7 +226,7 @@
   var Yt = Wt({ isActive: false, mode: false }, { __media: void 0, set(e) {
     Yt.mode = e, e === "auto" ? (Yt.__media === void 0 && (Yt.__media = window.matchMedia("(prefers-color-scheme: dark)"), Yt.__updateMedia = () => {
       Yt.set("auto");
-    }, Yt.__media.addListener(Yt.__updateMedia)), e = Yt.__media.matches) : Yt.__media !== void 0 && (Yt.__media.removeListener(Yt.__updateMedia), Yt.__media = void 0), Yt.isActive = e === true, document.body.classList.remove("body--".concat(e === true ? "light" : "dark")), document.body.classList.add("body--".concat(e === true ? "dark" : "light"));
+    }, Yt.__media.addListener(Yt.__updateMedia)), e = Yt.__media.matches) : Yt.__media !== void 0 && (Yt.__media.removeListener(Yt.__updateMedia), Yt.__media = void 0), Yt.isActive = e === true, document.body.classList.remove(`body--${e === true ? "light" : "dark"}`), document.body.classList.add(`body--${e === true ? "dark" : "light"}`);
   }, toggle() {
     Yt.set(Yt.isActive === false);
   }, install({ $q: e, ssrContext: t }) {
@@ -205,7 +237,7 @@
     if (typeof e != "string") throw new TypeError("Expected a string as propName");
     if (typeof t != "string") throw new TypeError("Expected a string as value");
     if (!(o instanceof Element)) throw new TypeError("Expected a DOM element");
-    o.style.setProperty("--q-".concat(e), t);
+    o.style.setProperty(`--q-${e}`, t);
   }
   var Hu = false;
   function Nu(e) {
@@ -222,7 +254,7 @@
     if (e.android === true) return "android";
   }
   function yv({ is: e, has: t, within: o }, r) {
-    let n = [e.desktop === true ? "desktop" : "mobile", "".concat(t.touch === false ? "no-" : "", "touch")];
+    let n = [e.desktop === true ? "desktop" : "mobile", `${t.touch === false ? "no-" : ""}touch`];
     if (e.mobile === true) {
       let a = Qu(e);
       a !== void 0 && n.push("platform-" + a);
@@ -240,7 +272,7 @@
       else if (e.mobile === true) {
         o.delete("desktop"), o.add("mobile"), o.delete("platform-ios"), o.delete("platform-android");
         let n = Qu(e);
-        n !== void 0 && o.add("platform-".concat(n));
+        n !== void 0 && o.add(`platform-${n}`);
       }
     }
     Ae.has.touch === true && (o.delete("no-touch"), o.add("touch")), Ae.within.iframe === true && o.add("within-iframe");
@@ -297,13 +329,13 @@
       document.addEventListener("backbutton", a, false);
     }) : window.Capacitor.Plugins.App.addListener("backButton", a);
   } };
-  var Wr = { isoName: "en-US", nativeName: "English (US)", label: { clear: "Clear", ok: "OK", cancel: "Cancel", close: "Close", set: "Set", select: "Select", reset: "Reset", remove: "Remove", update: "Update", create: "Create", search: "Search", filter: "Filter", refresh: "Refresh", expand: (e) => e ? 'Expand "'.concat(e, '"') : "Expand", collapse: (e) => e ? 'Collapse "'.concat(e, '"') : "Collapse" }, date: { days: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), daysShort: "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"), months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"), firstDayOfWeek: 0, format24h: false, pluralDay: "days", prevMonth: "Previous month", nextMonth: "Next month", prevYear: "Previous year", nextYear: "Next year", today: "Today", prevRangeYears: (e) => "Previous ".concat(e, " years"), nextRangeYears: (e) => "Next ".concat(e, " years") }, table: { noData: "No data available", noResults: "No matching records found", loading: "Loading...", selectedRecords: (e) => e === 1 ? "1 record selected." : (e === 0 ? "No" : e) + " records selected.", recordsPerPage: "Records per page:", allRows: "All", pagination: (e, t, o) => e + "-" + t + " of " + o, columns: "Columns" }, pagination: { first: "First page", prev: "Previous page", next: "Next page", last: "Last page" }, editor: { url: "URL", bold: "Bold", italic: "Italic", strikethrough: "Strikethrough", underline: "Underline", unorderedList: "Unordered List", orderedList: "Ordered List", subscript: "Subscript", superscript: "Superscript", hyperlink: "Hyperlink", toggleFullscreen: "Toggle Fullscreen", quote: "Quote", left: "Left align", center: "Center align", right: "Right align", justify: "Justify align", print: "Print", outdent: "Decrease indentation", indent: "Increase indentation", removeFormat: "Remove formatting", formatting: "Formatting", fontSize: "Font Size", align: "Align", hr: "Insert Horizontal Rule", undo: "Undo", redo: "Redo", heading1: "Heading 1", heading2: "Heading 2", heading3: "Heading 3", heading4: "Heading 4", heading5: "Heading 5", heading6: "Heading 6", paragraph: "Paragraph", code: "Code", size1: "Very small", size2: "A bit small", size3: "Normal", size4: "Medium-large", size5: "Big", size6: "Very big", size7: "Maximum", defaultFont: "Default Font", viewSource: "View Source" }, tree: { noNodes: "No nodes available", noResults: "No matching nodes found" } };
+  var Wr = { isoName: "en-US", nativeName: "English (US)", label: { clear: "Clear", ok: "OK", cancel: "Cancel", close: "Close", set: "Set", select: "Select", reset: "Reset", remove: "Remove", update: "Update", create: "Create", search: "Search", filter: "Filter", refresh: "Refresh", expand: (e) => e ? `Expand "${e}"` : "Expand", collapse: (e) => e ? `Collapse "${e}"` : "Collapse" }, date: { days: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"), daysShort: "Sun_Mon_Tue_Wed_Thu_Fri_Sat".split("_"), months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"), firstDayOfWeek: 0, format24h: false, pluralDay: "days", prevMonth: "Previous month", nextMonth: "Next month", prevYear: "Previous year", nextYear: "Next year", today: "Today", prevRangeYears: (e) => `Previous ${e} years`, nextRangeYears: (e) => `Next ${e} years` }, table: { noData: "No data available", noResults: "No matching records found", loading: "Loading...", selectedRecords: (e) => e === 1 ? "1 record selected." : (e === 0 ? "No" : e) + " records selected.", recordsPerPage: "Records per page:", allRows: "All", pagination: (e, t, o) => e + "-" + t + " of " + o, columns: "Columns" }, pagination: { first: "First page", prev: "Previous page", next: "Next page", last: "Last page" }, editor: { url: "URL", bold: "Bold", italic: "Italic", strikethrough: "Strikethrough", underline: "Underline", unorderedList: "Unordered List", orderedList: "Ordered List", subscript: "Subscript", superscript: "Superscript", hyperlink: "Hyperlink", toggleFullscreen: "Toggle Fullscreen", quote: "Quote", left: "Left align", center: "Center align", right: "Right align", justify: "Justify align", print: "Print", outdent: "Decrease indentation", indent: "Increase indentation", removeFormat: "Remove formatting", formatting: "Formatting", fontSize: "Font Size", align: "Align", hr: "Insert Horizontal Rule", undo: "Undo", redo: "Redo", heading1: "Heading 1", heading2: "Heading 2", heading3: "Heading 3", heading4: "Heading 4", heading5: "Heading 5", heading6: "Heading 6", paragraph: "Paragraph", code: "Code", size1: "Very small", size2: "A bit small", size3: "Normal", size4: "Medium-large", size5: "Big", size6: "Very big", size7: "Maximum", defaultFont: "Default Font", viewSource: "View Source" }, tree: { noNodes: "No nodes available", noResults: "No matching nodes found" } };
   function Ku() {
     let e = Array.isArray(navigator.languages) === true && navigator.languages.length !== 0 ? navigator.languages[0] : navigator.language;
     if (typeof e == "string") return e.split(/[-_]/).map((t, o) => o === 0 ? t.toLowerCase() : o > 1 || t.length < 4 ? t.toUpperCase() : t[0].toUpperCase() + t.slice(1).toLowerCase()).join("-");
   }
   var _n = Wt({ __qLang: {} }, { getLocale: Ku, set(e = Wr, t) {
-    let o = { ...e, rtl: e.rtl === true, getLocale: Ku };
+    let o = __spreadProps(__spreadValues({}, e), { rtl: e.rtl === true, getLocale: Ku });
     if (o.set = _n.set, _n.__langConfig === void 0 || _n.__langConfig.noHtmlAttrs !== true) {
       let r = document.documentElement;
       r.setAttribute("dir", o.rtl === true ? "rtl" : "ltr"), r.setAttribute("lang", o.isoName);
@@ -318,7 +350,7 @@
   } }), Yo = _n;
   var Wu = { name: "material-icons", type: { positive: "check_circle", negative: "warning", info: "info", warning: "priority_high" }, arrow: { up: "arrow_upward", right: "arrow_forward", down: "arrow_downward", left: "arrow_back", dropdown: "arrow_drop_down" }, chevron: { left: "chevron_left", right: "chevron_right" }, colorPicker: { spectrum: "gradient", tune: "tune", palette: "style" }, pullToRefresh: { icon: "refresh" }, carousel: { left: "chevron_left", right: "chevron_right", up: "keyboard_arrow_up", down: "keyboard_arrow_down", navigationIcon: "lens" }, chip: { remove: "cancel", selected: "check" }, datetime: { arrowLeft: "chevron_left", arrowRight: "chevron_right", now: "access_time", today: "today" }, editor: { bold: "format_bold", italic: "format_italic", strikethrough: "strikethrough_s", underline: "format_underlined", unorderedList: "format_list_bulleted", orderedList: "format_list_numbered", subscript: "vertical_align_bottom", superscript: "vertical_align_top", hyperlink: "link", toggleFullscreen: "fullscreen", quote: "format_quote", left: "format_align_left", center: "format_align_center", right: "format_align_right", justify: "format_align_justify", print: "print", outdent: "format_indent_decrease", indent: "format_indent_increase", removeFormat: "format_clear", formatting: "text_format", fontSize: "format_size", align: "format_align_left", hr: "remove", undo: "undo", redo: "redo", heading: "format_size", code: "code", size: "format_size", font: "font_download", viewSource: "code" }, expansionItem: { icon: "keyboard_arrow_down", denseIcon: "arrow_drop_down" }, fab: { icon: "add", activeIcon: "close" }, field: { clear: "cancel", error: "error" }, pagination: { first: "first_page", prev: "keyboard_arrow_left", next: "keyboard_arrow_right", last: "last_page" }, rating: { icon: "grade" }, stepper: { done: "check", active: "edit", error: "warning" }, tabs: { left: "chevron_left", right: "chevron_right", up: "keyboard_arrow_up", down: "keyboard_arrow_down" }, table: { arrowUp: "arrow_upward", warning: "warning", firstPage: "first_page", prevPage: "chevron_left", nextPage: "chevron_right", lastPage: "last_page" }, tree: { icon: "play_arrow" }, uploader: { done: "done", clear: "clear", add: "add_box", upload: "cloud_upload", removeQueue: "clear_all", removeUploaded: "done_all" } };
   var wl = Wt({ iconMapFn: null, __qIconSet: {} }, { set(e, t) {
-    let o = { ...e };
+    let o = __spreadValues({}, e);
     o.set = wl.set, Object.assign(wl.__qIconSet, o);
   }, install({ $q: e, iconSet: t, ssrContext: o }) {
     e.config.iconMapFn !== void 0 && (this.iconMapFn = e.config.iconMapFn), e.iconSet = this.__qIconSet, ft(e, "iconMapFn", () => this.iconMapFn, (r) => {
@@ -403,7 +435,7 @@
   function an(e, t) {
     let o = Du(e);
     o.config.globalProperties = t.config.globalProperties;
-    let { reload: r, ...n } = t._context;
+    let _a2 = t._context, { reload: r } = _a2, n = __objRest(_a2, ["reload"]);
     return Object.assign(o._context, n), o;
   }
   function Zu(e, t) {
@@ -425,7 +457,7 @@
   }
   var Ju = function(e, t = {}) {
     let o = { version: "2.18.5" };
-    kl === false ? (t.config !== void 0 && Object.assign(jn, t.config), o.config = { ...jn }, Yu()) : o.config = t.config || {}, kv(e, t, { parentApp: e, $q: o, lang: t.lang, iconSet: t.iconSet, onSSRHydrated: [] });
+    kl === false ? (t.config !== void 0 && Object.assign(jn, t.config), o.config = __spreadValues({}, jn), Yu()) : o.config = t.config || {}, kv(e, t, { parentApp: e, $q: o, lang: t.lang, iconSet: t.iconSet, onSSRHydrated: [] });
   };
   var nl = {};
   jr(nl, { QAjaxBar: () => Da, QAvatar: () => Va, QBadge: () => us, QBanner: () => ss, QBar: () => cs, QBreadcrumbs: () => ms, QBreadcrumbsEl: () => ps, QBtn: () => Ve, QBtnDropdown: () => Ja, QBtnGroup: () => or, QBtnToggle: () => Os, QCard: () => hr, QCardActions: () => ei, QCardSection: () => _o, QCarousel: () => zs, QCarouselControl: () => Hs, QCarouselSlide: () => Is, QChatMessage: () => Ns, QCheckbox: () => Vo, QChip: () => qr, QCircularProgress: () => Tr, QColor: () => tc, QDate: () => vc, QDialog: () => Ho, QDrawer: () => _c, QEditor: () => $c, QExpansionItem: () => Ec, QFab: () => Bc, QFabAction: () => Lc, QField: () => Ai, QFile: () => Vc, QFooter: () => zc, QForm: () => Ic, QFormChildMixin: () => Hc, QHeader: () => Nc, QIcon: () => Re, QImg: () => Qc, QInfiniteScroll: () => jc, QInnerLoading: () => Uc, QInput: () => Or, QIntersection: () => nd, QItem: () => No, QItemLabel: () => Ln, QItemSection: () => ro, QKnob: () => ad, QLayout: () => ld, QLinearProgress: () => Ki, QList: () => Vi, QMarkupTable: () => zi, QMenu: () => Fo, QNoSsr: () => ud, QOptionGroup: () => Ni, QPage: () => cd, QPageContainer: () => dd, QPageScroller: () => fd, QPageSticky: () => md, QPagination: () => vd, QParallax: () => gd, QPopupEdit: () => hd, QPopupProxy: () => pd, QPullToRefresh: () => yd, QRadio: () => Ii, QRange: () => Sd, QRating: () => xd, QResizeObserver: () => no, QResponsive: () => _d, QRouteTab: () => Ef, QScrollArea: () => Td, QScrollObserver: () => Vr, QSelect: () => Yi, QSeparator: () => uo, QSkeleton: () => $d, QSlideItem: () => Bd, QSlideTransition: () => pn, QSlider: () => Jo, QSpace: () => Fd, QSpinner: () => wt, QSpinnerAudio: () => Ld, QSpinnerBall: () => Dd, QSpinnerBars: () => Od, QSpinnerBox: () => Vd, QSpinnerClock: () => zd, QSpinnerComment: () => Id, QSpinnerCube: () => Hd, QSpinnerDots: () => Nd, QSpinnerFacebook: () => Qd, QSpinnerGears: () => jd, QSpinnerGrid: () => Ud, QSpinnerHearts: () => Kd, QSpinnerHourglass: () => Wd, QSpinnerInfinity: () => Yd, QSpinnerIos: () => Xd, QSpinnerOrbit: () => Gd, QSpinnerOval: () => Zd, QSpinnerPie: () => Jd, QSpinnerPuff: () => ef, QSpinnerRadio: () => tf, QSpinnerRings: () => of, QSpinnerTail: () => nf, QSplitter: () => rf, QStep: () => uf, QStepper: () => sf, QStepperNavigation: () => cf, QTab: () => fn, QTabPanel: () => Rr, QTabPanels: () => mi, QTable: () => Pf, QTabs: () => aa, QTd: () => $f, QTh: () => Gi, QTime: () => Bf, QTimeline: () => Ff, QTimelineEntry: () => Lf, QToggle: () => Hi, QToolbar: () => Df, QToolbarTitle: () => Of, QTooltip: () => Mi, QTr: () => Af, QTree: () => Vf, QUploader: () => Qf, QUploaderAddTrigger: () => jf, QVideo: () => Uf, QVirtualScroll: () => Ji });
@@ -433,7 +465,7 @@
   function Un(e, t = 1) {
     let o = 0;
     for (; parseInt(e, 10) >= 1024 && o < es.length - 1; ) e /= 1024, ++o;
-    return "".concat(e.toFixed(t)).concat(es[o]);
+    return `${e.toFixed(t)}${es[o]}`;
   }
   function Tl(e) {
     return e.charAt(0).toUpperCase() + e.slice(1);
@@ -455,7 +487,7 @@
   var Ml = XMLHttpRequest, os = Ml.prototype.open, qv = ["top", "right", "bottom", "left"], La = [], Yr = 0;
   function Tv({ p: e, pos: t, active: o, horiz: r, reverse: n, dir: a }) {
     let l = 1, u = 1;
-    return r === true ? (n === true && (l = -1), t === "bottom" && (u = -1), { transform: "translate3d(".concat(l * (e - 100), "%,").concat(o ? 0 : u * -200, "%,0)") }) : (n === true && (u = -1), t === "right" && (l = -1), { transform: "translate3d(".concat(o ? 0 : a * l * -200, "%,").concat(u * (e - 100), "%,0)") });
+    return r === true ? (n === true && (l = -1), t === "bottom" && (u = -1), { transform: `translate3d(${l * (e - 100)}%,${o ? 0 : u * -200}%,0)` }) : (n === true && (u = -1), t === "right" && (l = -1), { transform: `translate3d(${o ? 0 : a * l * -200}%,${u * (e - 100)}%,0)` });
   }
   function Mv(e, t) {
     return typeof t != "number" && (e < 25 ? t = Math.random() * 3 + 3 : e < 65 ? t = Math.random() * 3 : e < 85 ? t = Math.random() * 2 : e < 99 ? t = 0.6 : t = 0), tt(e + t, 0, 100);
@@ -478,7 +510,7 @@
     La = La.filter((t) => t.start !== e), Yr = Math.max(0, Yr - 1), Yr === 0 && (Ml.prototype.open = os);
   }
   var Da = P({ name: "QAjaxBar", props: { position: { type: String, default: "top", validator: (e) => qv.includes(e) }, size: { type: String, default: "2px" }, color: String, skipHijack: Boolean, reverse: Boolean, hijackFilter: Function }, emits: ["start", "stop"], setup(e, { emit: t }) {
-    let { proxy: o } = K(), r = T(0), n = T(false), a = T(true), l = 0, u = null, c, f = s(() => "q-loading-bar q-loading-bar--".concat(e.position) + (e.color !== void 0 ? " bg-".concat(e.color) : "") + (a.value === true ? "" : " no-transition")), d = s(() => e.position === "top" || e.position === "bottom"), p = s(() => d.value === true ? "height" : "width"), g = s(() => {
+    let { proxy: o } = K(), r = T(0), n = T(false), a = T(true), l = 0, u = null, c, f = s(() => `q-loading-bar q-loading-bar--${e.position}` + (e.color !== void 0 ? ` bg-${e.color}` : "") + (a.value === true ? "" : " no-transition")), d = s(() => e.position === "top" || e.position === "bottom"), p = s(() => d.value === true ? "height" : "width"), g = s(() => {
       let b = n.value, h = Tv({ p: r.value, pos: e.position, active: b, horiz: d.value, reverse: o.$q.lang.rtl === true && ["top", "bottom"].includes(e.position) ? e.reverse === false : e.reverse, dir: o.$q.lang.rtl === true ? -1 : 1 });
       return h[p.value] = e.size, h.opacity = b ? 1 : 0, h;
     }), m = s(() => n.value === true ? { role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": r.value } : { "aria-hidden": "true" });
@@ -511,11 +543,11 @@
       e.skipHijack !== true && (S = true, Rv({ start: v, stop: y, hijackFilter: s(() => e.hijackFilter || null) }));
     }), be(() => {
       u !== null && clearTimeout(u), S === true && Pv(v);
-    }), Object.assign(o, { start: v, stop: y, increment: x }), () => i("div", { class: f.value, style: g.value, ...m.value });
+    }), Object.assign(o, { start: v, stop: y, increment: x }), () => i("div", __spreadValues({ class: f.value, style: g.value }, m.value));
   } });
   var Oa = { xs: 18, sm: 24, md: 32, lg: 38, xl: 46 }, Dt = { size: String };
   function Ot(e, t = Oa) {
-    return s(() => e.size !== void 0 ? { fontSize: e.size in t ? "".concat(t[e.size], "px") : e.size } : null);
+    return s(() => e.size !== void 0 ? { fontSize: e.size in t ? `${t[e.size]}px` : e.size } : null);
   }
   function re(e, t) {
     return e !== void 0 && e() || t;
@@ -538,8 +570,8 @@
     let l = i(e, t, o);
     return n === true ? Bt(l, a()) : l;
   }
-  var ns = "0 0 24 24", Rl = (e) => e, Pl = (e) => "ionicons ".concat(e), as = { "mdi-": (e) => "mdi ".concat(e), "icon-": Rl, "bt-": (e) => "bt ".concat(e), "eva-": (e) => "eva ".concat(e), "ion-md": Pl, "ion-ios": Pl, "ion-logo": Pl, "iconfont ": Rl, "ti-": (e) => "themify-icon ".concat(e), "bi-": (e) => "bootstrap-icons ".concat(e), "i-": Rl }, is = { o_: "-outlined", r_: "-round", s_: "-sharp" }, ls = { sym_o_: "-outlined", sym_r_: "-rounded", sym_s_: "-sharp" }, Av = new RegExp("^(" + Object.keys(as).join("|") + ")"), $v = new RegExp("^(" + Object.keys(is).join("|") + ")"), rs = new RegExp("^(" + Object.keys(ls).join("|") + ")"), Ev = /^[Mm]\s?[-+]?\.?\d/, Bv = /^img:/, Fv = /^svguse:/, Lv = /^ion-/, Dv = /^(fa-(classic|sharp|solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /, Re = P({ name: "QIcon", props: { ...Dt, tag: { type: String, default: "i" }, name: String, color: String, left: Boolean, right: Boolean }, setup(e, { slots: t }) {
-    let { proxy: { $q: o } } = K(), r = Ot(e), n = s(() => "q-icon" + (e.left === true ? " on-left" : "") + (e.right === true ? " on-right" : "") + (e.color !== void 0 ? " text-".concat(e.color) : "")), a = s(() => {
+  var ns = "0 0 24 24", Rl = (e) => e, Pl = (e) => `ionicons ${e}`, as = { "mdi-": (e) => `mdi ${e}`, "icon-": Rl, "bt-": (e) => `bt ${e}`, "eva-": (e) => `eva ${e}`, "ion-md": Pl, "ion-ios": Pl, "ion-logo": Pl, "iconfont ": Rl, "ti-": (e) => `themify-icon ${e}`, "bi-": (e) => `bootstrap-icons ${e}`, "i-": Rl }, is = { o_: "-outlined", r_: "-round", s_: "-sharp" }, ls = { sym_o_: "-outlined", sym_r_: "-rounded", sym_s_: "-sharp" }, Av = new RegExp("^(" + Object.keys(as).join("|") + ")"), $v = new RegExp("^(" + Object.keys(is).join("|") + ")"), rs = new RegExp("^(" + Object.keys(ls).join("|") + ")"), Ev = /^[Mm]\s?[-+]?\.?\d/, Bv = /^img:/, Fv = /^svguse:/, Lv = /^ion-/, Dv = /^(fa-(classic|sharp|solid|regular|light|brands|duotone|thin)|[lf]a[srlbdk]?) /, Re = P({ name: "QIcon", props: __spreadProps(__spreadValues({}, Dt), { tag: { type: String, default: "i" }, name: String, color: String, left: Boolean, right: Boolean }), setup(e, { slots: t }) {
+    let { proxy: { $q: o } } = K(), r = Ot(e), n = s(() => "q-icon" + (e.left === true ? " on-left" : "") + (e.right === true ? " on-right" : "") + (e.color !== void 0 ? ` text-${e.color}` : "")), a = s(() => {
       let l, u = e.name;
       if (u === "none" || !u) return { none: true };
       if (o.iconMapFn !== null) {
@@ -563,7 +595,7 @@
       let c = " ", f = u.match(Av);
       if (f !== null) l = as[f[1]](u);
       else if (Dv.test(u) === true) l = u;
-      else if (Lv.test(u) === true) l = "ionicons ion-".concat(o.platform.is.ios === true ? "ios" : "md").concat(u.substring(3));
+      else if (Lv.test(u) === true) l = `ionicons ion-${o.platform.is.ios === true ? "ios" : "md"}${u.substring(3)}`;
       else if (rs.test(u) === true) {
         l = "notranslate material-symbols";
         let d = u.match(rs);
@@ -580,8 +612,8 @@
       return a.value.none === true ? i(e.tag, l, re(t.default)) : a.value.img === true ? i(e.tag, l, Ge(t.default, [i("img", { src: a.value.src })])) : a.value.svg === true ? i(e.tag, l, Ge(t.default, [i("svg", { viewBox: a.value.viewBox || "0 0 24 24" }, a.value.nodes)])) : a.value.svguse === true ? i(e.tag, l, Ge(t.default, [i("svg", { viewBox: a.value.viewBox }, [i("use", { "xlink:href": a.value.src })])])) : (a.value.cls !== void 0 && (l.class += " " + a.value.cls), i(e.tag, l, Ge(t.default, [a.value.content])));
     };
   } });
-  var Va = P({ name: "QAvatar", props: { ...Dt, fontSize: String, color: String, textColor: String, icon: String, square: Boolean, rounded: Boolean }, setup(e, { slots: t }) {
-    let o = Ot(e), r = s(() => "q-avatar" + (e.color ? " bg-".concat(e.color) : "") + (e.textColor ? " text-".concat(e.textColor, " q-chip--colored") : "") + (e.square === true ? " q-avatar--square" : e.rounded === true ? " rounded-borders" : "")), n = s(() => e.fontSize ? { fontSize: e.fontSize } : null);
+  var Va = P({ name: "QAvatar", props: __spreadProps(__spreadValues({}, Dt), { fontSize: String, color: String, textColor: String, icon: String, square: Boolean, rounded: Boolean }), setup(e, { slots: t }) {
+    let o = Ot(e), r = s(() => "q-avatar" + (e.color ? ` bg-${e.color}` : "") + (e.textColor ? ` text-${e.textColor} q-chip--colored` : "") + (e.square === true ? " q-avatar--square" : e.rounded === true ? " rounded-borders" : "")), n = s(() => e.fontSize ? { fontSize: e.fontSize } : null);
     return () => {
       let a = e.icon !== void 0 ? [i(Re, { name: e.icon })] : void 0;
       return i("div", { class: r.value, style: o.value }, [i("div", { class: "q-avatar__content row flex-center overflow-hidden", style: n.value }, Kn(t.default, a))]);
@@ -590,7 +622,7 @@
   var Ov = ["top", "middle", "bottom"], us = P({ name: "QBadge", props: { color: String, textColor: String, floating: Boolean, transparent: Boolean, multiLine: Boolean, outline: Boolean, rounded: Boolean, label: [Number, String], align: { type: String, validator: (e) => Ov.includes(e) } }, setup(e, { slots: t }) {
     let o = s(() => e.align !== void 0 ? { verticalAlign: e.align } : null), r = s(() => {
       let n = e.outline === true && e.color || e.textColor;
-      return "q-badge flex inline items-center no-wrap q-badge--".concat(e.multiLine === true ? "multi" : "single", "-line") + (e.outline === true ? " q-badge--outline" : e.color !== void 0 ? " bg-".concat(e.color) : "") + (n !== void 0 ? " text-".concat(n) : "") + (e.floating === true ? " q-badge--floating" : "") + (e.rounded === true ? " q-badge--rounded" : "") + (e.transparent === true ? " q-badge--transparent" : "");
+      return `q-badge flex inline items-center no-wrap q-badge--${e.multiLine === true ? "multi" : "single"}-line` + (e.outline === true ? " q-badge--outline" : e.color !== void 0 ? ` bg-${e.color}` : "") + (n !== void 0 ? ` text-${n}` : "") + (e.floating === true ? " q-badge--floating" : "") + (e.rounded === true ? " q-badge--rounded" : "") + (e.transparent === true ? " q-badge--transparent" : "");
     });
     return () => i("div", { class: r.value, style: o.value, role: "status", "aria-label": e.label }, Ge(t.default, e.label !== void 0 ? [e.label] : []));
   } });
@@ -598,22 +630,22 @@
   function xe(e, t) {
     return s(() => e.dark === null ? t.dark.isActive : e.dark);
   }
-  var ss = P({ name: "QBanner", props: { ...Se, inlineActions: Boolean, dense: Boolean, rounded: Boolean }, setup(e, { slots: t }) {
-    let { proxy: { $q: o } } = K(), r = xe(e, o), n = s(() => "q-banner row items-center" + (e.dense === true ? " q-banner--dense" : "") + (r.value === true ? " q-banner--dark q-dark" : "") + (e.rounded === true ? " rounded-borders" : "")), a = s(() => "q-banner__actions row items-center justify-end col-".concat(e.inlineActions === true ? "auto" : "all"));
+  var ss = P({ name: "QBanner", props: __spreadProps(__spreadValues({}, Se), { inlineActions: Boolean, dense: Boolean, rounded: Boolean }), setup(e, { slots: t }) {
+    let { proxy: { $q: o } } = K(), r = xe(e, o), n = s(() => "q-banner row items-center" + (e.dense === true ? " q-banner--dense" : "") + (r.value === true ? " q-banner--dark q-dark" : "") + (e.rounded === true ? " rounded-borders" : "")), a = s(() => `q-banner__actions row items-center justify-end col-${e.inlineActions === true ? "auto" : "all"}`);
     return () => {
       let l = [i("div", { class: "q-banner__avatar col-auto row items-center self-start" }, re(t.avatar)), i("div", { class: "q-banner__content col text-body2" }, re(t.default))], u = re(t.action);
       return u !== void 0 && l.push(i("div", { class: a.value }, u)), i("div", { class: n.value + (e.inlineActions === false && u !== void 0 ? " q-banner--top-padding" : ""), role: "alert" }, l);
     };
   } });
-  var cs = P({ name: "QBar", props: { ...Se, dense: Boolean }, setup(e, { slots: t }) {
-    let { proxy: { $q: o } } = K(), r = xe(e, o), n = s(() => "q-bar row no-wrap items-center q-bar--".concat(e.dense === true ? "dense" : "standard", "  q-bar--").concat(r.value === true ? "dark" : "light"));
+  var cs = P({ name: "QBar", props: __spreadProps(__spreadValues({}, Se), { dense: Boolean }), setup(e, { slots: t }) {
+    let { proxy: { $q: o } } = K(), r = xe(e, o), n = s(() => `q-bar row no-wrap items-center q-bar--${e.dense === true ? "dense" : "standard"}  q-bar--${r.value === true ? "dark" : "light"}`);
     return () => i("div", { class: n.value, role: "toolbar" }, re(t.default));
   } });
   var ds = { left: "start", center: "center", right: "end", between: "between", around: "around", evenly: "evenly", stretch: "stretch" }, Vv = Object.keys(ds), Wn = { align: { type: String, validator: (e) => Vv.includes(e) } };
   function Yn(e) {
     return s(() => {
       let t = e.align === void 0 ? e.vertical === true ? "stretch" : "left" : e.align;
-      return "".concat(e.vertical === true ? "items" : "justify", "-").concat(ds[t]);
+      return `${e.vertical === true ? "items" : "justify"}-${ds[t]}`;
     });
   }
   function Xr(e) {
@@ -641,8 +673,8 @@
   function Gt(e) {
     return e.isUnmounted === true || e.isDeactivated === true;
   }
-  var zv = ["", true], ms = P({ name: "QBreadcrumbs", props: { ...Wn, separator: { type: String, default: "/" }, separatorColor: String, activeColor: { type: String, default: "primary" }, gutter: { type: String, validator: (e) => ["none", "xs", "sm", "md", "lg", "xl"].includes(e), default: "sm" } }, setup(e, { slots: t }) {
-    let o = Yn(e), r = s(() => "flex items-center ".concat(o.value).concat(e.gutter === "none" ? "" : " q-gutter-".concat(e.gutter))), n = s(() => e.separatorColor ? " text-".concat(e.separatorColor) : ""), a = s(() => " text-".concat(e.activeColor));
+  var zv = ["", true], ms = P({ name: "QBreadcrumbs", props: __spreadProps(__spreadValues({}, Wn), { separator: { type: String, default: "/" }, separatorColor: String, activeColor: { type: String, default: "primary" }, gutter: { type: String, validator: (e) => ["none", "xs", "sm", "md", "lg", "xl"].includes(e), default: "sm" } }), setup(e, { slots: t }) {
+    let o = Yn(e), r = s(() => `flex items-center ${o.value}${e.gutter === "none" ? "" : ` q-gutter-${e.gutter}`}`), n = s(() => e.separatorColor ? ` text-${e.separatorColor}` : ""), a = s(() => ` text-${e.activeColor}`);
     return () => {
       if (t.default === void 0) return;
       let l = Xn(re(t.default));
@@ -655,7 +687,7 @@
         var _a2;
         if (((_a2 = p.type) == null ? void 0 : _a2.name) === "QBreadcrumbsEl") {
           let g = u < f, m = p.props !== null && zv.includes(p.props.disable), v = (g === true ? "" : " q-breadcrumbs--last") + (m !== true && g === true ? a.value : "");
-          u++, c.push(i("div", { class: "flex items-center".concat(v) }, [p])), g === true && c.push(i("div", { class: "q-breadcrumbs__separator" + n.value }, d()));
+          u++, c.push(i("div", { class: `flex items-center${v}` }, [p])), g === true && c.push(i("div", { class: "q-breadcrumbs__separator" + n.value }, d()));
         } else c.push(p);
       }), i("div", { class: "q-breadcrumbs" }, [i("div", { class: r.value }, c)]);
     };
@@ -686,7 +718,7 @@
     for (let o in e) if (Hv(e[o], t[o]) === false) return false;
     return true;
   }
-  var Al = { to: [String, Object], replace: Boolean, href: String, target: String, disable: Boolean }, Zo = { ...Al, exact: Boolean, activeClass: { type: String, default: "q-router-link--active" }, exactActiveClass: { type: String, default: "q-router-link--exact-active" } };
+  var Al = { to: [String, Object], replace: Boolean, href: String, target: String, disable: Boolean }, Zo = __spreadProps(__spreadValues({}, Al), { exact: Boolean, activeClass: { type: String, default: "q-router-link--active" }, exactActiveClass: { type: String, default: "q-router-link--exact-active" } });
   function ln({ fallbackTag: e, useDisableForRouterLinkProps: t = true } = {}) {
     let o = K(), { props: r, proxy: n, emit: a } = o, l = Gn(o), u = s(() => r.disable !== true && r.href !== void 0), c = t === true ? s(() => l === true && r.disable !== true && u.value !== true && r.to !== void 0 && r.to !== null && r.to !== "") : s(() => l === true && u.value !== true && r.to !== void 0 && r.to !== null && r.to !== ""), f = s(() => c.value === true ? S(r.to) : null), d = s(() => f.value !== null), p = s(() => u.value === true || d.value === true), g = s(() => r.type === "a" || p.value === true ? "a" : r.tag || e || "div"), m = s(() => u.value === true ? { href: r.href, target: r.target } : d.value === true ? { href: f.value.href, target: r.target } : {}), v = s(() => {
       if (d.value === false) return -1;
@@ -698,11 +730,11 @@
       if (Z !== -1) return Z;
       let B = vs(_[E - 2]);
       return E > 1 && vs(L) === B && D[D.length - 1].path !== B ? D.findIndex(gs.bind(null, _[E - 2])) : Z;
-    }), x = s(() => d.value === true && v.value !== -1 && Iv(n.$route.params, f.value.params)), y = s(() => x.value === true && v.value === n.$route.matched.length - 1 && Nv(n.$route.params, f.value.params)), k = s(() => d.value === true ? y.value === true ? " ".concat(r.exactActiveClass, " ").concat(r.activeClass) : r.exact === true ? "" : x.value === true ? " ".concat(r.activeClass) : "" : "");
+    }), x = s(() => d.value === true && v.value !== -1 && Iv(n.$route.params, f.value.params)), y = s(() => x.value === true && v.value === n.$route.matched.length - 1 && Nv(n.$route.params, f.value.params)), k = s(() => d.value === true ? y.value === true ? ` ${r.exactActiveClass} ${r.activeClass}` : r.exact === true ? "" : x.value === true ? ` ${r.activeClass}` : "" : "");
     function S(_) {
       try {
         return n.$router.resolve(_);
-      } catch {
+      } catch (e2) {
       }
       return null;
     }
@@ -723,18 +755,18 @@
     }
     return { hasRouterLink: d, hasHrefLink: u, hasLink: p, linkTag: g, resolvedLink: f, linkIsActive: x, linkIsExactActive: y, linkClass: k, linkAttrs: m, getLink: S, navigateToRouterLink: b, navigateOnClick: h };
   }
-  var ps = P({ name: "QBreadcrumbsEl", props: { ...Zo, label: String, icon: String, tag: { type: String, default: "span" } }, emits: ["click"], setup(e, { slots: t }) {
-    let { linkTag: o, linkAttrs: r, linkClass: n, navigateOnClick: a } = ln(), l = s(() => ({ class: "q-breadcrumbs__el q-link flex inline items-center relative-position " + (e.disable !== true ? "q-link--focusable" + n.value : "q-breadcrumbs__el--disable"), ...r.value, onClick: a })), u = s(() => "q-breadcrumbs__el-icon" + (e.label !== void 0 ? " q-breadcrumbs__el-icon--with-label" : ""));
+  var ps = P({ name: "QBreadcrumbsEl", props: __spreadProps(__spreadValues({}, Zo), { label: String, icon: String, tag: { type: String, default: "span" } }), emits: ["click"], setup(e, { slots: t }) {
+    let { linkTag: o, linkAttrs: r, linkClass: n, navigateOnClick: a } = ln(), l = s(() => __spreadProps(__spreadValues({ class: "q-breadcrumbs__el q-link flex inline items-center relative-position " + (e.disable !== true ? "q-link--focusable" + n.value : "q-breadcrumbs__el--disable") }, r.value), { onClick: a })), u = s(() => "q-breadcrumbs__el-icon" + (e.label !== void 0 ? " q-breadcrumbs__el-icon--with-label" : ""));
     return () => {
       let c = [];
-      return e.icon !== void 0 && c.push(i(Re, { class: u.value, name: e.icon })), e.label !== void 0 && c.push(e.label), i(o.value, { ...l.value }, Ge(t.default, c));
+      return e.icon !== void 0 && c.push(i(Re, { class: u.value, name: e.icon })), e.label !== void 0 && c.push(e.label), i(o.value, __spreadValues({}, l.value), Ge(t.default, c));
     };
   } });
   var We = { size: { type: [String, Number], default: "1em" }, color: String };
   function je(e) {
-    return { cSize: s(() => e.size in Oa ? "".concat(Oa[e.size], "px") : e.size), classes: s(() => "q-spinner" + (e.color ? " text-".concat(e.color) : "")) };
+    return { cSize: s(() => e.size in Oa ? `${Oa[e.size]}px` : e.size), classes: s(() => "q-spinner" + (e.color ? ` text-${e.color}` : "")) };
   }
-  var wt = P({ name: "QSpinner", props: { ...We, thickness: { type: Number, default: 5 } }, setup(e) {
+  var wt = P({ name: "QSpinner", props: __spreadProps(__spreadValues({}, We), { thickness: { type: Number, default: 5 } }), setup(e) {
     let { cSize: t, classes: o } = je(e);
     return () => i("svg", { class: o.value + " q-spinner-mat", width: t.value, height: t.value, viewBox: "25 25 50 50" }, [i("circle", { class: "path", cx: "50", cy: "50", r: "20", fill: "none", stroke: "currentColor", "stroke-width": e.thickness, "stroke-miterlimit": "10" })]);
   } });
@@ -769,7 +801,7 @@
     if (e == null) return;
     if (typeof e == "string") try {
       return document.querySelector(e) || void 0;
-    } catch {
+    } catch (e2) {
       return;
     }
     let t = Au(e);
@@ -793,14 +825,14 @@
     o.modifiers.stop === true && it(e);
     let n = o.modifiers.color, a = o.modifiers.center;
     a = a === true || r === true;
-    let l = document.createElement("span"), u = document.createElement("span"), c = _t(e), { left: f, top: d, width: p, height: g } = t.getBoundingClientRect(), m = Math.sqrt(p * p + g * g), v = m / 2, x = "".concat((p - m) / 2, "px"), y = a ? x : "".concat(c.left - f - v, "px"), k = "".concat((g - m) / 2, "px"), S = a ? k : "".concat(c.top - d - v, "px");
-    u.className = "q-ripple__inner", kn(u, { height: "".concat(m, "px"), width: "".concat(m, "px"), transform: "translate3d(".concat(y, ",").concat(S, ",0) scale3d(.2,.2,1)"), opacity: 0 }), l.className = "q-ripple".concat(n ? " text-" + n : ""), l.setAttribute("dir", "ltr"), l.appendChild(u), t.appendChild(l);
+    let l = document.createElement("span"), u = document.createElement("span"), c = _t(e), { left: f, top: d, width: p, height: g } = t.getBoundingClientRect(), m = Math.sqrt(p * p + g * g), v = m / 2, x = `${(p - m) / 2}px`, y = a ? x : `${c.left - f - v}px`, k = `${(g - m) / 2}px`, S = a ? k : `${c.top - d - v}px`;
+    u.className = "q-ripple__inner", kn(u, { height: `${m}px`, width: `${m}px`, transform: `translate3d(${y},${S},0) scale3d(.2,.2,1)`, opacity: 0 }), l.className = `q-ripple${n ? " text-" + n : ""}`, l.setAttribute("dir", "ltr"), l.appendChild(u), t.appendChild(l);
     let b = () => {
       l.remove(), clearTimeout(h);
     };
     o.abort.push(b);
     let h = setTimeout(() => {
-      u.classList.add("q-ripple__inner--enter"), u.style.transform = "translate3d(".concat(x, ",").concat(k, ",0) scale3d(1,1,1)"), u.style.opacity = 0.2, h = setTimeout(() => {
+      u.classList.add("q-ripple__inner--enter"), u.style.transform = `translate3d(${x},${k},0) scale3d(1,1,1)`, u.style.opacity = 0.2, h = setTimeout(() => {
         u.classList.remove("q-ripple__inner--enter"), u.classList.add("q-ripple__inner--leave"), u.style.opacity = 0, h = setTimeout(() => {
           l.remove(), o.abort.splice(o.abort.indexOf(b), 1);
         }, 275);
@@ -817,7 +849,7 @@
     let r = { cfg: o, enabled: t.value !== false, modifiers: {}, abort: [], start(n) {
       r.enabled === true && n.qSkipRipple !== true && n.type === (r.modifiers.early === true ? "pointerdown" : "click") && Ss(n, e, r, n.qKeyEvent === true);
     }, keystart: Zn((n) => {
-      r.enabled === true && n.qSkipRipple !== true && Mt(n, r.modifiers.keyCodes) === true && n.type === "key".concat(r.modifiers.early === true ? "down" : "up") && Ss(n, e, r, true);
+      r.enabled === true && n.qSkipRipple !== true && Mt(n, r.modifiers.keyCodes) === true && n.type === `key${r.modifiers.early === true ? "down" : "up"}` && Ss(n, e, r, true);
     }, 300) };
     xs(r, t), e.__qripple = r, vt(r, "main", [[e, "pointerdown", "start", "passive"], [e, "click", "start", "passive"], [e, "keydown", "keystart", "passive"], [e, "keyup", "keystart", "passive"]]);
   }, updated(e, t) {
@@ -839,7 +871,7 @@
     let t = Ia(e);
     return t !== void 0 ? { [t]: true } : {};
   }
-  var Na = { ...Dt, ...Al, type: { type: String, default: "button" }, label: [Number, String], icon: String, iconRight: String, ...$l.reduce((e, t) => (e[t] = Boolean) && e, {}), square: Boolean, rounded: Boolean, glossy: Boolean, size: String, fab: Boolean, fabMini: Boolean, padding: String, color: String, textColor: String, noCaps: Boolean, noWrap: Boolean, dense: Boolean, tabindex: [Number, String], ripple: { type: [Boolean, Object], default: true }, align: { ...Wn.align, default: "center" }, stack: Boolean, stretch: Boolean, loading: { type: Boolean, default: null }, disable: Boolean }, _s = { ...Na, round: Boolean };
+  var Na = __spreadProps(__spreadValues(__spreadProps(__spreadValues(__spreadValues({}, Dt), Al), { type: { type: String, default: "button" }, label: [Number, String], icon: String, iconRight: String }), $l.reduce((e, t) => (e[t] = Boolean) && e, {})), { square: Boolean, rounded: Boolean, glossy: Boolean, size: String, fab: Boolean, fabMini: Boolean, padding: String, color: String, textColor: String, noCaps: Boolean, noWrap: Boolean, dense: Boolean, tabindex: [Number, String], ripple: { type: [Boolean, Object], default: true }, align: __spreadProps(__spreadValues({}, Wn.align), { default: "center" }), stack: Boolean, stretch: Boolean, loading: { type: Boolean, default: null }, disable: Boolean }), _s = __spreadProps(__spreadValues({}, Na), { round: Boolean });
   function Cs(e) {
     let t = Ot(e, Wv), o = Yn(e), { hasRouterLink: r, hasLink: n, linkTag: a, linkAttrs: l, navigateOnClick: u } = ln({ fallbackTag: "button" }), c = s(() => {
       let y = e.fab === false && e.fabMini === false ? t.value : {};
@@ -849,28 +881,28 @@
       return n.value === true ? Object.assign(y, l.value) : Yv.includes(e.type) === true && (y.type = e.type), a.value === "a" ? (e.disable === true ? y["aria-disabled"] = "true" : y.href === void 0 && (y.role = "button"), r.value !== true && Xv.test(e.type) === true && (y.type = e.type)) : e.disable === true && (y.disabled = "", y["aria-disabled"] = "true"), e.loading === true && e.percentage !== void 0 && Object.assign(y, { role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": e.percentage }), y;
     }), v = s(() => {
       let y;
-      e.color !== void 0 ? e.flat === true || e.outline === true ? y = "text-".concat(e.textColor || e.color) : y = "bg-".concat(e.color, " text-").concat(e.textColor || "white") : e.textColor && (y = "text-".concat(e.textColor));
-      let k = e.round === true ? "round" : "rectangle".concat(f.value === true ? " q-btn--rounded" : e.square === true ? " q-btn--square" : "");
-      return "q-btn--".concat(g.value, " q-btn--").concat(k) + (y !== void 0 ? " " + y : "") + (d.value === true ? " q-btn--actionable q-focusable q-hoverable" : e.disable === true ? " disabled" : "") + (e.fab === true ? " q-btn--fab" : e.fabMini === true ? " q-btn--fab-mini" : "") + (e.noCaps === true ? " q-btn--no-uppercase" : "") + (e.dense === true ? " q-btn--dense" : "") + (e.stretch === true ? " no-border-radius self-stretch" : "") + (e.glossy === true ? " glossy" : "") + (e.square ? " q-btn--square" : "");
+      e.color !== void 0 ? e.flat === true || e.outline === true ? y = `text-${e.textColor || e.color}` : y = `bg-${e.color} text-${e.textColor || "white"}` : e.textColor && (y = `text-${e.textColor}`);
+      let k = e.round === true ? "round" : `rectangle${f.value === true ? " q-btn--rounded" : e.square === true ? " q-btn--square" : ""}`;
+      return `q-btn--${g.value} q-btn--${k}` + (y !== void 0 ? " " + y : "") + (d.value === true ? " q-btn--actionable q-focusable q-hoverable" : e.disable === true ? " disabled" : "") + (e.fab === true ? " q-btn--fab" : e.fabMini === true ? " q-btn--fab-mini" : "") + (e.noCaps === true ? " q-btn--no-uppercase" : "") + (e.dense === true ? " q-btn--dense" : "") + (e.stretch === true ? " no-border-radius self-stretch" : "") + (e.glossy === true ? " glossy" : "") + (e.square ? " q-btn--square" : "");
     }), x = s(() => o.value + (e.stack === true ? " column" : " row") + (e.noWrap === true ? " no-wrap text-no-wrap" : "") + (e.loading === true ? " q-btn__content--hidden" : ""));
     return { classes: v, style: c, innerClasses: x, attributes: m, hasLink: n, linkTag: a, navigateOnClick: u, isActionable: d };
   }
-  var { passiveCapture: vo } = et, Jn = null, er = null, tr = null, Ve = P({ name: "QBtn", props: { ..._s, percentage: Number, darkPercentage: Boolean, onTouchstart: [Function, Array] }, emits: ["click", "keydown", "mousedown", "keyup"], setup(e, { slots: t, emit: o }) {
-    let { proxy: r } = K(), { classes: n, style: a, innerClasses: l, attributes: u, hasLink: c, linkTag: f, navigateOnClick: d, isActionable: p } = Cs(e), g = T(null), m = T(null), v = null, x, y = null, k = s(() => e.label !== void 0 && e.label !== null && e.label !== ""), S = s(() => e.disable === true || e.ripple === false ? false : { keyCodes: c.value === true ? [13, 32] : [13], ...e.ripple === true ? {} : e.ripple }), b = s(() => ({ center: e.round })), h = s(() => {
+  var { passiveCapture: vo } = et, Jn = null, er = null, tr = null, Ve = P({ name: "QBtn", props: __spreadProps(__spreadValues({}, _s), { percentage: Number, darkPercentage: Boolean, onTouchstart: [Function, Array] }), emits: ["click", "keydown", "mousedown", "keyup"], setup(e, { slots: t, emit: o }) {
+    let { proxy: r } = K(), { classes: n, style: a, innerClasses: l, attributes: u, hasLink: c, linkTag: f, navigateOnClick: d, isActionable: p } = Cs(e), g = T(null), m = T(null), v = null, x, y = null, k = s(() => e.label !== void 0 && e.label !== null && e.label !== ""), S = s(() => e.disable === true || e.ripple === false ? false : __spreadValues({ keyCodes: c.value === true ? [13, 32] : [13] }, e.ripple === true ? {} : e.ripple)), b = s(() => ({ center: e.round })), h = s(() => {
       let C = Math.max(0, Math.min(100, e.percentage));
-      return C > 0 ? { transition: "transform 0.6s", transform: "translateX(".concat(C - 100, "%)") } : {};
+      return C > 0 ? { transition: "transform 0.6s", transform: `translateX(${C - 100}%)` } : {};
     }), _ = s(() => {
       if (e.loading === true) return { onMousedown: q, onTouchstart: q, onClick: q, onKeydown: q, onKeyup: q };
       if (p.value === true) {
         let C = { onClick: L, onKeydown: D, onMousedown: B };
         if (r.$q.platform.has.touch === true) {
           let A = e.onTouchstart !== void 0 ? "" : "Passive";
-          C["onTouchstart".concat(A)] = Z;
+          C[`onTouchstart${A}`] = Z;
         }
         return C;
       }
       return { onClick: _e };
-    }), E = s(() => ({ ref: g, class: "q-btn q-btn-item non-selectable no-outline " + n.value, style: a.value, ...u.value, ..._.value }));
+    }), E = s(() => __spreadValues(__spreadValues({ ref: g, class: "q-btn q-btn-item non-selectable no-outline " + n.value, style: a.value }, u.value), _.value));
     function L(C) {
       if (g.value !== null) {
         if (C !== void 0) {
@@ -932,8 +964,8 @@
   } });
   var or = P({ name: "QBtnGroup", props: { unelevated: Boolean, outline: Boolean, flat: Boolean, rounded: Boolean, square: Boolean, push: Boolean, stretch: Boolean, glossy: Boolean, spread: Boolean }, setup(e, { slots: t }) {
     let o = s(() => {
-      let r = ["unelevated", "outline", "flat", "rounded", "square", "push", "stretch", "glossy"].filter((n) => e[n] === true).map((n) => "q-btn-group--".concat(n)).join(" ");
-      return "q-btn-group row no-wrap".concat(r.length !== 0 ? " " + r : "") + (e.spread === true ? " q-btn-group--spread" : " inline");
+      let r = ["unelevated", "outline", "flat", "rounded", "square", "push", "stretch", "glossy"].filter((n) => e[n] === true).map((n) => `q-btn-group--${n}`).join(" ");
+      return `q-btn-group row no-wrap${r.length !== 0 ? " " + r : ""}` + (e.spread === true ? " q-btn-group--spread" : " inline");
     });
     return () => i("div", { class: o.value }, re(t.default));
   } });
@@ -943,7 +975,7 @@
       e.empty !== void 0 ? e.empty() : e.removeAllRanges !== void 0 && (e.removeAllRanges(), Ro.is.mobile !== true && e.addRange(document.createRange()));
     } else document.selection !== void 0 && document.selection.empty();
   }
-  var El = { target: { type: [Boolean, String, Element], default: true }, noParentEvent: Boolean }, Qa = { ...El, contextMenu: Boolean };
+  var El = { target: { type: [Boolean, String, Element], default: true }, noParentEvent: Boolean }, Qa = __spreadProps(__spreadValues({}, El), { contextMenu: Boolean });
   function nr({ showing: e, avoidEmit: t, configureAnchorEl: o }) {
     let { props: r, proxy: n, emit: a } = K(), l = T(null), u = null;
     function c(m) {
@@ -988,10 +1020,10 @@
         let m = r.target;
         if (typeof r.target == "string") try {
           m = document.querySelector(r.target);
-        } catch {
+        } catch (e2) {
           m = void 0;
         }
-        m != null ? (l.value = m.$el || m, o()) : (l.value = null, console.error('Anchor: target "'.concat(r.target, '" not found')));
+        m != null ? (l.value = m.$el || m, o()) : (l.value = null, console.error(`Anchor: target "${r.target}" not found`));
       }
     }
     return Y(() => r.contextMenu, (m) => {
@@ -1009,7 +1041,7 @@
   function ja(e, t) {
     let o = T(null), r;
     function n(u, c) {
-      let f = "".concat(c !== void 0 ? "add" : "remove", "EventListener"), d = c !== void 0 ? c : r;
+      let f = `${c !== void 0 ? "add" : "remove"}EventListener`, d = c !== void 0 ? c : r;
       u !== window && u[f]("scroll", d, et.passive), window[f]("scroll", d, et.passive), r = c;
     }
     function a() {
@@ -1076,7 +1108,7 @@
   var rr = [], Jr = [], Gv = 1, un = document.body;
   function Eo(e, t) {
     let o = document.createElement("div");
-    if (o.id = t !== void 0 ? "q-portal--".concat(t, "--").concat(Gv++) : e, jn.globalNodes !== void 0) {
+    if (o.id = t !== void 0 ? `q-portal--${t}--${Gv++}` : e, jn.globalNodes !== void 0) {
       let r = jn.globalNodes.class;
       r !== void 0 && (o.className = r);
     }
@@ -1162,9 +1194,9 @@
   }, o = () => {
   }) {
     return { transitionProps: s(() => {
-      let r = "q-transition--".concat(e.transitionShow || t()), n = "q-transition--".concat(e.transitionHide || o());
-      return { appear: true, enterFromClass: "".concat(r, "-enter-from"), enterActiveClass: "".concat(r, "-enter-active"), enterToClass: "".concat(r, "-enter-to"), leaveFromClass: "".concat(n, "-leave-from"), leaveActiveClass: "".concat(n, "-leave-active"), leaveToClass: "".concat(n, "-leave-to") };
-    }), transitionStyle: s(() => "--q-transition-duration: ".concat(e.transitionDuration, "ms")) };
+      let r = `q-transition--${e.transitionShow || t()}`, n = `q-transition--${e.transitionHide || o()}`;
+      return { appear: true, enterFromClass: `${r}-enter-from`, enterActiveClass: `${r}-enter-active`, enterToClass: `${r}-enter-to`, leaveFromClass: `${n}-leave-from`, leaveActiveClass: `${n}-leave-active`, leaveToClass: `${n}-leave-to` };
+    }), transitionStyle: s(() => `--q-transition-duration: ${e.transitionDuration}ms`) };
   }
   function So() {
     let e, t = K();
@@ -1343,11 +1375,11 @@
   }
   var Hl = { "start#ltr": "left", "start#rtl": "right", "end#ltr": "right", "end#rtl": "left" };
   ["left", "middle", "right"].forEach((e) => {
-    Hl["".concat(e, "#ltr")] = e, Hl["".concat(e, "#rtl")] = e;
+    Hl[`${e}#ltr`] = e, Hl[`${e}#rtl`] = e;
   });
   function vr(e, t) {
     let o = e.split(" ");
-    return { vertical: o[0], horizontal: Hl["".concat(o[1], "#").concat(t === true ? "rtl" : "ltr")] };
+    return { vertical: o[0], horizontal: Hl[`${o[1]}#${t === true ? "rtl" : "ltr"}`] };
   }
   function ag(e, t) {
     let { top: o, left: r, right: n, bottom: a, width: l, height: u } = e.getBoundingClientRect();
@@ -1413,7 +1445,7 @@
       e.maxWidth = Math.min(l, d), e.left = Math.max(0, d - e.maxWidth);
     } else e.left = Math.max(0, r.horizontal === "middle" ? t.middle : r.horizontal === n.horizontal ? t.left : t.right), e.maxWidth = Math.min(l, f - e.left);
   }
-  var Fo = P({ name: "QMenu", inheritAttrs: false, props: { ...Qa, ...go, ...Se, ...yo, persistent: Boolean, autoClose: Boolean, separateClosePopup: Boolean, noEscDismiss: Boolean, noRouteDismiss: Boolean, noRefocus: Boolean, noFocus: Boolean, fit: Boolean, cover: Boolean, square: Boolean, anchor: { type: String, validator: mr }, self: { type: String, validator: mr }, offset: { type: Array, validator: Ga }, scrollTarget: to, touchPosition: Boolean, maxHeight: { type: String, default: null }, maxWidth: { type: String, default: null } }, emits: [...ho, "click", "escapeKey"], setup(e, { slots: t, emit: o, attrs: r }) {
+  var Fo = P({ name: "QMenu", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues(__spreadValues({}, Qa), go), Se), yo), { persistent: Boolean, autoClose: Boolean, separateClosePopup: Boolean, noEscDismiss: Boolean, noRouteDismiss: Boolean, noRefocus: Boolean, noFocus: Boolean, fit: Boolean, cover: Boolean, square: Boolean, anchor: { type: String, validator: mr }, self: { type: String, validator: mr }, offset: { type: Array, validator: Ga }, scrollTarget: to, touchPosition: Boolean, maxHeight: { type: String, default: null }, maxWidth: { type: String, default: null } }), emits: [...ho, "click", "escapeKey"], setup(e, { slots: t, emit: o, attrs: r }) {
     let n = null, a, l, u, c = K(), { proxy: f } = c, { $q: d } = f, p = T(null), g = T(false), m = s(() => e.persistent !== true && e.noRouteDismiss !== true), v = xe(e, d), { registerTick: x, removeTick: y } = So(), { registerTimeout: k } = Vt(), { transitionProps: S, transitionStyle: b } = cn(e), { localScrollTarget: h, changeScrollEvent: _, unconfigureScrollTarget: E } = ja(e, W), { anchorEl: L, canShow: D } = nr({ showing: g }), { hide: Z } = po({ showing: g, canShow: D, handleShow: ve, handleHide: O, hideOnRouteChange: m, processOnMount: true }), { showPortal: B, hidePortal: F, renderPortal: $ } = ir(c, p, ae, "menu"), q = { anchorEl: L, innerRef: p, onClickOutside(j) {
       if (e.persistent !== true && g.value === true) return Z(j), (j.type === "touchstart" || j.target.classList.contains("q-dialog__backdrop")) && _e(j), true;
     } }, C = s(() => vr(e.anchor || (e.cover === true ? "center middle" : "bottom start"), d.lang.rtl)), A = s(() => e.cover === true ? C.value : vr(e.self || "top start", d.lang.rtl)), z = s(() => (e.square === true ? " q-menu--square" : "") + (v.value === true ? " q-menu--dark q-dark" : "")), H = s(() => e.autoClose === true ? { onClick: U } : {}), Q = s(() => g.value === true && e.persistent !== true);
@@ -1464,7 +1496,7 @@
       ta({ targetEl: p.value, offset: e.offset, anchorEl: L.value, anchorOrigin: C.value, selfOrigin: A.value, absoluteOffset: a, fit: e.fit, cover: e.cover, maxHeight: e.maxHeight, maxWidth: e.maxWidth });
     }
     function ae() {
-      return i(st, S.value, () => g.value === true ? i("div", { role: "menu", ...r, ref: p, tabindex: -1, class: ["q-menu q-position-engine scroll" + z.value, r.class], style: [r.style, b.value], ...H.value }, re(t.default)) : null);
+      return i(st, S.value, () => g.value === true ? i("div", __spreadValues(__spreadProps(__spreadValues({ role: "menu" }, r), { ref: p, tabindex: -1, class: ["q-menu q-position-engine scroll" + z.value, r.class], style: [r.style, b.value] }), H.value), re(t.default)) : null);
     }
     return be(w), Object.assign(f, { focus: ee, updatePosition: V }), $;
   } });
@@ -1494,18 +1526,18 @@
     return e != null ? e : null;
   }
   function Ds(e, t) {
-    return e != null ? e : t === true ? "f_".concat(Lo()) : null;
+    return e != null ? e : t === true ? `f_${Lo()}` : null;
   }
   function Do({ getValue: e, required: t = true } = {}) {
     if (xt.value === true) {
       let o = e !== void 0 ? T(sg(e())) : T(null);
       return t === true && o.value === null && Qe(() => {
-        o.value = "f_".concat(Lo());
+        o.value = `f_${Lo()}`;
       }), e !== void 0 && Y(e, (r) => {
         o.value = Ds(r, t);
       }), o;
     }
-    return e !== void 0 ? s(() => Ds(e(), t)) : T("f_".concat(Lo()));
+    return e !== void 0 ? s(() => Ds(e(), t)) : T(`f_${Lo()}`);
   }
   var cg = Object.keys(Na);
   function dg(e) {
@@ -1514,7 +1546,7 @@
       return r !== void 0 && (t[o] = r), t;
     }, {});
   }
-  var Ja = P({ name: "QBtnDropdown", props: { ...Na, ...yo, modelValue: Boolean, split: Boolean, dropdownIcon: String, contentClass: [Array, String, Object], contentStyle: [Array, String, Object], cover: Boolean, persistent: Boolean, noEscDismiss: Boolean, noRouteDismiss: Boolean, autoClose: Boolean, noRefocus: Boolean, noFocus: Boolean, menuAnchor: { type: String, default: "bottom end" }, menuSelf: { type: String, default: "top end" }, menuOffset: Array, disableMainBtn: Boolean, disableDropdown: Boolean, noIconAnimation: Boolean, toggleAriaLabel: String }, emits: ["update:modelValue", "click", "beforeShow", "show", "beforeHide", "hide"], setup(e, { slots: t, emit: o }) {
+  var Ja = P({ name: "QBtnDropdown", props: __spreadProps(__spreadValues(__spreadValues({}, Na), yo), { modelValue: Boolean, split: Boolean, dropdownIcon: String, contentClass: [Array, String, Object], contentStyle: [Array, String, Object], cover: Boolean, persistent: Boolean, noEscDismiss: Boolean, noRouteDismiss: Boolean, autoClose: Boolean, noRefocus: Boolean, noFocus: Boolean, menuAnchor: { type: String, default: "bottom end" }, menuSelf: { type: String, default: "top end" }, menuOffset: Array, disableMainBtn: Boolean, disableDropdown: Boolean, noIconAnimation: Boolean, toggleAriaLabel: String }), emits: ["update:modelValue", "click", "beforeShow", "show", "beforeHide", "hide"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), n = T(e.modelValue), a = T(null), l = Do(), u = s(() => {
       let h = { "aria-expanded": n.value === true ? "true" : "false", "aria-haspopup": "true", "aria-controls": l.value, "aria-label": e.toggleAriaLabel || r.$q.lang.label[n.value === true ? "collapse" : "expand"](e.label) };
       return (e.disable === true || e.split === false && e.disableMainBtn === true || e.disableDropdown === true) && (h["aria-disabled"] = "true"), h;
@@ -1557,7 +1589,7 @@
       e.modelValue === true && S();
     }), () => {
       let h = [i(Re, { class: c.value, name: e.dropdownIcon || r.$q.iconSet.arrow.dropdown })];
-      return e.disableDropdown !== true && h.push(i(Fo, { ref: a, id: l.value, class: e.contentClass, style: e.contentStyle, cover: e.cover, fit: true, persistent: e.persistent, noEscDismiss: e.noEscDismiss, noRouteDismiss: e.noRouteDismiss, autoClose: e.autoClose, noFocus: e.noFocus, noRefocus: e.noRefocus, anchor: e.menuAnchor, self: e.menuSelf, offset: e.menuOffset, separateClosePopup: true, transitionShow: e.transitionShow, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, onBeforeShow: p, onShow: g, onBeforeHide: m, onHide: v }, t.default)), e.split === false ? i(Ve, { class: "q-btn-dropdown q-btn-dropdown--simple", ...d.value, ...u.value, disable: e.disable === true || e.disableMainBtn === true, noWrap: true, round: false, onClick: x }, { default: () => re(t.label, []).concat(h), loading: t.loading }) : i(or, { class: "q-btn-dropdown q-btn-dropdown--split no-wrap q-btn-item", rounded: e.rounded, square: e.square, ...f.value, glossy: e.glossy, stretch: e.stretch }, () => [i(Ve, { class: "q-btn-dropdown--current", ...d.value, disable: e.disable === true || e.disableMainBtn === true, noWrap: true, round: false, onClick: y }, { default: t.label, loading: t.loading }), i(Ve, { class: "q-btn-dropdown__arrow-container q-anchor--skip", ...u.value, ...f.value, disable: e.disable === true || e.disableDropdown === true, rounded: e.rounded, color: e.color, textColor: e.textColor, dense: e.dense, size: e.size, padding: e.padding, ripple: e.ripple }, () => h)]);
+      return e.disableDropdown !== true && h.push(i(Fo, { ref: a, id: l.value, class: e.contentClass, style: e.contentStyle, cover: e.cover, fit: true, persistent: e.persistent, noEscDismiss: e.noEscDismiss, noRouteDismiss: e.noRouteDismiss, autoClose: e.autoClose, noFocus: e.noFocus, noRefocus: e.noRefocus, anchor: e.menuAnchor, self: e.menuSelf, offset: e.menuOffset, separateClosePopup: true, transitionShow: e.transitionShow, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, onBeforeShow: p, onShow: g, onBeforeHide: m, onHide: v }, t.default)), e.split === false ? i(Ve, __spreadProps(__spreadValues(__spreadValues({ class: "q-btn-dropdown q-btn-dropdown--simple" }, d.value), u.value), { disable: e.disable === true || e.disableMainBtn === true, noWrap: true, round: false, onClick: x }), { default: () => re(t.label, []).concat(h), loading: t.loading }) : i(or, __spreadProps(__spreadValues({ class: "q-btn-dropdown q-btn-dropdown--split no-wrap q-btn-item", rounded: e.rounded, square: e.square }, f.value), { glossy: e.glossy, stretch: e.stretch }), () => [i(Ve, __spreadProps(__spreadValues({ class: "q-btn-dropdown--current" }, d.value), { disable: e.disable === true || e.disableMainBtn === true, noWrap: true, round: false, onClick: y }), { default: t.label, loading: t.loading }), i(Ve, __spreadProps(__spreadValues(__spreadValues({ class: "q-btn-dropdown__arrow-container q-anchor--skip" }, u.value), f.value), { disable: e.disable === true || e.disableDropdown === true, rounded: e.rounded, color: e.color, textColor: e.textColor, dense: e.dense, size: e.size, padding: e.padding, ripple: e.ripple }), () => h)]);
     };
   } });
   var kt = { name: String };
@@ -1566,18 +1598,18 @@
   }
   function Zt(e = {}) {
     return (t, o, r) => {
-      t[o](i("input", { class: "hidden" + (r || ""), ...e.value }));
+      t[o](i("input", __spreadValues({ class: "hidden" + (r || "") }, e.value)));
     };
   }
   function gr(e) {
     return s(() => e.name || e.for);
   }
-  var Os = P({ name: "QBtnToggle", props: { ...kt, modelValue: { required: true }, options: { type: Array, required: true, validator: (e) => e.every((t) => ("label" in t || "icon" in t || "slot" in t) && "value" in t) }, color: String, textColor: String, toggleColor: { type: String, default: "primary" }, toggleTextColor: String, outline: Boolean, flat: Boolean, unelevated: Boolean, rounded: Boolean, push: Boolean, glossy: Boolean, size: String, padding: String, noCaps: Boolean, noWrap: Boolean, dense: Boolean, readonly: Boolean, disable: Boolean, stack: Boolean, stretch: Boolean, spread: Boolean, clearable: Boolean, ripple: { type: [Boolean, Object], default: true } }, emits: ["update:modelValue", "clear", "click"], setup(e, { slots: t, emit: o }) {
-    let r = s(() => e.options.find((g) => g.value === e.modelValue) !== void 0), n = s(() => ({ type: "hidden", name: e.name, value: e.modelValue })), a = Zt(n), l = s(() => Ha(e)), u = s(() => ({ rounded: e.rounded, dense: e.dense, ...l.value })), c = s(() => e.options.map((g, m) => {
-      let { attrs: v, value: x, slot: y, ...k } = g;
-      return { slot: y, props: { key: m, "aria-pressed": x === e.modelValue ? "true" : "false", ...v, ...k, ...u.value, disable: e.disable === true || k.disable === true, color: x === e.modelValue ? d(k, "toggleColor") : d(k, "color"), textColor: x === e.modelValue ? d(k, "toggleTextColor") : d(k, "textColor"), noCaps: d(k, "noCaps") === true, noWrap: d(k, "noWrap") === true, size: d(k, "size"), padding: d(k, "padding"), ripple: d(k, "ripple"), stack: d(k, "stack") === true, stretch: d(k, "stretch") === true, onClick(S) {
+  var Os = P({ name: "QBtnToggle", props: __spreadProps(__spreadValues({}, kt), { modelValue: { required: true }, options: { type: Array, required: true, validator: (e) => e.every((t) => ("label" in t || "icon" in t || "slot" in t) && "value" in t) }, color: String, textColor: String, toggleColor: { type: String, default: "primary" }, toggleTextColor: String, outline: Boolean, flat: Boolean, unelevated: Boolean, rounded: Boolean, push: Boolean, glossy: Boolean, size: String, padding: String, noCaps: Boolean, noWrap: Boolean, dense: Boolean, readonly: Boolean, disable: Boolean, stack: Boolean, stretch: Boolean, spread: Boolean, clearable: Boolean, ripple: { type: [Boolean, Object], default: true } }), emits: ["update:modelValue", "clear", "click"], setup(e, { slots: t, emit: o }) {
+    let r = s(() => e.options.find((g) => g.value === e.modelValue) !== void 0), n = s(() => ({ type: "hidden", name: e.name, value: e.modelValue })), a = Zt(n), l = s(() => Ha(e)), u = s(() => __spreadValues({ rounded: e.rounded, dense: e.dense }, l.value)), c = s(() => e.options.map((g, m) => {
+      let _a2 = g, { attrs: v, value: x, slot: y } = _a2, k = __objRest(_a2, ["attrs", "value", "slot"]);
+      return { slot: y, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({ key: m, "aria-pressed": x === e.modelValue ? "true" : "false" }, v), k), u.value), { disable: e.disable === true || k.disable === true, color: x === e.modelValue ? d(k, "toggleColor") : d(k, "color"), textColor: x === e.modelValue ? d(k, "toggleTextColor") : d(k, "textColor"), noCaps: d(k, "noCaps") === true, noWrap: d(k, "noWrap") === true, size: d(k, "size"), padding: d(k, "padding"), ripple: d(k, "ripple"), stack: d(k, "stack") === true, stretch: d(k, "stretch") === true, onClick(S) {
         f(x, g, S);
-      } } };
+      } }) };
     }));
     function f(g, m, v) {
       e.readonly !== true && (e.modelValue === g ? e.clearable === true && (o("update:modelValue", null, null), o("clear")) : o("update:modelValue", g, m), o("click", v));
@@ -1589,18 +1621,18 @@
       let g = c.value.map((m) => i(Ve, m.props, m.slot !== void 0 ? t[m.slot] : void 0));
       return e.name !== void 0 && e.disable !== true && r.value === true && a(g, "push"), Ge(t.default, g);
     }
-    return () => i(or, { class: "q-btn-toggle", ...l.value, rounded: e.rounded, stretch: e.stretch, glossy: e.glossy, spread: e.spread }, p);
+    return () => i(or, __spreadProps(__spreadValues({ class: "q-btn-toggle" }, l.value), { rounded: e.rounded, stretch: e.stretch, glossy: e.glossy, spread: e.spread }), p);
   } });
-  var hr = P({ name: "QCard", props: { ...Se, tag: { type: String, default: "div" }, square: Boolean, flat: Boolean, bordered: Boolean }, setup(e, { slots: t }) {
+  var hr = P({ name: "QCard", props: __spreadProps(__spreadValues({}, Se), { tag: { type: String, default: "div" }, square: Boolean, flat: Boolean, bordered: Boolean }), setup(e, { slots: t }) {
     let { proxy: { $q: o } } = K(), r = xe(e, o), n = s(() => "q-card" + (r.value === true ? " q-card--dark q-dark" : "") + (e.bordered === true ? " q-card--bordered" : "") + (e.square === true ? " q-card--square no-border-radius" : "") + (e.flat === true ? " q-card--flat no-shadow" : ""));
     return () => i(e.tag, { class: n.value }, re(t.default));
   } });
   var _o = P({ name: "QCardSection", props: { tag: { type: String, default: "div" }, horizontal: Boolean }, setup(e, { slots: t }) {
-    let o = s(() => "q-card__section q-card__section--".concat(e.horizontal === true ? "horiz row no-wrap" : "vert"));
+    let o = s(() => `q-card__section q-card__section--${e.horizontal === true ? "horiz row no-wrap" : "vert"}`);
     return () => i(e.tag, { class: o.value }, re(t.default));
   } });
-  var ei = P({ name: "QCardActions", props: { ...Wn, vertical: Boolean }, setup(e, { slots: t }) {
-    let o = Yn(e), r = s(() => "q-card__actions ".concat(o.value, " q-card__actions--").concat(e.vertical === true ? "vert column" : "horiz row"));
+  var ei = P({ name: "QCardActions", props: __spreadProps(__spreadValues({}, Wn), { vertical: Boolean }), setup(e, { slots: t }) {
+    let o = Yn(e), r = s(() => `q-card__actions ${o.value} q-card__actions--${e.vertical === true ? "vert column" : "horiz row"}`);
     return () => i("div", { class: r.value }, re(t.default));
   } });
   var Ql = { left: true, right: true, up: true, down: true, horizontal: true, vertical: true }, fg = Object.keys(Ql);
@@ -1624,7 +1656,7 @@
   var ti = $t({ name: "touch-swipe", beforeMount(e, { value: t, arg: o, modifiers: r }) {
     if (r.mouse !== true && Ae.has.touch !== true) return;
     let n = r.mouseCapture === true ? "Capture" : "", a = { handler: t, sensitivity: vg(o), direction: pr(r), noop: Ye, mouseStart(l) {
-      br(l, a) && Ko(l) && (vt(a, "temp", [[document, "mousemove", "move", "notPassive".concat(n)], [document, "mouseup", "end", "notPassiveCapture"]]), a.start(l, true));
+      br(l, a) && Ko(l) && (vt(a, "temp", [[document, "mousemove", "move", `notPassive${n}`], [document, "mouseup", "end", "notPassiveCapture"]]), a.start(l, true));
     }, touchStart(l) {
       if (br(l, a)) {
         let u = l.target;
@@ -1666,9 +1698,9 @@
     } };
     if (e.__qtouchswipe = a, r.mouse === true) {
       let l = r.mouseCapture === true || r.mousecapture === true ? "Capture" : "";
-      vt(a, "main", [[e, "mousedown", "mouseStart", "passive".concat(l)]]);
+      vt(a, "main", [[e, "mousedown", "mouseStart", `passive${l}`]]);
     }
-    Ae.has.touch === true && vt(a, "main", [[e, "touchstart", "touchStart", "passive".concat(r.capture === true ? "Capture" : "")], [e, "touchmove", "noop", "notPassiveCapture"]]);
+    Ae.has.touch === true && vt(a, "main", [[e, "touchstart", "touchStart", `passive${r.capture === true ? "Capture" : ""}`], [e, "touchmove", "noop", "notPassiveCapture"]]);
   }, updated(e, t) {
     let o = e.__qtouchswipe;
     o !== void 0 && (t.oldValue !== t.value && (typeof t.value != "function" && o.end(), o.handler = t.value), o.direction = pr(t.modifiers));
@@ -1696,7 +1728,7 @@
       let A = e.vertical === true ? "up" : "left";
       D((o.$q.lang.rtl === true ? -1 : 1) * (C.direction === A ? 1 : -1));
     }
-    let d = s(() => [[ti, f, void 0, { horizontal: e.vertical !== true, vertical: e.vertical, mouse: true }]]), p = s(() => e.transitionPrev || "slide-".concat(e.vertical === true ? "down" : "right")), g = s(() => e.transitionNext || "slide-".concat(e.vertical === true ? "up" : "left")), m = s(() => "--q-transition-duration: ".concat(e.transitionDuration, "ms")), v = s(() => typeof e.modelValue == "string" || typeof e.modelValue == "number" ? e.modelValue : String(e.modelValue)), x = s(() => ({ include: e.keepAliveInclude, exclude: e.keepAliveExclude, max: e.keepAliveMax })), y = s(() => e.keepAliveInclude !== void 0 || e.keepAliveExclude !== void 0);
+    let d = s(() => [[ti, f, void 0, { horizontal: e.vertical !== true, vertical: e.vertical, mouse: true }]]), p = s(() => e.transitionPrev || `slide-${e.vertical === true ? "down" : "right"}`), g = s(() => e.transitionNext || `slide-${e.vertical === true ? "up" : "left"}`), m = s(() => `--q-transition-duration: ${e.transitionDuration}ms`), v = s(() => typeof e.modelValue == "string" || typeof e.modelValue == "number" ? e.modelValue : String(e.modelValue)), x = s(() => ({ include: e.keepAliveInclude, exclude: e.keepAliveExclude, max: e.keepAliveMax })), y = s(() => e.keepAliveInclude !== void 0 || e.keepAliveExclude !== void 0);
     Y(() => e.modelValue, (C, A) => {
       let z = h(C) === true ? _(C) : -1;
       l !== true && L(z === -1 ? 0 : z < _(A) ? -1 : 1), c.value !== z && (c.value = z, t("beforeTransition", C, A), n(() => {
@@ -1745,7 +1777,7 @@
     }
     function B() {
       let C = h(e.modelValue) === true && Z() && a[c.value];
-      return e.keepAlive === true ? [i(wa, x.value, [i(y.value === true ? r(v.value, () => ({ ...Vs, name: v.value })) : Vs, { key: v.value, style: m.value }, () => C)])] : [i("div", { class: "q-panel scroll", style: m.value, key: v.value, role: "tabpanel" }, [C])];
+      return e.keepAlive === true ? [i(wa, x.value, [i(y.value === true ? r(v.value, () => __spreadProps(__spreadValues({}, Vs), { name: v.value })) : Vs, { key: v.value, style: m.value }, () => C)])] : [i("div", { class: "q-panel scroll", style: m.value, key: v.value, role: "tabpanel" }, [C])];
     }
     function F() {
       if (a.length !== 0) return e.animated === true ? [i(st, { name: u.value }, B)] : B();
@@ -1785,8 +1817,8 @@
       t.fullscreen === true && f();
     }), be(d), Object.assign(r, { toggleFullscreen: c, setFullscreen: f, exitFullscreen: d }), { inFullscreen: u, toggleFullscreen: c };
   }
-  var gg = ["top", "right", "bottom", "left"], hg = ["regular", "flat", "outline", "push", "unelevated"], zs = P({ name: "QCarousel", props: { ...Se, ...Sr, ...Cr, transitionPrev: { type: String, default: "fade" }, transitionNext: { type: String, default: "fade" }, height: String, padding: Boolean, controlColor: String, controlTextColor: String, controlType: { type: String, validator: (e) => hg.includes(e), default: "flat" }, autoplay: [Number, Boolean], arrows: Boolean, prevIcon: String, nextIcon: String, navigation: Boolean, navigationPosition: { type: String, validator: (e) => gg.includes(e) }, navigationIcon: String, navigationActiveIcon: String, thumbnails: Boolean }, emits: [...wr, ...xr], setup(e, { slots: t }) {
-    let { proxy: { $q: o } } = K(), r = xe(e, o), n = null, a, { updatePanelsList: l, getPanelContent: u, panelDirectives: c, goToPanel: f, previousPanel: d, nextPanel: p, getEnabledPanels: g, panelIndex: m } = _r(), { inFullscreen: v } = kr(), x = s(() => v.value !== true && e.height !== void 0 ? { height: e.height } : {}), y = s(() => e.vertical === true ? "vertical" : "horizontal"), k = s(() => e.navigationPosition || (e.vertical === true ? "right" : "bottom")), S = s(() => "q-carousel q-panel-parent q-carousel--with".concat(e.padding === true ? "" : "out", "-padding") + (v.value === true ? " fullscreen" : "") + (r.value === true ? " q-carousel--dark q-dark" : "") + (e.arrows === true ? " q-carousel--arrows-".concat(y.value) : "") + (e.navigation === true ? " q-carousel--navigation-".concat(k.value) : "")), b = s(() => {
+  var gg = ["top", "right", "bottom", "left"], hg = ["regular", "flat", "outline", "push", "unelevated"], zs = P({ name: "QCarousel", props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Se), Sr), Cr), { transitionPrev: { type: String, default: "fade" }, transitionNext: { type: String, default: "fade" }, height: String, padding: Boolean, controlColor: String, controlTextColor: String, controlType: { type: String, validator: (e) => hg.includes(e), default: "flat" }, autoplay: [Number, Boolean], arrows: Boolean, prevIcon: String, nextIcon: String, navigation: Boolean, navigationPosition: { type: String, validator: (e) => gg.includes(e) }, navigationIcon: String, navigationActiveIcon: String, thumbnails: Boolean }), emits: [...wr, ...xr], setup(e, { slots: t }) {
+    let { proxy: { $q: o } } = K(), r = xe(e, o), n = null, a, { updatePanelsList: l, getPanelContent: u, panelDirectives: c, goToPanel: f, previousPanel: d, nextPanel: p, getEnabledPanels: g, panelIndex: m } = _r(), { inFullscreen: v } = kr(), x = s(() => v.value !== true && e.height !== void 0 ? { height: e.height } : {}), y = s(() => e.vertical === true ? "vertical" : "horizontal"), k = s(() => e.navigationPosition || (e.vertical === true ? "right" : "bottom")), S = s(() => `q-carousel q-panel-parent q-carousel--with${e.padding === true ? "" : "out"}-padding` + (v.value === true ? " fullscreen" : "") + (r.value === true ? " q-carousel--dark q-dark" : "") + (e.arrows === true ? ` q-carousel--arrows-${y.value}` : "") + (e.navigation === true ? ` q-carousel--navigation-${k.value}` : "")), b = s(() => {
       let B = [e.prevIcon || o.iconSet.carousel[e.vertical === true ? "up" : "left"], e.nextIcon || o.iconSet.carousel[e.vertical === true ? "down" : "right"]];
       return e.vertical === false && o.lang.rtl === true ? B.reverse() : B;
     }), h = s(() => e.navigationIcon || o.iconSet.carousel.navigationIcon), _ = s(() => e.navigationActiveIcon || h.value), E = s(() => ({ color: e.controlColor, textColor: e.controlTextColor, round: true, [e.controlType]: true, dense: true }));
@@ -1807,41 +1839,41 @@
       n !== null && clearTimeout(n);
     });
     function D(B, F) {
-      return i("div", { class: "q-carousel__control q-carousel__navigation no-wrap absolute flex q-carousel__navigation--".concat(B, " q-carousel__navigation--").concat(k.value) + (e.controlColor !== void 0 ? " text-".concat(e.controlColor) : "") }, [i("div", { class: "q-carousel__navigation-inner flex flex-center no-wrap" }, g().map(F))]);
+      return i("div", { class: `q-carousel__control q-carousel__navigation no-wrap absolute flex q-carousel__navigation--${B} q-carousel__navigation--${k.value}` + (e.controlColor !== void 0 ? ` text-${e.controlColor}` : "") }, [i("div", { class: "q-carousel__navigation-inner flex flex-center no-wrap" }, g().map(F))]);
     }
     function Z() {
       let B = [];
       if (e.navigation === true) {
-        let F = t["navigation-icon"] !== void 0 ? t["navigation-icon"] : (q) => i(Ve, { key: "nav" + q.name, class: "q-carousel__navigation-icon q-carousel__navigation-icon--".concat(q.active === true ? "" : "in", "active"), ...q.btnProps, onClick: q.onClick }), $ = a - 1;
+        let F = t["navigation-icon"] !== void 0 ? t["navigation-icon"] : (q) => i(Ve, __spreadProps(__spreadValues({ key: "nav" + q.name, class: `q-carousel__navigation-icon q-carousel__navigation-icon--${q.active === true ? "" : "in"}active` }, q.btnProps), { onClick: q.onClick })), $ = a - 1;
         B.push(D("buttons", (q, C) => {
           let A = q.props.name, z = m.value === C;
-          return F({ index: C, maxIndex: $, name: A, active: z, btnProps: { icon: z === true ? _.value : h.value, size: "sm", ...E.value }, onClick: () => {
+          return F({ index: C, maxIndex: $, name: A, active: z, btnProps: __spreadValues({ icon: z === true ? _.value : h.value, size: "sm" }, E.value), onClick: () => {
             f(A);
           } });
         }));
       } else if (e.thumbnails === true) {
-        let F = e.controlColor !== void 0 ? " text-".concat(e.controlColor) : "";
+        let F = e.controlColor !== void 0 ? ` text-${e.controlColor}` : "";
         B.push(D("thumbnails", ($) => {
           let q = $.props;
-          return i("img", { key: "tmb#" + q.name, class: "q-carousel__thumbnail q-carousel__thumbnail--".concat(q.name === e.modelValue ? "" : "in", "active") + F, src: q.imgSrc || q["img-src"], onClick: () => {
+          return i("img", { key: "tmb#" + q.name, class: `q-carousel__thumbnail q-carousel__thumbnail--${q.name === e.modelValue ? "" : "in"}active` + F, src: q.imgSrc || q["img-src"], onClick: () => {
             f(q.name);
           } });
         }));
       }
-      return e.arrows === true && m.value >= 0 && ((e.infinite === true || m.value > 0) && B.push(i("div", { key: "prev", class: "q-carousel__control q-carousel__arrow q-carousel__prev-arrow q-carousel__prev-arrow--".concat(y.value, " absolute flex flex-center") }, [i(Ve, { icon: b.value[0], ...E.value, onClick: d })])), (e.infinite === true || m.value < a - 1) && B.push(i("div", { key: "next", class: "q-carousel__control q-carousel__arrow q-carousel__next-arrow q-carousel__next-arrow--".concat(y.value, " absolute flex flex-center") }, [i(Ve, { icon: b.value[1], ...E.value, onClick: p })]))), Ge(t.control, B);
+      return e.arrows === true && m.value >= 0 && ((e.infinite === true || m.value > 0) && B.push(i("div", { key: "prev", class: `q-carousel__control q-carousel__arrow q-carousel__prev-arrow q-carousel__prev-arrow--${y.value} absolute flex flex-center` }, [i(Ve, __spreadProps(__spreadValues({ icon: b.value[0] }, E.value), { onClick: d }))])), (e.infinite === true || m.value < a - 1) && B.push(i("div", { key: "next", class: `q-carousel__control q-carousel__arrow q-carousel__next-arrow q-carousel__next-arrow--${y.value} absolute flex flex-center` }, [i(Ve, __spreadProps(__spreadValues({ icon: b.value[1] }, E.value), { onClick: p }))]))), Ge(t.control, B);
     }
     return () => (a = l(t), i("div", { class: S.value, style: x.value }, [Rt("div", { class: "q-carousel__slides-container" }, u(), "sl-cont", e.swipeable, () => c.value)].concat(Z())));
   } });
-  var Is = P({ name: "QCarouselSlide", props: { ...yr, imgSrc: String }, setup(e, { slots: t }) {
-    let o = s(() => e.imgSrc ? { backgroundImage: 'url("'.concat(e.imgSrc, '")') } : {});
+  var Is = P({ name: "QCarouselSlide", props: __spreadProps(__spreadValues({}, yr), { imgSrc: String }), setup(e, { slots: t }) {
+    let o = s(() => e.imgSrc ? { backgroundImage: `url("${e.imgSrc}")` } : {});
     return () => i("div", { class: "q-carousel__slide", style: o.value }, re(t.default));
   } });
   var Hs = P({ name: "QCarouselControl", props: { position: { type: String, default: "bottom-right", validator: (e) => ["top-right", "top-left", "bottom-right", "bottom-left", "top", "right", "bottom", "left"].includes(e) }, offset: { type: Array, default: () => [18, 18], validator: (e) => e.length === 2 } }, setup(e, { slots: t }) {
-    let o = s(() => "q-carousel__control absolute absolute-".concat(e.position)), r = s(() => ({ margin: "".concat(e.offset[1], "px ").concat(e.offset[0], "px") }));
+    let o = s(() => `q-carousel__control absolute absolute-${e.position}`), r = s(() => ({ margin: `${e.offset[1]}px ${e.offset[0]}px` }));
     return () => i("div", { class: o.value, style: r.value }, re(t.default));
   } });
   var Ns = P({ name: "QChatMessage", props: { sent: Boolean, label: String, bgColor: String, textColor: String, name: String, avatar: String, text: Array, stamp: String, size: String, labelHtml: Boolean, nameHtml: Boolean, textHtml: Boolean, stampHtml: Boolean }, setup(e, { slots: t }) {
-    let o = s(() => e.sent === true ? "sent" : "received"), r = s(() => "q-message-text-content q-message-text-content--".concat(o.value) + (e.textColor !== void 0 ? " text-".concat(e.textColor) : "")), n = s(() => "q-message-text q-message-text--".concat(o.value) + (e.bgColor !== void 0 ? " text-".concat(e.bgColor) : "")), a = s(() => "q-message-container row items-end no-wrap" + (e.sent === true ? " reverse" : "")), l = s(() => e.size !== void 0 ? "col-".concat(e.size) : ""), u = s(() => ({ msg: e.textHtml === true ? "innerHTML" : "textContent", stamp: e.stampHtml === true ? "innerHTML" : "textContent", name: e.nameHtml === true ? "innerHTML" : "textContent", label: e.labelHtml === true ? "innerHTML" : "textContent" }));
+    let o = s(() => e.sent === true ? "sent" : "received"), r = s(() => `q-message-text-content q-message-text-content--${o.value}` + (e.textColor !== void 0 ? ` text-${e.textColor}` : "")), n = s(() => `q-message-text q-message-text--${o.value}` + (e.bgColor !== void 0 ? ` text-${e.bgColor}` : "")), a = s(() => "q-message-container row items-end no-wrap" + (e.sent === true ? " reverse" : "")), l = s(() => e.size !== void 0 ? `col-${e.size}` : ""), u = s(() => ({ msg: e.textHtml === true ? "innerHTML" : "textContent", stamp: e.stampHtml === true ? "innerHTML" : "textContent", name: e.nameHtml === true ? "innerHTML" : "textContent", label: e.labelHtml === true ? "innerHTML" : "textContent" }));
     function c(d) {
       return t.stamp !== void 0 ? [d, i("div", { class: "q-message-stamp" }, t.stamp())] : e.stamp ? [d, i("div", { class: "q-message-stamp", [u.value.stamp]: e.stamp })] : [d];
     }
@@ -1851,11 +1883,11 @@
     }
     return () => {
       let d = [];
-      t.avatar !== void 0 ? d.push(t.avatar()) : e.avatar !== void 0 && d.push(i("img", { class: "q-message-avatar q-message-avatar--".concat(o.value), src: e.avatar, "aria-hidden": "true" }));
+      t.avatar !== void 0 ? d.push(t.avatar()) : e.avatar !== void 0 && d.push(i("img", { class: `q-message-avatar q-message-avatar--${o.value}`, src: e.avatar, "aria-hidden": "true" }));
       let p = [];
-      t.name !== void 0 ? p.push(i("div", { class: "q-message-name q-message-name--".concat(o.value) }, t.name())) : e.name !== void 0 && p.push(i("div", { class: "q-message-name q-message-name--".concat(o.value), [u.value.name]: e.name })), t.default !== void 0 ? p.push(f(Xn(t.default()), true)) : e.text !== void 0 && p.push(f(e.text)), d.push(i("div", { class: l.value }, p));
+      t.name !== void 0 ? p.push(i("div", { class: `q-message-name q-message-name--${o.value}` }, t.name())) : e.name !== void 0 && p.push(i("div", { class: `q-message-name q-message-name--${o.value}`, [u.value.name]: e.name })), t.default !== void 0 ? p.push(f(Xn(t.default()), true)) : e.text !== void 0 && p.push(f(e.text)), d.push(i("div", { class: l.value }, p));
       let g = [];
-      return t.label !== void 0 ? g.push(i("div", { class: "q-message-label" }, t.label())) : e.label !== void 0 && g.push(i("div", { class: "q-message-label", [u.value.label]: e.label })), g.push(i("div", { class: a.value }, d)), i("div", { class: "q-message q-message-".concat(o.value) }, g);
+      return t.label !== void 0 ? g.push(i("div", { class: "q-message-label" }, t.label())) : e.label !== void 0 && g.push(i("div", { class: "q-message-label", [u.value.label]: e.label })), g.push(i("div", { class: a.value }, d)), i("div", { class: `q-message q-message-${o.value}` }, g);
     };
   } });
   function oi(e, t) {
@@ -1867,14 +1899,14 @@
     return { refocusTargetEl: r, refocusTarget: n };
   }
   var ni = { xs: 30, sm: 35, md: 40, lg: 50, xl: 60 };
-  var ri = { ...Se, ...Dt, ...kt, modelValue: { required: true, default: null }, val: {}, trueValue: { default: true }, falseValue: { default: false }, indeterminateValue: { default: null }, checkedIcon: String, uncheckedIcon: String, indeterminateIcon: String, toggleOrder: { type: String, validator: (e) => e === "tf" || e === "ft" }, toggleIndeterminate: Boolean, label: String, leftLabel: Boolean, color: String, keepColor: Boolean, dense: Boolean, disable: Boolean, tabindex: [String, Number] }, ai = ["update:modelValue"];
+  var ri = __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Se), Dt), kt), { modelValue: { required: true, default: null }, val: {}, trueValue: { default: true }, falseValue: { default: false }, indeterminateValue: { default: null }, checkedIcon: String, uncheckedIcon: String, indeterminateIcon: String, toggleOrder: { type: String, validator: (e) => e === "tf" || e === "ft" }, toggleIndeterminate: Boolean, label: String, leftLabel: Boolean, color: String, keepColor: Boolean, dense: Boolean, disable: Boolean, tabindex: [String, Number] }), ai = ["update:modelValue"];
   function ii(e, t) {
     let { props: o, slots: r, emit: n, proxy: a } = K(), { $q: l } = a, u = xe(o, l), c = T(null), { refocusTargetEl: f, refocusTarget: d } = oi(o, c), p = Ot(o, ni), g = s(() => o.val !== void 0 && Array.isArray(o.modelValue)), m = s(() => {
       let $ = fo(o.val);
       return g.value === true ? o.modelValue.findIndex((q) => fo(q) === $) : -1;
-    }), v = s(() => g.value === true ? m.value !== -1 : fo(o.modelValue) === fo(o.trueValue)), x = s(() => g.value === true ? m.value === -1 : fo(o.modelValue) === fo(o.falseValue)), y = s(() => v.value === false && x.value === false), k = s(() => o.disable === true ? -1 : o.tabindex || 0), S = s(() => "q-".concat(e, " cursor-pointer no-outline row inline no-wrap items-center") + (o.disable === true ? " disabled" : "") + (u.value === true ? " q-".concat(e, "--dark") : "") + (o.dense === true ? " q-".concat(e, "--dense") : "") + (o.leftLabel === true ? " reverse" : "")), b = s(() => {
-      let $ = v.value === true ? "truthy" : x.value === true ? "falsy" : "indet", q = o.color !== void 0 && (o.keepColor === true || (e === "toggle" ? v.value === true : x.value !== true)) ? " text-".concat(o.color) : "";
-      return "q-".concat(e, "__inner relative-position non-selectable q-").concat(e, "__inner--").concat($).concat(q);
+    }), v = s(() => g.value === true ? m.value !== -1 : fo(o.modelValue) === fo(o.trueValue)), x = s(() => g.value === true ? m.value === -1 : fo(o.modelValue) === fo(o.falseValue)), y = s(() => v.value === false && x.value === false), k = s(() => o.disable === true ? -1 : o.tabindex || 0), S = s(() => `q-${e} cursor-pointer no-outline row inline no-wrap items-center` + (o.disable === true ? " disabled" : "") + (u.value === true ? ` q-${e}--dark` : "") + (o.dense === true ? ` q-${e}--dense` : "") + (o.leftLabel === true ? " reverse" : "")), b = s(() => {
+      let $ = v.value === true ? "truthy" : x.value === true ? "falsy" : "indet", q = o.color !== void 0 && (o.keepColor === true || (e === "toggle" ? v.value === true : x.value !== true)) ? ` text-${o.color}` : "";
+      return `q-${e}__inner relative-position non-selectable q-${e}__inner--${$}${q}`;
     }), h = s(() => {
       let $ = { type: "checkbox" };
       return o.name !== void 0 && Object.assign($, { ".checked": v.value, "^checked": v.value === true ? "checked" : void 0, name: o.name, value: g.value === true ? o.val : o.trueValue }), $;
@@ -1909,11 +1941,11 @@
     let F = t(v, y);
     return Object.assign(a, { toggle: L }), () => {
       let $ = F();
-      o.disable !== true && _($, "unshift", " q-".concat(e, "__native absolute q-ma-none q-pa-none"));
+      o.disable !== true && _($, "unshift", ` q-${e}__native absolute q-ma-none q-pa-none`);
       let q = [i("div", { class: b.value, style: p.value, "aria-hidden": "true" }, $)];
       f.value !== null && q.push(f.value);
       let C = o.label !== void 0 ? Ge(r.default, [o.label]) : re(r.default);
-      return C !== void 0 && q.push(i("div", { class: "q-".concat(e, "__label q-anchor--skip") }, C)), i("div", { ref: c, class: S.value, ...E.value, onClick: L, onKeydown: Z, onKeyup: B }, q);
+      return C !== void 0 && q.push(i("div", { class: `q-${e}__label q-anchor--skip` }, C)), i("div", __spreadProps(__spreadValues({ ref: c, class: S.value }, E.value), { onClick: L, onKeydown: Z, onKeyup: B }), q);
     };
   }
   var pg = () => i("div", { key: "svg", class: "q-checkbox__bg absolute" }, [i("svg", { class: "q-checkbox__svg fit absolute-full", viewBox: "0 0 24 24" }, [i("path", { class: "q-checkbox__truthy", fill: "none", d: "M1.73,12.91 8.1,19.28 22.79,4.59" }), i("path", { class: "q-checkbox__indet", d: "M4,14H20V10H4" })])]), Vo = P({ name: "QCheckbox", props: ri, emits: ai, setup(e) {
@@ -1924,12 +1956,12 @@
     }
     return ii("checkbox", o);
   } });
-  var bg = { xs: 8, sm: 10, md: 14, lg: 20, xl: 24 }, qr = P({ name: "QChip", props: { ...Se, ...Dt, dense: Boolean, icon: String, iconRight: String, iconRemove: String, iconSelected: String, label: [String, Number], color: String, textColor: String, modelValue: { type: Boolean, default: true }, selected: { type: Boolean, default: null }, square: Boolean, outline: Boolean, clickable: Boolean, removable: Boolean, removeAriaLabel: String, tabindex: [String, Number], disable: Boolean, ripple: { type: [Boolean, Object], default: true } }, emits: ["update:modelValue", "update:selected", "remove", "click"], setup(e, { slots: t, emit: o }) {
+  var bg = { xs: 8, sm: 10, md: 14, lg: 20, xl: 24 }, qr = P({ name: "QChip", props: __spreadProps(__spreadValues(__spreadValues({}, Se), Dt), { dense: Boolean, icon: String, iconRight: String, iconRemove: String, iconSelected: String, label: [String, Number], color: String, textColor: String, modelValue: { type: Boolean, default: true }, selected: { type: Boolean, default: null }, square: Boolean, outline: Boolean, clickable: Boolean, removable: Boolean, removeAriaLabel: String, tabindex: [String, Number], disable: Boolean, ripple: { type: [Boolean, Object], default: true } }), emits: ["update:modelValue", "update:selected", "remove", "click"], setup(e, { slots: t, emit: o }) {
     let { proxy: { $q: r } } = K(), n = xe(e, r), a = Ot(e, bg), l = s(() => e.selected === true || e.icon !== void 0), u = s(() => e.selected === true ? e.iconSelected || r.iconSet.chip.selected : e.icon), c = s(() => e.iconRemove || r.iconSet.chip.remove), f = s(() => e.disable === false && (e.clickable === true || e.selected !== null)), d = s(() => {
       let y = e.outline === true && e.color || e.textColor;
-      return "q-chip row inline no-wrap items-center" + (e.outline === false && e.color !== void 0 ? " bg-".concat(e.color) : "") + (y ? " text-".concat(y, " q-chip--colored") : "") + (e.disable === true ? " disabled" : "") + (e.dense === true ? " q-chip--dense" : "") + (e.outline === true ? " q-chip--outline" : "") + (e.selected === true ? " q-chip--selected" : "") + (f.value === true ? " q-chip--clickable cursor-pointer non-selectable q-hoverable" : "") + (e.square === true ? " q-chip--square" : "") + (n.value === true ? " q-chip--dark q-dark" : "");
+      return "q-chip row inline no-wrap items-center" + (e.outline === false && e.color !== void 0 ? ` bg-${e.color}` : "") + (y ? ` text-${y} q-chip--colored` : "") + (e.disable === true ? " disabled" : "") + (e.dense === true ? " q-chip--dense" : "") + (e.outline === true ? " q-chip--outline" : "") + (e.selected === true ? " q-chip--selected" : "") + (f.value === true ? " q-chip--clickable cursor-pointer non-selectable q-hoverable" : "") + (e.square === true ? " q-chip--square" : "") + (n.value === true ? " q-chip--dark q-dark" : "");
     }), p = s(() => {
-      let y = e.disable === true ? { tabindex: -1, "aria-disabled": "true" } : { tabindex: e.tabindex || 0 }, k = { ...y, role: "button", "aria-hidden": "false", "aria-label": e.removeAriaLabel || r.lang.label.remove };
+      let y = e.disable === true ? { tabindex: -1, "aria-disabled": "true" } : { tabindex: e.tabindex || 0 }, k = __spreadProps(__spreadValues({}, y), { role: "button", "aria-hidden": "false", "aria-label": e.removeAriaLabel || r.lang.label.remove });
       return { chip: y, remove: k };
     });
     function g(y) {
@@ -1945,7 +1977,7 @@
       let y = [];
       f.value === true && y.push(i("div", { class: "q-focus-helper" })), l.value === true && y.push(i(Re, { class: "q-chip__icon q-chip__icon--left", name: u.value }));
       let k = e.label !== void 0 ? [i("div", { class: "ellipsis" }, [e.label])] : void 0;
-      return y.push(i("div", { class: "q-chip__content col row no-wrap items-center q-anchor--skip" }, Kn(t.default, k))), e.iconRight && y.push(i(Re, { class: "q-chip__icon q-chip__icon--right", name: e.iconRight })), e.removable === true && y.push(i(Re, { class: "q-chip__icon q-chip__icon--remove cursor-pointer", name: c.value, ...p.value.remove, onClick: v, onKeyup: v })), y;
+      return y.push(i("div", { class: "q-chip__content col row no-wrap items-center q-anchor--skip" }, Kn(t.default, k))), e.iconRight && y.push(i(Re, { class: "q-chip__icon q-chip__icon--right", name: e.iconRight })), e.removable === true && y.push(i(Re, __spreadProps(__spreadValues({ class: "q-chip__icon q-chip__icon--remove cursor-pointer", name: c.value }, p.value.remove), { onClick: v, onKeyup: v }))), y;
     }
     return () => {
       if (e.modelValue === false) return;
@@ -1953,23 +1985,23 @@
       return f.value === true && Object.assign(y, p.value.chip, { onClick: m, onKeyup: g }), Rt("div", y, x(), "ripple", e.ripple !== false && e.disable !== true, () => [[$o, e.ripple]]);
     };
   } });
-  var na = { ...Dt, min: { type: Number, default: 0 }, max: { type: Number, default: 100 }, color: String, centerColor: String, trackColor: String, fontSize: String, rounded: Boolean, thickness: { type: Number, default: 0.2, validator: (e) => e >= 0 && e <= 1 }, angle: { type: Number, default: 0 }, showValue: Boolean, reverse: Boolean, instantFeedback: Boolean };
-  var jl = 50, Qs = 2 * jl, js = Qs * Math.PI, yg = Math.round(js * 1e3) / 1e3, Tr = P({ name: "QCircularProgress", props: { ...na, value: { type: Number, default: 0 }, animationSpeed: { type: [String, Number], default: 600 }, indeterminate: Boolean }, setup(e, { slots: t }) {
+  var na = __spreadProps(__spreadValues({}, Dt), { min: { type: Number, default: 0 }, max: { type: Number, default: 100 }, color: String, centerColor: String, trackColor: String, fontSize: String, rounded: Boolean, thickness: { type: Number, default: 0.2, validator: (e) => e >= 0 && e <= 1 }, angle: { type: Number, default: 0 }, showValue: Boolean, reverse: Boolean, instantFeedback: Boolean });
+  var jl = 50, Qs = 2 * jl, js = Qs * Math.PI, yg = Math.round(js * 1e3) / 1e3, Tr = P({ name: "QCircularProgress", props: __spreadProps(__spreadValues({}, na), { value: { type: Number, default: 0 }, animationSpeed: { type: [String, Number], default: 600 }, indeterminate: Boolean }), setup(e, { slots: t }) {
     let { proxy: { $q: o } } = K(), r = Ot(e), n = s(() => {
       let m = (o.lang.rtl === true ? -1 : 1) * e.angle;
-      return { transform: e.reverse !== (o.lang.rtl === true) ? "scale3d(-1, 1, 1) rotate3d(0, 0, 1, ".concat(-90 - m, "deg)") : "rotate3d(0, 0, 1, ".concat(m - 90, "deg)") };
-    }), a = s(() => e.instantFeedback !== true && e.indeterminate !== true ? { transition: "stroke-dashoffset ".concat(e.animationSpeed, "ms ease 0s, stroke ").concat(e.animationSpeed, "ms ease") } : ""), l = s(() => Qs / (1 - e.thickness / 2)), u = s(() => "".concat(l.value / 2, " ").concat(l.value / 2, " ").concat(l.value, " ").concat(l.value)), c = s(() => tt(e.value, e.min, e.max)), f = s(() => e.max - e.min), d = s(() => e.thickness / 2 * l.value), p = s(() => {
+      return { transform: e.reverse !== (o.lang.rtl === true) ? `scale3d(-1, 1, 1) rotate3d(0, 0, 1, ${-90 - m}deg)` : `rotate3d(0, 0, 1, ${m - 90}deg)` };
+    }), a = s(() => e.instantFeedback !== true && e.indeterminate !== true ? { transition: `stroke-dashoffset ${e.animationSpeed}ms ease 0s, stroke ${e.animationSpeed}ms ease` } : ""), l = s(() => Qs / (1 - e.thickness / 2)), u = s(() => `${l.value / 2} ${l.value / 2} ${l.value} ${l.value}`), c = s(() => tt(e.value, e.min, e.max)), f = s(() => e.max - e.min), d = s(() => e.thickness / 2 * l.value), p = s(() => {
       let m = (e.max - c.value) / f.value, v = e.rounded === true && c.value < e.max && m < 0.25 ? d.value / 2 * (1 - m / 0.25) : 0;
       return js * m + v;
     });
     function g({ thickness: m, offset: v, color: x, cls: y, rounded: k }) {
-      return i("circle", { class: "q-circular-progress__" + y + (x !== void 0 ? " text-".concat(x) : ""), style: a.value, fill: "transparent", stroke: "currentColor", "stroke-width": m, "stroke-dasharray": yg, "stroke-dashoffset": v, "stroke-linecap": k, cx: l.value, cy: l.value, r: jl });
+      return i("circle", { class: "q-circular-progress__" + y + (x !== void 0 ? ` text-${x}` : ""), style: a.value, fill: "transparent", stroke: "currentColor", "stroke-width": m, "stroke-dasharray": yg, "stroke-dashoffset": v, "stroke-linecap": k, cx: l.value, cy: l.value, r: jl });
     }
     return () => {
       let m = [];
-      e.centerColor !== void 0 && e.centerColor !== "transparent" && m.push(i("circle", { class: "q-circular-progress__center text-".concat(e.centerColor), fill: "currentColor", r: jl - d.value / 2, cx: l.value, cy: l.value })), e.trackColor !== void 0 && e.trackColor !== "transparent" && m.push(g({ cls: "track", thickness: d.value, offset: 0, color: e.trackColor })), m.push(g({ cls: "circle", thickness: d.value, offset: p.value, color: e.color, rounded: e.rounded === true ? "round" : void 0 }));
+      e.centerColor !== void 0 && e.centerColor !== "transparent" && m.push(i("circle", { class: `q-circular-progress__center text-${e.centerColor}`, fill: "currentColor", r: jl - d.value / 2, cx: l.value, cy: l.value })), e.trackColor !== void 0 && e.trackColor !== "transparent" && m.push(g({ cls: "track", thickness: d.value, offset: 0, color: e.trackColor })), m.push(g({ cls: "circle", thickness: d.value, offset: p.value, color: e.color, rounded: e.rounded === true ? "round" : void 0 }));
       let v = [i("svg", { class: "q-circular-progress__svg", style: n.value, viewBox: u.value, "aria-hidden": "true" }, m)];
-      return e.showValue === true && v.push(i("div", { class: "q-circular-progress__text absolute-full row flex-center content-center", style: { fontSize: e.fontSize } }, t.default !== void 0 ? t.default() : [i("div", c.value)])), i("div", { class: "q-circular-progress q-circular-progress--".concat(e.indeterminate === true ? "in" : "", "determinate"), style: r.value, role: "progressbar", "aria-valuemin": e.min, "aria-valuemax": e.max, "aria-valuenow": e.indeterminate === true ? void 0 : c.value }, Kn(t.internal, v));
+      return e.showValue === true && v.push(i("div", { class: "q-circular-progress__text absolute-full row flex-center content-center", style: { fontSize: e.fontSize } }, t.default !== void 0 ? t.default() : [i("div", c.value)])), i("div", { class: `q-circular-progress q-circular-progress--${e.indeterminate === true ? "in" : ""}determinate`, style: r.value, role: "progressbar", "aria-valuemin": e.min, "aria-valuemax": e.max, "aria-valuenow": e.indeterminate === true ? void 0 : c.value }, Kn(t.internal, v));
     };
   } });
   function Ul(e, t, o) {
@@ -2051,9 +2083,9 @@
     } };
     if (e.__qtouchpan = n, o.mouse === true) {
       let a = o.mouseCapture === true || o.mousecapture === true ? "Capture" : "";
-      vt(n, "main", [[e, "mousedown", "mouseStart", "passive".concat(a)]]);
+      vt(n, "main", [[e, "mousedown", "mouseStart", `passive${a}`]]);
     }
-    Ae.has.touch === true && vt(n, "main", [[e, "touchstart", "touchStart", "passive".concat(o.capture === true ? "Capture" : "")], [e, "touchmove", "noop", "notPassiveCapture"]]);
+    Ae.has.touch === true && vt(n, "main", [[e, "touchstart", "touchStart", `passive${o.capture === true ? "Capture" : ""}`], [e, "touchmove", "noop", "notPassiveCapture"]]);
   }, updated(e, t) {
     let o = e.__qtouchpan;
     o !== void 0 && (t.oldValue !== t.value && (typeof value != "function" && o.end(), o.handler = t.value), o.direction = pr(t.modifiers));
@@ -2062,7 +2094,7 @@
     let t = e.__qtouchpan;
     t !== void 0 && (t.event !== void 0 && t.end(), Tt(t, "main"), Tt(t, "temp"), Ae.is.firefox === true && Wo(e, false), (_a2 = t.styleCleanup) == null ? void 0 : _a2.call(t), delete e.__qtouchpan);
   } });
-  var Us = "q-slider__marker-labels", xg = (e) => ({ value: e }), _g = ({ marker: e }) => i("div", { key: e.value, style: e.style, class: e.classes }, e.label), ra = [34, 37, 40, 33, 39, 38], li = { ...Se, ...kt, min: { type: Number, default: 0 }, max: { type: Number, default: 100 }, innerMin: Number, innerMax: Number, step: { type: Number, default: 1, validator: (e) => e >= 0 }, snap: Boolean, vertical: Boolean, reverse: Boolean, color: String, markerLabelsClass: String, label: Boolean, labelColor: String, labelTextColor: String, labelAlways: Boolean, switchLabelSide: Boolean, markers: [Boolean, Number], markerLabels: [Boolean, Array, Object, Function], switchMarkerLabelsSide: Boolean, trackImg: String, trackColor: String, innerTrackImg: String, innerTrackColor: String, selectionColor: String, selectionImg: String, thumbSize: { type: String, default: "20px" }, trackSize: { type: String, default: "4px" }, disable: Boolean, readonly: Boolean, dense: Boolean, tabindex: [String, Number], thumbColor: String, thumbPath: { type: String, default: "M 4, 10 a 6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0" } }, ui = ["pan", "update:modelValue", "change"];
+  var Us = "q-slider__marker-labels", xg = (e) => ({ value: e }), _g = ({ marker: e }) => i("div", { key: e.value, style: e.style, class: e.classes }, e.label), ra = [34, 37, 40, 33, 39, 38], li = __spreadProps(__spreadValues(__spreadValues({}, Se), kt), { min: { type: Number, default: 0 }, max: { type: Number, default: 100 }, innerMin: Number, innerMax: Number, step: { type: Number, default: 1, validator: (e) => e >= 0 }, snap: Boolean, vertical: Boolean, reverse: Boolean, color: String, markerLabelsClass: String, label: Boolean, labelColor: String, labelTextColor: String, labelAlways: Boolean, switchLabelSide: Boolean, markers: [Boolean, Number], markerLabels: [Boolean, Array, Object, Function], switchMarkerLabelsSide: Boolean, trackImg: String, trackColor: String, innerTrackImg: String, innerTrackColor: String, selectionColor: String, selectionImg: String, thumbSize: { type: String, default: "20px" }, trackSize: { type: String, default: "4px" }, disable: Boolean, readonly: Boolean, dense: Boolean, tabindex: [String, Number], thumbColor: String, thumbPath: { type: String, default: "M 4, 10 a 6,6 0 1,0 12,0 a 6,6 0 1,0 -12,0" } }), ui = ["pan", "update:modelValue", "change"];
   function si({ updateValue: e, updatePosition: t, getDragging: o, formAttrs: r }) {
     let { props: n, emit: a, slots: l, proxy: { $q: u } } = K(), c = xe(n, u), f = Zt(r), d = T(false), p = T(false), g = T(false), m = T(false), v = s(() => n.vertical === true ? "--v" : "--h"), x = s(() => "-" + (n.switchLabelSide === true ? "switched" : "standard")), y = s(() => n.vertical === true ? n.reverse === true : n.reverse !== (u.lang.rtl === true)), k = s(() => isNaN(n.innerMin) === true || n.innerMin < n.min ? n.min : n.innerMin), S = s(() => isNaN(n.innerMax) === true || n.innerMax > n.max ? n.max : n.innerMax), b = s(() => n.disable !== true && n.readonly !== true && k.value < S.value), h = s(() => {
       if (n.step === 0) return (ue) => ue;
@@ -2071,24 +2103,24 @@
     }), _ = s(() => n.step === 0 ? 1 : n.step), E = s(() => b.value === true ? n.tabindex || 0 : -1), L = s(() => n.max - n.min), D = s(() => S.value - k.value), Z = s(() => ke(k.value)), B = s(() => ke(S.value)), F = s(() => n.vertical === true ? y.value === true ? "bottom" : "top" : y.value === true ? "right" : "left"), $ = s(() => n.vertical === true ? "height" : "width"), q = s(() => n.vertical === true ? "width" : "height"), C = s(() => n.vertical === true ? "vertical" : "horizontal"), A = s(() => {
       let J = { role: "slider", "aria-valuemin": k.value, "aria-valuemax": S.value, "aria-orientation": C.value, "data-step": n.step };
       return n.disable === true ? J["aria-disabled"] = "true" : n.readonly === true && (J["aria-readonly"] = "true"), J;
-    }), z = s(() => "q-slider q-slider".concat(v.value, " q-slider--").concat(d.value === true ? "" : "in", "active inline no-wrap ") + (n.vertical === true ? "row" : "column") + (n.disable === true ? " disabled" : " q-slider--enabled" + (b.value === true ? " q-slider--editable" : "")) + (g.value === "both" ? " q-slider--focus" : "") + (n.label || n.labelAlways === true ? " q-slider--label" : "") + (n.labelAlways === true ? " q-slider--label-always" : "") + (c.value === true ? " q-slider--dark" : "") + (n.dense === true ? " q-slider--dense q-slider--dense" + v.value : ""));
+    }), z = s(() => `q-slider q-slider${v.value} q-slider--${d.value === true ? "" : "in"}active inline no-wrap ` + (n.vertical === true ? "row" : "column") + (n.disable === true ? " disabled" : " q-slider--enabled" + (b.value === true ? " q-slider--editable" : "")) + (g.value === "both" ? " q-slider--focus" : "") + (n.label || n.labelAlways === true ? " q-slider--label" : "") + (n.labelAlways === true ? " q-slider--label-always" : "") + (c.value === true ? " q-slider--dark" : "") + (n.dense === true ? " q-slider--dense q-slider--dense" + v.value : ""));
     function H(J) {
       let ue = "q-slider__" + J;
-      return "".concat(ue, " ").concat(ue).concat(v.value, " ").concat(ue).concat(v.value).concat(x.value);
+      return `${ue} ${ue}${v.value} ${ue}${v.value}${x.value}`;
     }
     function Q(J) {
       let ue = "q-slider__" + J;
-      return "".concat(ue, " ").concat(ue).concat(v.value);
+      return `${ue} ${ue}${v.value}`;
     }
     let ee = s(() => {
       let J = n.selectionColor || n.color;
-      return "q-slider__selection absolute" + (J !== void 0 ? " text-".concat(J) : "");
-    }), ve = s(() => Q("markers") + " absolute overflow-hidden"), O = s(() => Q("track-container")), w = s(() => H("pin")), W = s(() => H("label")), U = s(() => H("text-container")), le = s(() => H("marker-labels-container") + (n.markerLabelsClass !== void 0 ? " ".concat(n.markerLabelsClass) : "")), M = s(() => "q-slider__track relative-position no-outline" + (n.trackColor !== void 0 ? " bg-".concat(n.trackColor) : "")), V = s(() => {
+      return "q-slider__selection absolute" + (J !== void 0 ? ` text-${J}` : "");
+    }), ve = s(() => Q("markers") + " absolute overflow-hidden"), O = s(() => Q("track-container")), w = s(() => H("pin")), W = s(() => H("label")), U = s(() => H("text-container")), le = s(() => H("marker-labels-container") + (n.markerLabelsClass !== void 0 ? ` ${n.markerLabelsClass}` : "")), M = s(() => "q-slider__track relative-position no-outline" + (n.trackColor !== void 0 ? ` bg-${n.trackColor}` : "")), V = s(() => {
       let J = { [q.value]: n.trackSize };
-      return n.trackImg !== void 0 && (J.backgroundImage = "url(".concat(n.trackImg, ") !important")), J;
-    }), ae = s(() => "q-slider__inner absolute" + (n.innerTrackColor !== void 0 ? " bg-".concat(n.innerTrackColor) : "")), j = s(() => {
-      let J = B.value - Z.value, ue = { [F.value]: "".concat(100 * Z.value, "%"), [$.value]: J === 0 ? "2px" : "".concat(100 * J, "%") };
-      return n.innerTrackImg !== void 0 && (ue.backgroundImage = "url(".concat(n.innerTrackImg, ") !important")), ue;
+      return n.trackImg !== void 0 && (J.backgroundImage = `url(${n.trackImg}) !important`), J;
+    }), ae = s(() => "q-slider__inner absolute" + (n.innerTrackColor !== void 0 ? ` bg-${n.innerTrackColor}` : "")), j = s(() => {
+      let J = B.value - Z.value, ue = { [F.value]: `${100 * Z.value}%`, [$.value]: J === 0 ? "2px" : `${100 * J}%` };
+      return n.innerTrackImg !== void 0 && (ue.backgroundImage = `url(${n.innerTrackImg}) !important`), ue;
     });
     function fe(J) {
       let { min: ue, max: we, step: Ke } = n, Pe = ue + J * (we - ue);
@@ -2112,27 +2144,27 @@
       while (Ke < we);
       return J.push(we), J;
     }), Ce = s(() => {
-      let J = " ".concat(Us).concat(v.value, "-");
-      return Us + "".concat(J).concat(n.switchMarkerLabelsSide === true ? "switched" : "standard").concat(J).concat(y.value === true ? "rtl" : "ltr");
-    }), Fe = s(() => n.markerLabels === false ? null : ze(n.markerLabels).map((J, ue) => ({ index: ue, value: J.value, label: J.label || J.value, classes: Ce.value + (J.classes !== void 0 ? " " + J.classes : ""), style: { ...Ie(J.value), ...J.style || {} } }))), de = s(() => ({ markerList: Fe.value, markerMap: nt.value, classes: Ce.value, getStyle: Ie })), Le = s(() => {
+      let J = ` ${Us}${v.value}-`;
+      return Us + `${J}${n.switchMarkerLabelsSide === true ? "switched" : "standard"}${J}${y.value === true ? "rtl" : "ltr"}`;
+    }), Fe = s(() => n.markerLabels === false ? null : ze(n.markerLabels).map((J, ue) => ({ index: ue, value: J.value, label: J.label || J.value, classes: Ce.value + (J.classes !== void 0 ? " " + J.classes : ""), style: __spreadValues(__spreadValues({}, Ie(J.value)), J.style || {}) }))), de = s(() => ({ markerList: Fe.value, markerMap: nt.value, classes: Ce.value, getStyle: Ie })), Le = s(() => {
       let J = D.value === 0 ? "2px" : 100 * ce.value / D.value;
-      return { ...j.value, backgroundSize: n.vertical === true ? "2px ".concat(J, "%") : "".concat(J, "% 2px") };
+      return __spreadProps(__spreadValues({}, j.value), { backgroundSize: n.vertical === true ? `2px ${J}%` : `${J}% 2px` });
     });
     function ze(J) {
       if (J === false) return null;
       if (J === true) return ge.value.map(xg);
       if (typeof J == "function") return ge.value.map((we) => {
         let Ke = J(we);
-        return ct(Ke) === true ? { ...Ke, value: we } : { value: we, label: Ke };
+        return ct(Ke) === true ? __spreadProps(__spreadValues({}, Ke), { value: we }) : { value: we, label: Ke };
       });
       let ue = ({ value: we }) => we >= n.min && we <= n.max;
       return Array.isArray(J) === true ? J.map((we) => ct(we) === true ? we : { value: we }).filter(ue) : Object.keys(J).map((we) => {
         let Ke = J[we], Pe = Number(we);
-        return ct(Ke) === true ? { ...Ke, value: Pe } : { value: Pe, label: Ke };
+        return ct(Ke) === true ? __spreadProps(__spreadValues({}, Ke), { value: Pe }) : { value: Pe, label: Ke };
       }).filter(ue);
     }
     function Ie(J) {
-      return { [F.value]: "".concat(100 * (J - n.min) / L.value, "%") };
+      return { [F.value]: `${100 * (J - n.min) / L.value}%` };
     }
     let nt = s(() => {
       if (n.markerLabels === false) return null;
@@ -2144,7 +2176,7 @@
     function ie() {
       if (l["marker-label-group"] !== void 0) return l["marker-label-group"](de.value);
       let J = l["marker-label"] || _g;
-      return Fe.value.map((ue) => J({ marker: ue, ...de.value }));
+      return Fe.value.map((ue) => J(__spreadValues({ marker: ue }, de.value)));
     }
     let G = s(() => [[Pt, me, void 0, { [C.value]: true, prevent: true, stop: true, mouse: true, mouseAllDir: true }]]);
     function me(J) {
@@ -2168,19 +2200,19 @@
     function lt(J) {
       if (n.vertical === true) return null;
       let ue = u.lang.rtl !== n.reverse ? 1 - J : J;
-      return { transform: "translateX(calc(".concat(2 * ue - 1, " * ").concat(n.thumbSize, " / 2 + ").concat(50 - 100 * ue, "%))") };
+      return { transform: `translateX(calc(${2 * ue - 1} * ${n.thumbSize} / 2 + ${50 - 100 * ue}%))` };
     }
     function te(J) {
-      let ue = s(() => p.value === false && (g.value === J.focusValue || g.value === "both") ? " q-slider--focus" : ""), we = s(() => "q-slider__thumb q-slider__thumb".concat(v.value, " q-slider__thumb").concat(v.value, "-").concat(y.value === true ? "rtl" : "ltr", " absolute non-selectable") + ue.value + (J.thumbColor.value !== void 0 ? " text-".concat(J.thumbColor.value) : "")), Ke = s(() => ({ width: n.thumbSize, height: n.thumbSize, [F.value]: "".concat(100 * J.ratio.value, "%"), zIndex: g.value === J.focusValue ? 2 : void 0 })), Pe = s(() => J.labelColor.value !== void 0 ? " text-".concat(J.labelColor.value) : ""), Je = s(() => lt(J.ratio.value)), mt = s(() => "q-slider__text" + (J.labelTextColor.value !== void 0 ? " text-".concat(J.labelTextColor.value) : ""));
+      let ue = s(() => p.value === false && (g.value === J.focusValue || g.value === "both") ? " q-slider--focus" : ""), we = s(() => `q-slider__thumb q-slider__thumb${v.value} q-slider__thumb${v.value}-${y.value === true ? "rtl" : "ltr"} absolute non-selectable` + ue.value + (J.thumbColor.value !== void 0 ? ` text-${J.thumbColor.value}` : "")), Ke = s(() => ({ width: n.thumbSize, height: n.thumbSize, [F.value]: `${100 * J.ratio.value}%`, zIndex: g.value === J.focusValue ? 2 : void 0 })), Pe = s(() => J.labelColor.value !== void 0 ? ` text-${J.labelColor.value}` : ""), Je = s(() => lt(J.ratio.value)), mt = s(() => "q-slider__text" + (J.labelTextColor.value !== void 0 ? ` text-${J.labelTextColor.value}` : ""));
       return () => {
         let qt = [i("svg", { class: "q-slider__thumb-shape absolute-full", viewBox: "0 0 20 20", "aria-hidden": "true" }, [i("path", { d: n.thumbPath })]), i("div", { class: "q-slider__focus-ring fit" })];
-        return (n.label === true || n.labelAlways === true) && (qt.push(i("div", { class: w.value + " absolute fit no-pointer-events" + Pe.value }, [i("div", { class: W.value, style: { minWidth: n.thumbSize } }, [i("div", { class: U.value, style: Je.value }, [i("span", { class: mt.value }, J.label.value)])])])), n.name !== void 0 && n.disable !== true && f(qt, "push")), i("div", { class: we.value, style: Ke.value, ...J.getNodeData() }, qt);
+        return (n.label === true || n.labelAlways === true) && (qt.push(i("div", { class: w.value + " absolute fit no-pointer-events" + Pe.value }, [i("div", { class: W.value, style: { minWidth: n.thumbSize } }, [i("div", { class: U.value, style: Je.value }, [i("span", { class: mt.value }, J.label.value)])])])), n.name !== void 0 && n.disable !== true && f(qt, "push")), i("div", __spreadValues({ class: we.value, style: Ke.value }, J.getNodeData()), qt);
       };
     }
     function se(J, ue, we, Ke) {
       let Pe = [];
       n.innerTrackColor !== "transparent" && Pe.push(i("div", { key: "inner", class: ae.value, style: j.value })), n.selectionColor !== "transparent" && Pe.push(i("div", { key: "selection", class: ee.value, style: J.value })), n.markers !== false && Pe.push(i("div", { key: "marker", class: ve.value, style: Le.value })), Ke(Pe);
-      let Je = [Rt("div", { key: "trackC", class: O.value, tabindex: ue.value, ...we.value }, [i("div", { class: M.value, style: V.value }, Pe)], "slide", b.value, () => G.value)];
+      let Je = [Rt("div", __spreadValues({ key: "trackC", class: O.value, tabindex: ue.value }, we.value), [i("div", { class: M.value, style: V.value }, Pe)], "slide", b.value, () => G.value)];
       if (n.markerLabels !== false) {
         let mt = n.switchMarkerLabelsSide === true ? "unshift" : "push";
         Je[mt](i("div", { key: "markerL", class: le.value }, ie()));
@@ -2191,15 +2223,15 @@
       document.removeEventListener("mouseup", Oe, true);
     }), { state: { active: d, focus: g, preventFocus: p, dragging: m, editable: b, classes: z, tabindex: E, attributes: A, roundValueFn: h, keyStep: _, trackLen: L, innerMin: k, innerMinRatio: Z, innerMax: S, innerMaxRatio: B, positionProp: F, sizeProp: $, isReversed: y }, methods: { onActivate: Ue, onMobileClick: He, onBlur: De, onKeyup: dt, getContent: se, getThumbRenderFn: te, convertRatioToModel: fe, convertModelToRatio: ke, getDraggingRatio: X } };
   }
-  var Cg = () => ({}), Jo = P({ name: "QSlider", props: { ...li, modelValue: { required: true, default: null, validator: (e) => typeof e == "number" || e === null }, labelValue: [String, Number] }, emits: ui, setup(e, { emit: t }) {
+  var Cg = () => ({}), Jo = P({ name: "QSlider", props: __spreadProps(__spreadValues({}, li), { modelValue: { required: true, default: null, validator: (e) => typeof e == "number" || e === null }, labelValue: [String, Number] }), emits: ui, setup(e, { emit: t }) {
     let { proxy: { $q: o } } = K(), { state: r, methods: n } = si({ updateValue: v, updatePosition: y, getDragging: x, formAttrs: Oo(e) }), a = T(null), l = T(0), u = T(0);
     function c() {
       u.value = e.modelValue === null ? r.innerMin.value : tt(e.modelValue, r.innerMin.value, r.innerMax.value);
     }
-    Y(() => "".concat(e.modelValue, "|").concat(r.innerMin.value, "|").concat(r.innerMax.value), c), c();
+    Y(() => `${e.modelValue}|${r.innerMin.value}|${r.innerMax.value}`, c), c();
     let f = s(() => n.convertModelToRatio(u.value)), d = s(() => r.active.value === true ? l.value : f.value), p = s(() => {
-      let b = { [r.positionProp.value]: "".concat(100 * r.innerMinRatio.value, "%"), [r.sizeProp.value]: "".concat(100 * (d.value - r.innerMinRatio.value), "%") };
-      return e.selectionImg !== void 0 && (b.backgroundImage = "url(".concat(e.selectionImg, ") !important")), b;
+      let b = { [r.positionProp.value]: `${100 * r.innerMinRatio.value}%`, [r.sizeProp.value]: `${100 * (d.value - r.innerMinRatio.value)}%` };
+      return e.selectionImg !== void 0 && (b.backgroundImage = `url(${e.selectionImg}) !important`), b;
     }), g = n.getThumbRenderFn({ focusValue: true, getNodeData: Cg, ratio: d, label: s(() => e.labelValue !== void 0 ? e.labelValue : u.value), thumbColor: s(() => e.thumbColor || e.color), labelColor: s(() => e.labelColor), labelTextColor: s(() => e.labelTextColor) }), m = s(() => r.editable.value !== true ? {} : o.platform.is.mobile === true ? { onClick: n.onMobileClick } : { onMousedown: n.onActivate, onFocus: k, onBlur: n.onBlur, onKeydown: S, onKeyup: n.onKeyup });
     function v(b) {
       u.value !== e.modelValue && t("update:modelValue", u.value), b === true && t("change", u.value);
@@ -2224,7 +2256,7 @@
       let b = n.getContent(p, r.tabindex, m, (h) => {
         h.push(g());
       });
-      return i("div", { ref: a, class: r.classes.value + (e.modelValue === null ? " q-slider--no-value" : ""), ...r.attributes.value, "aria-valuenow": e.modelValue }, b);
+      return i("div", __spreadProps(__spreadValues({ ref: a, class: r.classes.value + (e.modelValue === null ? " q-slider--no-value" : "") }, r.attributes.value), { "aria-valuenow": e.modelValue }), b);
     };
   } });
   function Mr() {
@@ -2280,14 +2312,14 @@
   }
   function wg(e, t, o) {
     let r = o === true ? ["left", "right"] : ["top", "bottom"];
-    return "absolute-".concat(t === true ? r[0] : r[1]).concat(e ? " text-".concat(e) : "");
+    return `absolute-${t === true ? r[0] : r[1]}${e ? ` text-${e}` : ""}`;
   }
   var kg = ["left", "center", "right", "justify"], aa = P({ name: "QTabs", props: { modelValue: [Number, String], align: { type: String, default: "center", validator: (e) => kg.includes(e) }, breakpoint: { type: [String, Number], default: 600 }, vertical: Boolean, shrink: Boolean, stretch: Boolean, activeClass: String, activeColor: String, activeBgColor: String, indicatorColor: String, leftIcon: String, rightIcon: String, outsideArrows: Boolean, mobileArrows: Boolean, switchIndicator: Boolean, narrowIndicator: Boolean, inlineLabel: Boolean, noCaps: Boolean, dense: Boolean, contentClass: String, "onUpdate:modelValue": [Function, Array] }, setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, { registerTick: a } = So(), { registerTick: l } = So(), { registerTick: u } = So(), { registerTimeout: c, removeTimeout: f } = Vt(), { registerTimeout: d, removeTimeout: p } = Vt(), g = T(null), m = T(null), v = T(e.modelValue), x = T(false), y = T(true), k = T(false), S = T(false), b = [], h = T(0), _ = T(false), E = null, L = null, D, Z = s(() => ({ activeClass: e.activeClass, activeColor: e.activeColor, activeBgColor: e.activeBgColor, indicatorClass: wg(e.indicatorColor, e.switchIndicator, e.vertical), narrowIndicator: e.narrowIndicator, inlineLabel: e.inlineLabel, noCaps: e.noCaps })), B = s(() => {
       let ie = h.value, G = v.value;
       for (let me = 0; me < ie; me++) if (b[me].name.value === G) return true;
       return false;
-    }), F = s(() => "q-tabs__content--align-".concat(x.value === true ? "left" : S.value === true ? "justify" : e.align)), $ = s(() => "q-tabs row no-wrap items-center q-tabs--".concat(x.value === true ? "" : "not-", "scrollable q-tabs--").concat(e.vertical === true ? "vertical" : "horizontal", " q-tabs__arrows--").concat(e.outsideArrows === true ? "outside" : "inside", " q-tabs--mobile-with").concat(e.mobileArrows === true ? "" : "out", "-arrows") + (e.dense === true ? " q-tabs--dense" : "") + (e.shrink === true ? " col-shrink" : "") + (e.stretch === true ? " self-stretch" : "")), q = s(() => "q-tabs__content scroll--mobile row no-wrap items-center self-stretch hide-scrollbar relative-position " + F.value + (e.contentClass !== void 0 ? " ".concat(e.contentClass) : "")), C = s(() => e.vertical === true ? { container: "height", content: "offsetHeight", scroll: "scrollHeight" } : { container: "width", content: "offsetWidth", scroll: "scrollWidth" }), A = s(() => e.vertical !== true && n.lang.rtl === true), z = s(() => $n === false && A.value === true);
+    }), F = s(() => `q-tabs__content--align-${x.value === true ? "left" : S.value === true ? "justify" : e.align}`), $ = s(() => `q-tabs row no-wrap items-center q-tabs--${x.value === true ? "" : "not-"}scrollable q-tabs--${e.vertical === true ? "vertical" : "horizontal"} q-tabs__arrows--${e.outsideArrows === true ? "outside" : "inside"} q-tabs--mobile-with${e.mobileArrows === true ? "" : "out"}-arrows` + (e.dense === true ? " q-tabs--dense" : "") + (e.shrink === true ? " col-shrink" : "") + (e.stretch === true ? " self-stretch" : "")), q = s(() => "q-tabs__content scroll--mobile row no-wrap items-center self-stretch hide-scrollbar relative-position " + F.value + (e.contentClass !== void 0 ? ` ${e.contentClass}` : "")), C = s(() => e.vertical === true ? { container: "height", content: "offsetHeight", scroll: "scrollHeight" } : { container: "width", content: "offsetWidth", scroll: "scrollWidth" }), A = s(() => e.vertical !== true && n.lang.rtl === true), z = s(() => $n === false && A.value === true);
     Y(A, w), Y(() => e.modelValue, (ie) => {
       H({ name: ie, setCurrent: true, skipEmit: true });
     }), Y(() => e.outsideArrows, Q);
@@ -2311,7 +2343,7 @@
         let Ue = me.tabIndicatorRef.value, Oe = De.tabIndicatorRef.value;
         E !== null && (clearTimeout(E), E = null), Ue.style.transition = "none", Ue.style.transform = "none", Oe.style.transition = "none", Oe.style.transform = "none";
         let He = Ue.getBoundingClientRect(), dt = Oe.getBoundingClientRect();
-        Oe.style.transform = e.vertical === true ? "translate3d(0,".concat(He.top - dt.top, "px,0) scale3d(1,").concat(dt.height ? He.height / dt.height : 1, ",1)") : "translate3d(".concat(He.left - dt.left, "px,0,0) scale3d(").concat(dt.width ? He.width / dt.width : 1, ",1,1)"), u(() => {
+        Oe.style.transform = e.vertical === true ? `translate3d(0,${He.top - dt.top}px,0) scale3d(1,${dt.height ? He.height / dt.height : 1},1)` : `translate3d(${He.left - dt.left}px,0,0) scale3d(${dt.width ? He.width / dt.width : 1},1,1)`, u(() => {
           E = setTimeout(() => {
             E = null, Oe.style.transition = "transform .25s cubic-bezier(.4, 0, .2, 1)", Oe.style.transform = "none";
           }, 70);
@@ -2448,11 +2480,11 @@
       Ie === true && (Ce(), nt = true, ge()), Q();
     }), () => i("div", { ref: g, class: $.value, role: "tablist", onFocusin: X, onFocusout: ce }, [i(no, { onResize: ee }), i("div", { ref: m, class: q.value, onScroll: w }, re(t.default)), i(Re, { class: "q-tabs__arrow q-tabs__arrow--left absolute q-tab__icon" + (y.value === true ? "" : " q-tabs__arrow--faded"), name: e.leftIcon || n.iconSet.tabs[e.vertical === true ? "up" : "left"], onMousedownPassive: U, onTouchstartPassive: U, onMouseupPassive: M, onMouseleavePassive: M, onTouchendPassive: M }), i(Re, { class: "q-tabs__arrow q-tabs__arrow--right absolute q-tab__icon" + (k.value === true ? "" : " q-tabs__arrow--faded"), name: e.rightIcon || n.iconSet.tabs[e.vertical === true ? "down" : "right"], onMousedownPassive: le, onTouchstartPassive: le, onMouseupPassive: M, onMouseleavePassive: M, onTouchendPassive: M })]);
   } });
-  var qg = 0, ci = ["click", "keydown"], di = { icon: String, label: [Number, String], alert: [Boolean, String], alertIcon: String, name: { type: [Number, String], default: () => "t_".concat(qg++) }, noCaps: Boolean, tabindex: [String, Number], disable: Boolean, contentClass: String, ripple: { type: [Boolean, Object], default: true } };
+  var qg = 0, ci = ["click", "keydown"], di = { icon: String, label: [Number, String], alert: [Boolean, String], alertIcon: String, name: { type: [Number, String], default: () => `t_${qg++}` }, noCaps: Boolean, tabindex: [String, Number], disable: Boolean, contentClass: String, ripple: { type: [Boolean, Object], default: true } };
   function fi(e, t, o, r) {
     let n = pt(Ba, Ze);
     if (n === Ze) return console.error("QTab/QRouteTab component needs to be child of QTabs"), Ze;
-    let { proxy: a } = K(), l = T(null), u = T(null), c = T(null), f = s(() => e.disable === true || e.ripple === false ? false : Object.assign({ keyCodes: [13, 32], early: true }, e.ripple === true ? {} : e.ripple)), d = s(() => n.currentModel.value === e.name), p = s(() => "q-tab relative-position self-stretch flex flex-center text-center" + (d.value === true ? " q-tab--active" + (n.tabProps.value.activeClass ? " " + n.tabProps.value.activeClass : "") + (n.tabProps.value.activeColor ? " text-".concat(n.tabProps.value.activeColor) : "") + (n.tabProps.value.activeBgColor ? " bg-".concat(n.tabProps.value.activeBgColor) : "") : " q-tab--inactive") + (e.icon && e.label && n.tabProps.value.inlineLabel === false ? " q-tab--full" : "") + (e.noCaps === true || n.tabProps.value.noCaps === true ? " q-tab--no-caps" : "") + (e.disable === true ? " disabled" : " q-focusable q-hoverable cursor-pointer") + (r !== void 0 ? r.linkClass.value : "")), g = s(() => "q-tab__content self-stretch flex-center relative-position q-anchor--skip non-selectable " + (n.tabProps.value.inlineLabel === true ? "row no-wrap q-tab__content--inline" : "column") + (e.contentClass !== void 0 ? " ".concat(e.contentClass) : "")), m = s(() => e.disable === true || n.hasFocus.value === true || d.value === false && n.hasActiveTab.value === true ? -1 : e.tabindex || 0);
+    let { proxy: a } = K(), l = T(null), u = T(null), c = T(null), f = s(() => e.disable === true || e.ripple === false ? false : Object.assign({ keyCodes: [13, 32], early: true }, e.ripple === true ? {} : e.ripple)), d = s(() => n.currentModel.value === e.name), p = s(() => "q-tab relative-position self-stretch flex flex-center text-center" + (d.value === true ? " q-tab--active" + (n.tabProps.value.activeClass ? " " + n.tabProps.value.activeClass : "") + (n.tabProps.value.activeColor ? ` text-${n.tabProps.value.activeColor}` : "") + (n.tabProps.value.activeBgColor ? ` bg-${n.tabProps.value.activeBgColor}` : "") : " q-tab--inactive") + (e.icon && e.label && n.tabProps.value.inlineLabel === false ? " q-tab--full" : "") + (e.noCaps === true || n.tabProps.value.noCaps === true ? " q-tab--no-caps" : "") + (e.disable === true ? " disabled" : " q-focusable q-hoverable cursor-pointer") + (r !== void 0 ? r.linkClass.value : "")), g = s(() => "q-tab__content self-stretch flex-center relative-position q-anchor--skip non-selectable " + (n.tabProps.value.inlineLabel === true ? "row no-wrap q-tab__content--inline" : "column") + (e.contentClass !== void 0 ? ` ${e.contentClass}` : "")), m = s(() => e.disable === true || n.hasFocus.value === true || d.value === false && n.hasActiveTab.value === true ? -1 : e.tabindex || 0);
     function v(b, h) {
       var _a2;
       if (h !== true && (b == null ? void 0 : b.qAvoidFocus) !== true && ((_a2 = l.value) == null ? void 0 : _a2.focus()), e.disable === true) {
@@ -2466,7 +2498,7 @@
       if (r.hasRouterLink.value === true) {
         let _ = (E = {}) => {
           let L, D = E.to === void 0 || Xt(E.to, e.to) === true ? n.avoidRouteWatcher = Lo() : null;
-          return r.navigateToRouterLink(b, { ...E, returnRouterError: true }).catch((Z) => {
+          return r.navigateToRouterLink(b, __spreadProps(__spreadValues({}, E), { returnRouterError: true })).catch((Z) => {
             L = Z;
           }).then((Z) => {
             var _a3;
@@ -2483,7 +2515,7 @@
     }
     function y() {
       let b = n.tabProps.value.narrowIndicator, h = [], _ = i("div", { ref: c, class: ["q-tab__indicator", n.tabProps.value.indicatorClass] });
-      e.icon !== void 0 && h.push(i(Re, { class: "q-tab__icon", name: e.icon })), e.label !== void 0 && h.push(i("div", { class: "q-tab__label" }, e.label)), e.alert !== false && h.push(e.alertIcon !== void 0 ? i(Re, { class: "q-tab__alert-icon", color: e.alert !== true ? e.alert : void 0, name: e.alertIcon }) : i("div", { class: "q-tab__alert" + (e.alert !== true ? " text-".concat(e.alert) : "") })), b === true && h.push(_);
+      e.icon !== void 0 && h.push(i(Re, { class: "q-tab__icon", name: e.icon })), e.label !== void 0 && h.push(i("div", { class: "q-tab__label" }, e.label)), e.alert !== false && h.push(e.alertIcon !== void 0 ? i(Re, { class: "q-tab__alert-icon", color: e.alert !== true ? e.alert : void 0, name: e.alertIcon }) : i("div", { class: "q-tab__alert" + (e.alert !== true ? ` text-${e.alert}` : "") })), b === true && h.push(_);
       let E = [i("div", { class: "q-focus-helper", tabindex: -1, ref: l }), i("div", { class: g.value }, Ge(t.default, h))];
       return b === false && E.push(_), E;
     }
@@ -2494,7 +2526,7 @@
       n.registerTab(k);
     });
     function S(b, h) {
-      let _ = { ref: u, class: p.value, tabindex: m.value, role: "tab", "aria-selected": d.value === true ? "true" : "false", "aria-disabled": e.disable === true ? "true" : void 0, onClick: v, onKeydown: x, ...h };
+      let _ = __spreadValues({ ref: u, class: p.value, tabindex: m.value, role: "tab", "aria-selected": d.value === true ? "true" : "false", "aria-disabled": e.disable === true ? "true" : void 0, onClick: v, onKeydown: x }, h);
       return Bt(i(b, _, y()), [[$o, f.value]]);
     }
     return { renderTab: S, $tabs: n };
@@ -2503,7 +2535,7 @@
     let { renderTab: r } = fi(e, t, o);
     return () => r("div");
   } });
-  var mi = P({ name: "QTabPanels", props: { ...Sr, ...Se }, emits: xr, setup(e, { slots: t }) {
+  var mi = P({ name: "QTabPanels", props: __spreadValues(__spreadValues({}, Sr), Se), emits: xr, setup(e, { slots: t }) {
     let o = K(), r = xe(e, o.proxy.$q), { updatePanelsList: n, getPanelContent: a, panelDirectives: l } = _r(), u = s(() => "q-tab-panels q-panel-parent" + (r.value === true ? " q-tab-panels--dark q-dark" : ""));
     return () => (n(t), Rt("div", { class: u.value }, a(), "pan", e.swipeable, () => l.value));
   } });
@@ -2518,7 +2550,7 @@
     return r = n ? (Math.round(255 * r / 100) | 256).toString(16).slice(1) : "", "#" + (o | t << 8 | e << 16 | 1 << 24).toString(16).slice(1) + r;
   }
   function Kl({ r: e, g: t, b: o, a: r }) {
-    return "rgb".concat(r !== void 0 ? "a" : "", "(").concat(e, ",").concat(t, ",").concat(o).concat(r !== void 0 ? "," + r / 100 : "", ")");
+    return `rgb${r !== void 0 ? "a" : ""}(${e},${t},${o}${r !== void 0 ? "," + r / 100 : ""})`;
   }
   function hi(e) {
     if (typeof e != "string") throw new TypeError("Expected a string");
@@ -2612,13 +2644,13 @@
   function $g(e) {
     if (typeof e != "string") throw new TypeError("Expected a string as color");
     let t = document.createElement("div");
-    t.className = "text-".concat(e, " invisible fixed no-pointer-events"), document.body.appendChild(t);
+    t.className = `text-${e} invisible fixed no-pointer-events`, document.body.appendChild(t);
     let o = getComputedStyle(t).getPropertyValue("color");
     return t.remove(), Bn(zo(o));
   }
   var Js = { rgbToHex: Bn, hexToRgb: hi, hsvToRgb: pi, rgbToHsv: ia, textToRgb: zo, lighten: Mg, luminosity: Wl, brightness: Rg, blend: Pg, changeAlpha: Ag, getPaletteColor: $g };
-  var Eg = ["rgb(255,204,204)", "rgb(255,230,204)", "rgb(255,255,204)", "rgb(204,255,204)", "rgb(204,255,230)", "rgb(204,255,255)", "rgb(204,230,255)", "rgb(204,204,255)", "rgb(230,204,255)", "rgb(255,204,255)", "rgb(255,153,153)", "rgb(255,204,153)", "rgb(255,255,153)", "rgb(153,255,153)", "rgb(153,255,204)", "rgb(153,255,255)", "rgb(153,204,255)", "rgb(153,153,255)", "rgb(204,153,255)", "rgb(255,153,255)", "rgb(255,102,102)", "rgb(255,179,102)", "rgb(255,255,102)", "rgb(102,255,102)", "rgb(102,255,179)", "rgb(102,255,255)", "rgb(102,179,255)", "rgb(102,102,255)", "rgb(179,102,255)", "rgb(255,102,255)", "rgb(255,51,51)", "rgb(255,153,51)", "rgb(255,255,51)", "rgb(51,255,51)", "rgb(51,255,153)", "rgb(51,255,255)", "rgb(51,153,255)", "rgb(51,51,255)", "rgb(153,51,255)", "rgb(255,51,255)", "rgb(255,0,0)", "rgb(255,128,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,128)", "rgb(0,255,255)", "rgb(0,128,255)", "rgb(0,0,255)", "rgb(128,0,255)", "rgb(255,0,255)", "rgb(245,0,0)", "rgb(245,123,0)", "rgb(245,245,0)", "rgb(0,245,0)", "rgb(0,245,123)", "rgb(0,245,245)", "rgb(0,123,245)", "rgb(0,0,245)", "rgb(123,0,245)", "rgb(245,0,245)", "rgb(214,0,0)", "rgb(214,108,0)", "rgb(214,214,0)", "rgb(0,214,0)", "rgb(0,214,108)", "rgb(0,214,214)", "rgb(0,108,214)", "rgb(0,0,214)", "rgb(108,0,214)", "rgb(214,0,214)", "rgb(163,0,0)", "rgb(163,82,0)", "rgb(163,163,0)", "rgb(0,163,0)", "rgb(0,163,82)", "rgb(0,163,163)", "rgb(0,82,163)", "rgb(0,0,163)", "rgb(82,0,163)", "rgb(163,0,163)", "rgb(92,0,0)", "rgb(92,46,0)", "rgb(92,92,0)", "rgb(0,92,0)", "rgb(0,92,46)", "rgb(0,92,92)", "rgb(0,46,92)", "rgb(0,0,92)", "rgb(46,0,92)", "rgb(92,0,92)", "rgb(255,255,255)", "rgb(205,205,205)", "rgb(178,178,178)", "rgb(153,153,153)", "rgb(127,127,127)", "rgb(102,102,102)", "rgb(76,76,76)", "rgb(51,51,51)", "rgb(25,25,25)", "rgb(0,0,0)"], ec = "M5 5 h10 v10 h-10 v-10 z", Bg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAH0lEQVQoU2NkYGAwZkAFZ5G5jPRRgOYEVDeB3EBjBQBOZwTVugIGyAAAAABJRU5ErkJggg==", tc = P({ name: "QColor", props: { ...Se, ...kt, modelValue: String, defaultValue: String, defaultView: { type: String, default: "spectrum", validator: (e) => ["spectrum", "tune", "palette"].includes(e) }, formatModel: { type: String, default: "auto", validator: (e) => ["auto", "hex", "rgb", "hexa", "rgba"].includes(e) }, palette: Array, noHeader: Boolean, noHeaderTabs: Boolean, noFooter: Boolean, square: Boolean, flat: Boolean, bordered: Boolean, disable: Boolean, readonly: Boolean }, emits: ["update:modelValue", "change"], setup(e, { emit: t }) {
-    let { proxy: o } = K(), { $q: r } = o, n = xe(e, r), { getCache: a } = xo(), l = T(null), u = T(null), c = s(() => e.formatModel === "auto" ? null : e.formatModel.indexOf("hex") !== -1), f = s(() => e.formatModel === "auto" ? null : e.formatModel.indexOf("a") !== -1), d = T(e.formatModel === "auto" ? e.modelValue === void 0 || e.modelValue === null || e.modelValue === "" || e.modelValue.startsWith("#") ? "hex" : "rgb" : e.formatModel.startsWith("hex") ? "hex" : "rgb"), p = T(e.defaultView), g = T($(e.modelValue || e.defaultValue)), m = s(() => e.disable !== true && e.readonly !== true), v = s(() => e.modelValue === void 0 || e.modelValue === null || e.modelValue === "" || e.modelValue.startsWith("#")), x = s(() => c.value !== null ? c.value : v.value), y = s(() => ({ type: "hidden", name: e.name, value: g.value[x.value === true ? "hex" : "rgb"] })), k = Zt(y), S = s(() => f.value !== null ? f.value : g.value.a !== void 0), b = s(() => ({ backgroundColor: g.value.rgb || "#000" })), h = s(() => "q-color-picker__header-content q-color-picker__header-content--".concat((g.value.a !== void 0 && g.value.a < 65 ? true : Wl(g.value) > 0.4) ? "light" : "dark")), _ = s(() => ({ background: "hsl(".concat(g.value.h, ",100%,50%)") })), E = s(() => ({ top: "".concat(100 - g.value.v, "%"), [r.lang.rtl === true ? "right" : "left"]: "".concat(g.value.s, "%") })), L = s(() => e.palette !== void 0 && e.palette.length !== 0 ? e.palette : Eg), D = s(() => "q-color-picker" + (e.bordered === true ? " q-color-picker--bordered" : "") + (e.square === true ? " q-color-picker--square no-border-radius" : "") + (e.flat === true ? " q-color-picker--flat no-shadow" : "") + (e.disable === true ? " disabled" : "") + (n.value === true ? " q-color-picker--dark q-dark" : "")), Z = s(() => e.disable === true ? { "aria-disabled": "true" } : {}), B = s(() => [[Pt, ee, void 0, { prevent: true, stop: true, mouse: true }]]);
+  var Eg = ["rgb(255,204,204)", "rgb(255,230,204)", "rgb(255,255,204)", "rgb(204,255,204)", "rgb(204,255,230)", "rgb(204,255,255)", "rgb(204,230,255)", "rgb(204,204,255)", "rgb(230,204,255)", "rgb(255,204,255)", "rgb(255,153,153)", "rgb(255,204,153)", "rgb(255,255,153)", "rgb(153,255,153)", "rgb(153,255,204)", "rgb(153,255,255)", "rgb(153,204,255)", "rgb(153,153,255)", "rgb(204,153,255)", "rgb(255,153,255)", "rgb(255,102,102)", "rgb(255,179,102)", "rgb(255,255,102)", "rgb(102,255,102)", "rgb(102,255,179)", "rgb(102,255,255)", "rgb(102,179,255)", "rgb(102,102,255)", "rgb(179,102,255)", "rgb(255,102,255)", "rgb(255,51,51)", "rgb(255,153,51)", "rgb(255,255,51)", "rgb(51,255,51)", "rgb(51,255,153)", "rgb(51,255,255)", "rgb(51,153,255)", "rgb(51,51,255)", "rgb(153,51,255)", "rgb(255,51,255)", "rgb(255,0,0)", "rgb(255,128,0)", "rgb(255,255,0)", "rgb(0,255,0)", "rgb(0,255,128)", "rgb(0,255,255)", "rgb(0,128,255)", "rgb(0,0,255)", "rgb(128,0,255)", "rgb(255,0,255)", "rgb(245,0,0)", "rgb(245,123,0)", "rgb(245,245,0)", "rgb(0,245,0)", "rgb(0,245,123)", "rgb(0,245,245)", "rgb(0,123,245)", "rgb(0,0,245)", "rgb(123,0,245)", "rgb(245,0,245)", "rgb(214,0,0)", "rgb(214,108,0)", "rgb(214,214,0)", "rgb(0,214,0)", "rgb(0,214,108)", "rgb(0,214,214)", "rgb(0,108,214)", "rgb(0,0,214)", "rgb(108,0,214)", "rgb(214,0,214)", "rgb(163,0,0)", "rgb(163,82,0)", "rgb(163,163,0)", "rgb(0,163,0)", "rgb(0,163,82)", "rgb(0,163,163)", "rgb(0,82,163)", "rgb(0,0,163)", "rgb(82,0,163)", "rgb(163,0,163)", "rgb(92,0,0)", "rgb(92,46,0)", "rgb(92,92,0)", "rgb(0,92,0)", "rgb(0,92,46)", "rgb(0,92,92)", "rgb(0,46,92)", "rgb(0,0,92)", "rgb(46,0,92)", "rgb(92,0,92)", "rgb(255,255,255)", "rgb(205,205,205)", "rgb(178,178,178)", "rgb(153,153,153)", "rgb(127,127,127)", "rgb(102,102,102)", "rgb(76,76,76)", "rgb(51,51,51)", "rgb(25,25,25)", "rgb(0,0,0)"], ec = "M5 5 h10 v10 h-10 v-10 z", Bg = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAYAAADED76LAAAAH0lEQVQoU2NkYGAwZkAFZ5G5jPRRgOYEVDeB3EBjBQBOZwTVugIGyAAAAABJRU5ErkJggg==", tc = P({ name: "QColor", props: __spreadProps(__spreadValues(__spreadValues({}, Se), kt), { modelValue: String, defaultValue: String, defaultView: { type: String, default: "spectrum", validator: (e) => ["spectrum", "tune", "palette"].includes(e) }, formatModel: { type: String, default: "auto", validator: (e) => ["auto", "hex", "rgb", "hexa", "rgba"].includes(e) }, palette: Array, noHeader: Boolean, noHeaderTabs: Boolean, noFooter: Boolean, square: Boolean, flat: Boolean, bordered: Boolean, disable: Boolean, readonly: Boolean }), emits: ["update:modelValue", "change"], setup(e, { emit: t }) {
+    let { proxy: o } = K(), { $q: r } = o, n = xe(e, r), { getCache: a } = xo(), l = T(null), u = T(null), c = s(() => e.formatModel === "auto" ? null : e.formatModel.indexOf("hex") !== -1), f = s(() => e.formatModel === "auto" ? null : e.formatModel.indexOf("a") !== -1), d = T(e.formatModel === "auto" ? e.modelValue === void 0 || e.modelValue === null || e.modelValue === "" || e.modelValue.startsWith("#") ? "hex" : "rgb" : e.formatModel.startsWith("hex") ? "hex" : "rgb"), p = T(e.defaultView), g = T($(e.modelValue || e.defaultValue)), m = s(() => e.disable !== true && e.readonly !== true), v = s(() => e.modelValue === void 0 || e.modelValue === null || e.modelValue === "" || e.modelValue.startsWith("#")), x = s(() => c.value !== null ? c.value : v.value), y = s(() => ({ type: "hidden", name: e.name, value: g.value[x.value === true ? "hex" : "rgb"] })), k = Zt(y), S = s(() => f.value !== null ? f.value : g.value.a !== void 0), b = s(() => ({ backgroundColor: g.value.rgb || "#000" })), h = s(() => `q-color-picker__header-content q-color-picker__header-content--${(g.value.a !== void 0 && g.value.a < 65 ? true : Wl(g.value) > 0.4) ? "light" : "dark"}`), _ = s(() => ({ background: `hsl(${g.value.h},100%,50%)` })), E = s(() => ({ top: `${100 - g.value.v}%`, [r.lang.rtl === true ? "right" : "left"]: `${g.value.s}%` })), L = s(() => e.palette !== void 0 && e.palette.length !== 0 ? e.palette : Eg), D = s(() => "q-color-picker" + (e.bordered === true ? " q-color-picker--bordered" : "") + (e.square === true ? " q-color-picker--square no-border-radius" : "") + (e.flat === true ? " q-color-picker--flat no-shadow" : "") + (e.disable === true ? " disabled" : "") + (n.value === true ? " q-color-picker--dark q-dark" : "")), Z = s(() => e.disable === true ? { "aria-disabled": "true" } : {}), B = s(() => [[Pt, ee, void 0, { prevent: true, stop: true, mouse: true }]]);
     Y(() => e.modelValue, (X) => {
       let ce = $(X || e.defaultValue);
       ce.hex !== g.value.hex && (g.value = ce);
@@ -2732,11 +2764,11 @@
     }
     function le() {
       let X = [];
-      return e.noHeaderTabs !== true && X.push(i(aa, { class: "q-color-picker__header-tabs", modelValue: d.value, dense: true, align: "justify", "onUpdate:modelValue": U }, () => [i(fn, { label: "HEX" + (S.value === true ? "A" : ""), name: "hex", ripple: false }), i(fn, { label: "RGB" + (S.value === true ? "A" : ""), name: "rgb", ripple: false })])), X.push(i("div", { class: "q-color-picker__header-banner row flex-center no-wrap" }, [i("input", { class: "fit", value: g.value[d.value], ...m.value !== true ? { readonly: true } : {}, ...a("topIn", { onInput: (ce) => {
+      return e.noHeaderTabs !== true && X.push(i(aa, { class: "q-color-picker__header-tabs", modelValue: d.value, dense: true, align: "justify", "onUpdate:modelValue": U }, () => [i(fn, { label: "HEX" + (S.value === true ? "A" : ""), name: "hex", ripple: false }), i(fn, { label: "RGB" + (S.value === true ? "A" : ""), name: "rgb", ripple: false })])), X.push(i("div", { class: "q-color-picker__header-banner row flex-center no-wrap" }, [i("input", __spreadValues(__spreadValues({ class: "fit", value: g.value[d.value] }, m.value !== true ? { readonly: true } : {}), a("topIn", { onInput: (ce) => {
         W(H(ce) === true);
       }, onChange: it, onBlur: (ce) => {
         H(ce, true) === true && o.$forceUpdate(), W(false);
-      } }) }), i(Re, { ref: u, class: "q-color-picker__error-icon absolute no-pointer-events", name: r.iconSet.type.negative })])), i("div", { class: "q-color-picker__header relative-position overflow-hidden" }, [i("div", { class: "q-color-picker__header-bg absolute-full" }), i("div", { class: h.value, style: b.value }, X)]);
+      } }))), i(Re, { ref: u, class: "q-color-picker__error-icon absolute no-pointer-events", name: r.iconSet.type.negative })])), i("div", { class: "q-color-picker__header relative-position overflow-hidden" }, [i("div", { class: "q-color-picker__header-bg absolute-full" }), i("div", { class: h.value, style: b.value }, X)]);
     }
     function M() {
       return i(mi, { modelValue: p.value, animated: true }, () => [i(Rr, { class: "q-color-picker__spectrum-tab overflow-hidden", name: "spectrum" }, j), i(Rr, { class: "q-pa-md q-color-picker__tune-tab", name: "tune" }, fe), i(Rr, { class: "q-color-picker__palette-tab", name: "palette" }, ke)]);
@@ -2748,21 +2780,21 @@
       return i("div", { class: "q-color-picker__footer relative-position overflow-hidden" }, [i(aa, { class: "absolute-full", modelValue: p.value, dense: true, align: "justify", "onUpdate:modelValue": V }, () => [i(fn, { icon: r.iconSet.colorPicker.spectrum, name: "spectrum", ripple: false }), i(fn, { icon: r.iconSet.colorPicker.tune, name: "tune", ripple: false }), i(fn, { icon: r.iconSet.colorPicker.palette, name: "palette", ripple: false })])]);
     }
     function j() {
-      let X = { ref: l, class: "q-color-picker__spectrum non-selectable relative-position cursor-pointer" + (m.value !== true ? " readonly" : ""), style: _.value, ...m.value === true ? { onClick: O, onMousedown: w } : {} }, ce = [i("div", { style: { paddingBottom: "100%" } }), i("div", { class: "q-color-picker__spectrum-white absolute-full" }), i("div", { class: "q-color-picker__spectrum-black absolute-full" }), i("div", { class: "absolute", style: E.value }, [g.value.hex !== void 0 ? i("div", { class: "q-color-picker__spectrum-circle" }) : null])], ge = [i(Jo, { class: "q-color-picker__hue non-selectable", modelValue: g.value.h, min: 0, max: 360, trackSize: "8px", innerTrackColor: "transparent", selectionColor: "transparent", readonly: m.value !== true, thumbPath: ec, "onUpdate:modelValue": C, onChange: A })];
-      return S.value === true && ge.push(i(Jo, { class: "q-color-picker__alpha non-selectable", modelValue: g.value.a, min: 0, max: 100, trackSize: "8px", trackColor: "white", innerTrackColor: "transparent", selectionColor: "transparent", trackImg: Bg, readonly: m.value !== true, hideSelection: true, thumbPath: ec, ...a("alphaSlide", { "onUpdate:modelValue": (Ce) => z(Ce, "a", 100), onChange: (Ce) => z(Ce, "a", 100, void 0, true) }) })), [Rt("div", X, ce, "spec", m.value, () => B.value), i("div", { class: "q-color-picker__sliders" }, ge)];
+      let X = __spreadValues({ ref: l, class: "q-color-picker__spectrum non-selectable relative-position cursor-pointer" + (m.value !== true ? " readonly" : ""), style: _.value }, m.value === true ? { onClick: O, onMousedown: w } : {}), ce = [i("div", { style: { paddingBottom: "100%" } }), i("div", { class: "q-color-picker__spectrum-white absolute-full" }), i("div", { class: "q-color-picker__spectrum-black absolute-full" }), i("div", { class: "absolute", style: E.value }, [g.value.hex !== void 0 ? i("div", { class: "q-color-picker__spectrum-circle" }) : null])], ge = [i(Jo, { class: "q-color-picker__hue non-selectable", modelValue: g.value.h, min: 0, max: 360, trackSize: "8px", innerTrackColor: "transparent", selectionColor: "transparent", readonly: m.value !== true, thumbPath: ec, "onUpdate:modelValue": C, onChange: A })];
+      return S.value === true && ge.push(i(Jo, __spreadValues({ class: "q-color-picker__alpha non-selectable", modelValue: g.value.a, min: 0, max: 100, trackSize: "8px", trackColor: "white", innerTrackColor: "transparent", selectionColor: "transparent", trackImg: Bg, readonly: m.value !== true, hideSelection: true, thumbPath: ec }, a("alphaSlide", { "onUpdate:modelValue": (Ce) => z(Ce, "a", 100), onChange: (Ce) => z(Ce, "a", 100, void 0, true) })))), [Rt("div", X, ce, "spec", m.value, () => B.value), i("div", { class: "q-color-picker__sliders" }, ge)];
     }
     function fe() {
-      return [i("div", { class: "row items-center no-wrap" }, [i("div", "R"), i(Jo, { modelValue: g.value.r, min: 0, max: 255, color: "red", dark: n.value, readonly: m.value !== true, ...a("rSlide", { "onUpdate:modelValue": (X) => z(X, "r", 255), onChange: (X) => z(X, "r", 255, void 0, true) }) }), i("input", { value: g.value.r, maxlength: 3, readonly: m.value !== true, onChange: it, ...a("rIn", { onInput: (X) => z(X.target.value, "r", 255, X), onBlur: (X) => z(X.target.value, "r", 255, X, true) }) })]), i("div", { class: "row items-center no-wrap" }, [i("div", "G"), i(Jo, { modelValue: g.value.g, min: 0, max: 255, color: "green", dark: n.value, readonly: m.value !== true, ...a("gSlide", { "onUpdate:modelValue": (X) => z(X, "g", 255), onChange: (X) => z(X, "g", 255, void 0, true) }) }), i("input", { value: g.value.g, maxlength: 3, readonly: m.value !== true, onChange: it, ...a("gIn", { onInput: (X) => z(X.target.value, "g", 255, X), onBlur: (X) => z(X.target.value, "g", 255, X, true) }) })]), i("div", { class: "row items-center no-wrap" }, [i("div", "B"), i(Jo, { modelValue: g.value.b, min: 0, max: 255, color: "blue", readonly: m.value !== true, dark: n.value, ...a("bSlide", { "onUpdate:modelValue": (X) => z(X, "b", 255), onChange: (X) => z(X, "b", 255, void 0, true) }) }), i("input", { value: g.value.b, maxlength: 3, readonly: m.value !== true, onChange: it, ...a("bIn", { onInput: (X) => z(X.target.value, "b", 255, X), onBlur: (X) => z(X.target.value, "b", 255, X, true) }) })]), S.value === true ? i("div", { class: "row items-center no-wrap" }, [i("div", "A"), i(Jo, { modelValue: g.value.a, color: "grey", readonly: m.value !== true, dark: n.value, ...a("aSlide", { "onUpdate:modelValue": (X) => z(X, "a", 100), onChange: (X) => z(X, "a", 100, void 0, true) }) }), i("input", { value: g.value.a, maxlength: 3, readonly: m.value !== true, onChange: it, ...a("aIn", { onInput: (X) => z(X.target.value, "a", 100, X), onBlur: (X) => z(X.target.value, "a", 100, X, true) }) })]) : null];
+      return [i("div", { class: "row items-center no-wrap" }, [i("div", "R"), i(Jo, __spreadValues({ modelValue: g.value.r, min: 0, max: 255, color: "red", dark: n.value, readonly: m.value !== true }, a("rSlide", { "onUpdate:modelValue": (X) => z(X, "r", 255), onChange: (X) => z(X, "r", 255, void 0, true) }))), i("input", __spreadValues({ value: g.value.r, maxlength: 3, readonly: m.value !== true, onChange: it }, a("rIn", { onInput: (X) => z(X.target.value, "r", 255, X), onBlur: (X) => z(X.target.value, "r", 255, X, true) })))]), i("div", { class: "row items-center no-wrap" }, [i("div", "G"), i(Jo, __spreadValues({ modelValue: g.value.g, min: 0, max: 255, color: "green", dark: n.value, readonly: m.value !== true }, a("gSlide", { "onUpdate:modelValue": (X) => z(X, "g", 255), onChange: (X) => z(X, "g", 255, void 0, true) }))), i("input", __spreadValues({ value: g.value.g, maxlength: 3, readonly: m.value !== true, onChange: it }, a("gIn", { onInput: (X) => z(X.target.value, "g", 255, X), onBlur: (X) => z(X.target.value, "g", 255, X, true) })))]), i("div", { class: "row items-center no-wrap" }, [i("div", "B"), i(Jo, __spreadValues({ modelValue: g.value.b, min: 0, max: 255, color: "blue", readonly: m.value !== true, dark: n.value }, a("bSlide", { "onUpdate:modelValue": (X) => z(X, "b", 255), onChange: (X) => z(X, "b", 255, void 0, true) }))), i("input", __spreadValues({ value: g.value.b, maxlength: 3, readonly: m.value !== true, onChange: it }, a("bIn", { onInput: (X) => z(X.target.value, "b", 255, X), onBlur: (X) => z(X.target.value, "b", 255, X, true) })))]), S.value === true ? i("div", { class: "row items-center no-wrap" }, [i("div", "A"), i(Jo, __spreadValues({ modelValue: g.value.a, color: "grey", readonly: m.value !== true, dark: n.value }, a("aSlide", { "onUpdate:modelValue": (X) => z(X, "a", 100), onChange: (X) => z(X, "a", 100, void 0, true) }))), i("input", __spreadValues({ value: g.value.a, maxlength: 3, readonly: m.value !== true, onChange: it }, a("aIn", { onInput: (X) => z(X.target.value, "a", 100, X), onBlur: (X) => z(X.target.value, "a", 100, X, true) })))]) : null];
     }
     function ke() {
-      let X = (ce) => i("div", { class: "q-color-picker__cube col-auto", style: { backgroundColor: ce }, ...m.value === true ? a("palette#" + ce, { onClick: () => {
+      let X = (ce) => i("div", __spreadValues({ class: "q-color-picker__cube col-auto", style: { backgroundColor: ce } }, m.value === true ? a("palette#" + ce, { onClick: () => {
         Q(ce);
-      } }) : {} });
+      } }) : {}));
       return [i("div", { class: "row items-center q-color-picker__palette-rows" + (m.value === true ? " q-color-picker__palette-rows--editable" : "") }, L.value.map(X))];
     }
     return () => {
       let X = [M()];
-      return e.name !== void 0 && e.disable !== true && k(X, "push"), e.noHeader !== true && X.unshift(le()), e.noFooter !== true && X.push(ae()), i("div", { class: D.value, ...Z.value }, X);
+      return e.name !== void 0 && e.disable !== true && k(X, "push"), e.noHeader !== true && X.unshift(le()), e.noFooter !== true && X.push(ae()), i("div", __spreadValues({ class: D.value }, Z.value), X);
     };
   } });
   var mn = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
@@ -2827,10 +2859,10 @@
   function yi(e, t) {
     let o = s(() => e.disable !== true && e.readonly !== true), r = s(() => o.value === true ? 0 : -1), n = s(() => {
       let u = [];
-      return e.color !== void 0 && u.push("bg-".concat(e.color)), e.textColor !== void 0 && u.push("text-".concat(e.textColor)), u.join(" ");
+      return e.color !== void 0 && u.push(`bg-${e.color}`), e.textColor !== void 0 && u.push(`text-${e.textColor}`), u.join(" ");
     });
     function a() {
-      return e.locale !== void 0 ? { ...t.lang.date, ...e.locale } : t.lang.date;
+      return e.locale !== void 0 ? __spreadValues(__spreadValues({}, t.lang.date), e.locale) : t.lang.date;
     }
     function l(u) {
       let c = /* @__PURE__ */ new Date(), f = u === true ? null : 0;
@@ -2945,26 +2977,26 @@
     return t.year !== void 0 && (r += o * t.year, delete t.year), t.month !== void 0 && (n += o * t.month, delete t.month), e.setDate(1), e.setMonth(2), e.setFullYear(r), e.setMonth(n), e.setDate(Math.min(a, tu(e))), t.date !== void 0 && (e.setDate(e.getDate() + o * t.date), delete t.date), e;
   }
   function jg(e, t, o) {
-    let r = t.year !== void 0 ? t.year : e["get".concat(o, "FullYear")](), n = t.month !== void 0 ? t.month - 1 : e["get".concat(o, "Month")](), a = new Date(r, n + 1, 0).getDate(), l = Math.min(a, t.date !== void 0 ? t.date : e["get".concat(o, "Date")]());
-    return e["set".concat(o, "Date")](1), e["set".concat(o, "Month")](2), e["set".concat(o, "FullYear")](r), e["set".concat(o, "Month")](n), e["set".concat(o, "Date")](l), delete t.year, delete t.month, delete t.date, e;
+    let r = t.year !== void 0 ? t.year : e[`get${o}FullYear`](), n = t.month !== void 0 ? t.month - 1 : e[`get${o}Month`](), a = new Date(r, n + 1, 0).getDate(), l = Math.min(a, t.date !== void 0 ? t.date : e[`get${o}Date`]());
+    return e[`set${o}Date`](1), e[`set${o}Month`](2), e[`set${o}FullYear`](r), e[`set${o}Month`](n), e[`set${o}Date`](l), delete t.year, delete t.month, delete t.date, e;
   }
   function eu(e, t, o) {
     let r = cc(t), n = new Date(e), a = r.year !== void 0 || r.month !== void 0 || r.date !== void 0 ? Qg(n, r, o) : n;
     for (let l in r) {
       let u = Tl(l);
-      a["set".concat(u)](a["get".concat(u)]() + o * r[l]);
+      a[`set${u}`](a[`get${u}`]() + o * r[l]);
     }
     return a;
   }
   function cc(e) {
-    let t = { ...e };
+    let t = __spreadValues({}, e);
     return e.years !== void 0 && (t.year = e.years, delete t.years), e.months !== void 0 && (t.month = e.months, delete t.months), e.days !== void 0 && (t.date = e.days, delete t.days), e.day !== void 0 && (t.date = e.day, delete t.day), e.hour !== void 0 && (t.hours = e.hour, delete t.hour), e.minute !== void 0 && (t.minutes = e.minute, delete t.minute), e.second !== void 0 && (t.seconds = e.second, delete t.second), e.millisecond !== void 0 && (t.milliseconds = e.millisecond, delete t.millisecond), t;
   }
   function dc(e, t, o) {
     let r = cc(t), n = o === true ? "UTC" : "", a = new Date(e), l = r.year !== void 0 || r.month !== void 0 || r.date !== void 0 ? jg(a, r, n) : a;
     for (let u in r) {
       let c = u.charAt(0).toUpperCase() + u.slice(1);
-      l["set".concat(n).concat(c)](r[u]);
+      l[`set${n}${c}`](r[u]);
     }
     return l;
   }
@@ -2998,7 +3030,7 @@
         let m = r !== "persian" ? new Date(a.year, a.month, 0).getDate() : Pr(a.year, a.month);
         if (a.day > m) return a;
       }
-      d.H !== void 0 ? a.hour = parseInt(p[d.H], 10) % 24 : d.h !== void 0 && (a.hour = parseInt(p[d.h], 10) % 12, (d.A && p[d.A] === "PM" || d.a && p[d.a] === "pm" || d.aa && p[d.aa] === "p.m.") && (a.hour += 12), a.hour = a.hour % 24), d.m !== void 0 && (a.minute = parseInt(p[d.m], 10) % 60), d.s !== void 0 && (a.second = parseInt(p[d.s], 10) % 60), d.S !== void 0 && (a.millisecond = parseInt(p[d.S], 10) * 10 ** (3 - p[d.S].length)), (d.Z !== void 0 || d.ZZ !== void 0) && (g = d.Z !== void 0 ? p[d.Z].replace(":", "") : p[d.ZZ], a.timezoneOffset = (g[0] === "+" ? -1 : 1) * (60 * g.slice(1, 3) + 1 * g.slice(3, 5)));
+      d.H !== void 0 ? a.hour = parseInt(p[d.H], 10) % 24 : d.h !== void 0 && (a.hour = parseInt(p[d.h], 10) % 12, (d.A && p[d.A] === "PM" || d.a && p[d.a] === "pm" || d.aa && p[d.aa] === "p.m.") && (a.hour += 12), a.hour = a.hour % 24), d.m !== void 0 && (a.minute = parseInt(p[d.m], 10) % 60), d.s !== void 0 && (a.second = parseInt(p[d.s], 10) % 60), d.S !== void 0 && (a.millisecond = parseInt(p[d.S], 10) * __pow(10, 3 - p[d.S].length)), (d.Z !== void 0 || d.ZZ !== void 0) && (g = d.Z !== void 0 ? p[d.Z].replace(":", "") : p[d.ZZ], a.timezoneOffset = (g[0] === "+" ? -1 : 1) * (60 * g.slice(1, 3) + 1 * g.slice(3, 5)));
     }
     return a.dateHash = rt(a.year, 4) + "/" + rt(a.month) + "/" + rt(a.day), a.timeHash = rt(a.hour) + ":" + rt(a.minute) + ":" + rt(a.second) + g, a;
   }
@@ -3040,52 +3072,52 @@
     return eu(e, t, -1);
   }
   function Io(e, t, o) {
-    let r = new Date(e), n = "set".concat(o === true ? "UTC" : "");
+    let r = new Date(e), n = `set${o === true ? "UTC" : ""}`;
     switch (t) {
       case "year":
       case "years":
-        r["".concat(n, "Month")](0);
+        r[`${n}Month`](0);
       case "month":
       case "months":
-        r["".concat(n, "Date")](1);
+        r[`${n}Date`](1);
       case "day":
       case "days":
       case "date":
-        r["".concat(n, "Hours")](0);
+        r[`${n}Hours`](0);
       case "hour":
       case "hours":
-        r["".concat(n, "Minutes")](0);
+        r[`${n}Minutes`](0);
       case "minute":
       case "minutes":
-        r["".concat(n, "Seconds")](0);
+        r[`${n}Seconds`](0);
       case "second":
       case "seconds":
-        r["".concat(n, "Milliseconds")](0);
+        r[`${n}Milliseconds`](0);
     }
     return r;
   }
   function eh(e, t, o) {
-    let r = new Date(e), n = "set".concat(o === true ? "UTC" : "");
+    let r = new Date(e), n = `set${o === true ? "UTC" : ""}`;
     switch (t) {
       case "year":
       case "years":
-        r["".concat(n, "Month")](11);
+        r[`${n}Month`](11);
       case "month":
       case "months":
-        r["".concat(n, "Date")](tu(r));
+        r[`${n}Date`](tu(r));
       case "day":
       case "days":
       case "date":
-        r["".concat(n, "Hours")](23);
+        r[`${n}Hours`](23);
       case "hour":
       case "hours":
-        r["".concat(n, "Minutes")](59);
+        r[`${n}Minutes`](59);
       case "minute":
       case "minutes":
-        r["".concat(n, "Seconds")](59);
+        r[`${n}Seconds`](59);
       case "second":
       case "seconds":
-        r["".concat(n, "Milliseconds")](999);
+        r[`${n}Milliseconds`](999);
     }
     return r;
   }
@@ -3171,7 +3203,7 @@
         if (r.getFullYear() !== n.getFullYear()) return false;
         break;
       default:
-        throw new Error("date isSameDate unknown unit ".concat(o));
+        throw new Error(`date isSameDate unknown unit ${o}`);
     }
     return true;
   }
@@ -3179,16 +3211,16 @@
     return new Date(e.getFullYear(), e.getMonth() + 1, 0).getDate();
   }
   function $r(e) {
-    if (e >= 11 && e <= 13) return "".concat(e, "th");
+    if (e >= 11 && e <= 13) return `${e}th`;
     switch (e % 10) {
       case 1:
-        return "".concat(e, "st");
+        return `${e}st`;
       case 2:
-        return "".concat(e, "nd");
+        return `${e}nd`;
       case 3:
-        return "".concat(e, "rd");
+        return `${e}rd`;
     }
-    return "".concat(e, "th");
+    return `${e}th`;
   }
   var ic = { YY(e, t, o) {
     let r = this.YYYY(e, t, o) % 100;
@@ -3295,10 +3327,10 @@
   function gn(e) {
     return e.year + "/" + rt(e.month);
   }
-  var vc = P({ name: "QDate", props: { ...Ar, ...kt, ...Se, modelValue: { required: true, validator: (e) => typeof e == "string" || Array.isArray(e) === true || Object(e) === e || e === null }, multiple: Boolean, range: Boolean, title: String, subtitle: String, mask: { ...Ar.mask, default: "YYYY/MM/DD" }, defaultYearMonth: { type: String, validator: ou }, yearsInMonthView: Boolean, events: [Array, Function], eventColor: [String, Function], emitImmediately: Boolean, options: [Array, Function], navigationMinYearMonth: { type: String, validator: ou }, navigationMaxYearMonth: { type: String, validator: ou }, noUnset: Boolean, firstDayOfWeek: [String, Number], todayBtn: Boolean, minimal: Boolean, defaultView: { type: String, default: "Calendar", validator: mc } }, emits: [...bi, "rangeStart", "rangeEnd", "navigation"], setup(e, { slots: t, emit: o }) {
+  var vc = P({ name: "QDate", props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Ar), kt), Se), { modelValue: { required: true, validator: (e) => typeof e == "string" || Array.isArray(e) === true || Object(e) === e || e === null }, multiple: Boolean, range: Boolean, title: String, subtitle: String, mask: __spreadProps(__spreadValues({}, Ar.mask), { default: "YYYY/MM/DD" }), defaultYearMonth: { type: String, validator: ou }, yearsInMonthView: Boolean, events: [Array, Function], eventColor: [String, Function], emitImmediately: Boolean, options: [Array, Function], navigationMinYearMonth: { type: String, validator: ou }, navigationMaxYearMonth: { type: String, validator: ou }, noUnset: Boolean, firstDayOfWeek: [String, Number], todayBtn: Boolean, minimal: Boolean, defaultView: { type: String, default: "Calendar", validator: mc } }), emits: [...bi, "rangeStart", "rangeEnd", "navigation"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = xe(e, n), { getCache: l } = xo(), { tabindex: u, headerClass: c, getLocale: f, getCurrentDate: d } = yi(e, n), p, g = Oo(e), m = Zt(g), v = T(null), x = T(dt()), y = T(f()), k = s(() => dt()), S = s(() => f()), b = s(() => d()), h = T(te(x.value, y.value)), _ = T(e.defaultView), E = s(() => n.lang.rtl === true ? "right" : "left"), L = T(E.value), D = T(E.value), Z = h.value.year, B = T(Z - Z % en - (Z < 0 ? en : 0)), F = T(null), $ = s(() => {
       let R = e.landscape === true ? "landscape" : "portrait";
-      return "q-date q-date--".concat(R, " q-date--").concat(R, "-").concat(e.minimal === true ? "minimal" : "standard") + (a.value === true ? " q-date--dark q-dark" : "") + (e.bordered === true ? " q-date--bordered" : "") + (e.square === true ? " q-date--square no-border-radius" : "") + (e.flat === true ? " q-date--flat no-shadow" : "") + (e.disable === true ? " disabled" : e.readonly === true ? " q-date--readonly" : "");
+      return `q-date q-date--${R} q-date--${R}-${e.minimal === true ? "minimal" : "standard"}` + (a.value === true ? " q-date--dark q-dark" : "") + (e.bordered === true ? " q-date--bordered" : "") + (e.square === true ? " q-date--square no-border-radius" : "") + (e.flat === true ? " q-date--flat no-shadow" : "") + (e.disable === true ? " disabled" : e.readonly === true ? " q-date--readonly" : "");
     }), q = s(() => e.color || "primary"), C = s(() => e.textColor || "white"), A = s(() => e.emitImmediately === true && e.multiple !== true && e.range !== true), z = s(() => Array.isArray(e.modelValue) === true ? e.modelValue : e.modelValue !== null && e.modelValue !== void 0 ? [e.modelValue] : []), H = s(() => z.value.filter((R) => typeof R == "string").map((R) => lt(R, x.value, y.value)).filter((R) => R.dateHash !== null && R.day !== null && R.month !== null && R.year !== null)), Q = s(() => {
       let R = (I) => lt(I, x.value, y.value);
       return z.value.filter((I) => ct(I) === true && I.from !== void 0 && I.to !== void 0).map((I) => ({ from: R(I.from), to: R(I.to) })).filter((I) => I.from.dateHash !== null && I.to.dateHash !== null && I.from.dateHash < I.to.dateHash);
@@ -3312,7 +3344,7 @@
         return y.value.daysShort[pe.getDay()] + ", " + y.value.monthsShort[ne.month - 1] + " " + ne.day + Er + "?";
       }
       if (O.value === 0) return Er;
-      if (O.value > 1) return "".concat(O.value, " ").concat(y.value.pluralDay);
+      if (O.value > 1) return `${O.value} ${y.value.pluralDay}`;
       let R = H.value[0], I = ee.value(R);
       return isNaN(I.valueOf()) === true ? Er : y.value.headerTitle !== void 0 ? y.value.headerTitle(I, R) : y.value.daysShort[I.getDay()] + ", " + y.value.monthsShort[R.month - 1] + " " + R.day;
     }), W = s(() => H.value.concat(Q.value.map((I) => I.from)).sort((I, ne) => I.year - ne.year || I.month - ne.month)[0]), U = s(() => H.value.concat(Q.value.map((I) => I.to)).sort((I, ne) => ne.year - I.year || ne.month - I.month)[0]), le = s(() => {
@@ -3434,7 +3466,7 @@
       }
       return R.forEach((Me) => {
         let Ne = "q-date__calendar-item ";
-        Me.fill === true ? Ne += "q-date__calendar-item--fill" : (Ne += "q-date__calendar-item--".concat(Me.in === true ? "in" : "out"), Me.range !== void 0 && (Ne += " q-date__range".concat(Me.rangeTo === true ? "-to" : Me.rangeFrom === true ? "-from" : "")), Me.editRange === true && (Ne += " q-date__edit-range".concat(Me.editRangeFrom === true ? "-from" : "").concat(Me.editRangeTo === true ? "-to" : "")), (Me.range !== void 0 || Me.editRange === true) && (Ne += " text-".concat(Me.color))), Me.classes = Ne;
+        Me.fill === true ? Ne += "q-date__calendar-item--fill" : (Ne += `q-date__calendar-item--${Me.in === true ? "in" : "out"}`, Me.range !== void 0 && (Ne += ` q-date__range${Me.rangeTo === true ? "-to" : Me.rangeFrom === true ? "-from" : ""}`), Me.editRange === true && (Ne += ` q-date__edit-range${Me.editRangeFrom === true ? "-from" : ""}${Me.editRangeTo === true ? "-to" : ""}`), (Me.range !== void 0 || Me.editRange === true) && (Ne += ` text-${Me.color}`)), Me.classes = Ne;
       }), R;
     }), ie = s(() => e.disable === true ? { "aria-disabled": "true" } : {});
     Y(() => e.modelValue, (R) => {
@@ -3456,7 +3488,7 @@
       p = JSON.stringify(R);
     }
     function me() {
-      let { year: R, month: I, day: ne } = b.value, pe = { ...h.value, year: R, month: I, day: ne }, ye = ge.value[gn(pe)];
+      let { year: R, month: I, day: ne } = b.value, pe = __spreadProps(__spreadValues({}, h.value), { year: R, month: I, day: ne }), ye = ge.value[gn(pe)];
       (ye === void 0 || ye.includes(pe.day) === false) && jo(pe), Oe(pe.year, pe.month);
     }
     function De(R) {
@@ -3473,7 +3505,7 @@
         F.value = null;
         return;
       }
-      let ne = Object.assign({ ...h.value }, R), pe = I !== void 0 ? Object.assign({ ...h.value }, I) : ne;
+      let ne = Object.assign(__spreadValues({}, h.value), R), pe = I !== void 0 ? Object.assign(__spreadValues({}, h.value), I) : ne;
       F.value = { init: ne, initHash: Co(ne), final: pe, finalHash: Co(pe) }, Oe(ne.year, ne.month);
     }
     function dt() {
@@ -3535,7 +3567,7 @@
       G(pe), o("update:modelValue", pe, ye, ot);
     }
     function jt(R) {
-      let I = H.value[0] !== void 0 && H.value[0].dateHash !== null ? { ...H.value[0] } : { ...h.value };
+      let I = H.value[0] !== void 0 && H.value[0].dateHash !== null ? __spreadValues({}, H.value[0]) : __spreadValues({}, h.value);
       Be(() => {
         I.year = h.value.year, I.month = h.value.month;
         let ne = e.calendar !== "persian" ? new Date(I.year, I.month, 0).getDate() : Pr(I.year, I.month);
@@ -3545,7 +3577,7 @@
       });
     }
     function nn(R, I) {
-      return I.from !== void 0 ? { reason: "".concat(R, "-range"), details: { ...Je(I.target), from: Je(I.from), to: Je(I.to) } } : { reason: "".concat(R, "-day"), details: Je(I) };
+      return I.from !== void 0 ? { reason: `${R}-range`, details: __spreadProps(__spreadValues({}, Je(I.target)), { from: Je(I.from), to: Je(I.to) }) } : { reason: `${R}-day`, details: Je(I) };
     }
     function ao(R, I, ne) {
       return R.from !== void 0 ? { from: ve.value(R.from, I, ne), to: ve.value(R.to, I, ne) } : ve.value(R, I, ne);
@@ -3576,53 +3608,53 @@
       G(ye), o("update:modelValue", ye, ne);
     }
     function Ee() {
-      if (e.minimal !== true) return i("div", { class: "q-date__header " + c.value }, [i("div", { class: "relative-position" }, [i(st, { name: "q-transition--fade" }, () => i("div", { key: "h-yr-" + le.value, class: "q-date__header-subtitle q-date__header-link " + (_.value === "Years" ? "q-date__header-link--active" : "cursor-pointer"), tabindex: u.value, ...l("vY", { onClick() {
+      if (e.minimal !== true) return i("div", { class: "q-date__header " + c.value }, [i("div", { class: "relative-position" }, [i(st, { name: "q-transition--fade" }, () => i("div", __spreadValues({ key: "h-yr-" + le.value, class: "q-date__header-subtitle q-date__header-link " + (_.value === "Years" ? "q-date__header-link--active" : "cursor-pointer"), tabindex: u.value }, l("vY", { onClick() {
         _.value = "Years";
       }, onKeyup(R) {
         R.keyCode === 13 && (_.value = "Years");
-      } }) }, [le.value]))]), i("div", { class: "q-date__header-title relative-position flex no-wrap" }, [i("div", { class: "relative-position col" }, [i(st, { name: "q-transition--fade" }, () => i("div", { key: "h-sub" + w.value, class: "q-date__header-title-label q-date__header-link " + (_.value === "Calendar" ? "q-date__header-link--active" : "cursor-pointer"), tabindex: u.value, ...l("vC", { onClick() {
+      } })), [le.value]))]), i("div", { class: "q-date__header-title relative-position flex no-wrap" }, [i("div", { class: "relative-position col" }, [i(st, { name: "q-transition--fade" }, () => i("div", __spreadValues({ key: "h-sub" + w.value, class: "q-date__header-title-label q-date__header-link " + (_.value === "Calendar" ? "q-date__header-link--active" : "cursor-pointer"), tabindex: u.value }, l("vC", { onClick() {
         _.value = "Calendar";
       }, onKeyup(R) {
         R.keyCode === 13 && (_.value = "Calendar");
-      } }) }, [w.value]))]), e.todayBtn === true ? i(Ve, { class: "q-date__header-today self-start", icon: n.iconSet.datetime.today, "aria-label": n.lang.date.today, flat: true, size: "sm", round: true, tabindex: u.value, onClick: me }) : null])]);
+      } })), [w.value]))]), e.todayBtn === true ? i(Ve, { class: "q-date__header-today self-start", icon: n.iconSet.datetime.today, "aria-label": n.lang.date.today, flat: true, size: "sm", round: true, tabindex: u.value, onClick: me }) : null])]);
     }
     function $e({ label: R, type: I, key: ne, dir: pe, goTo: ye, boundaries: ot, cls: Me }) {
-      return [i("div", { class: "row items-center q-date__arrow" }, [i(Ve, { round: true, dense: true, size: "sm", flat: true, icon: M.value[0], "aria-label": I === "Years" ? n.lang.date.prevYear : n.lang.date.prevMonth, tabindex: u.value, disable: ot.prev === false, ...l("go-#" + I, { onClick() {
+      return [i("div", { class: "row items-center q-date__arrow" }, [i(Ve, __spreadValues({ round: true, dense: true, size: "sm", flat: true, icon: M.value[0], "aria-label": I === "Years" ? n.lang.date.prevYear : n.lang.date.prevMonth, tabindex: u.value, disable: ot.prev === false }, l("go-#" + I, { onClick() {
         ye(-1);
-      } }) })]), i("div", { class: "relative-position overflow-hidden flex flex-center" + Me }, [i(st, { name: "q-transition--jump-" + pe }, () => i("div", { key: ne }, [i(Ve, { flat: true, dense: true, noCaps: true, label: R, tabindex: u.value, ...l("view#" + I, { onClick: () => {
+      } })))]), i("div", { class: "relative-position overflow-hidden flex flex-center" + Me }, [i(st, { name: "q-transition--jump-" + pe }, () => i("div", { key: ne }, [i(Ve, __spreadValues({ flat: true, dense: true, noCaps: true, label: R, tabindex: u.value }, l("view#" + I, { onClick: () => {
         _.value = I;
-      } }) })]))]), i("div", { class: "row items-center q-date__arrow" }, [i(Ve, { round: true, dense: true, size: "sm", flat: true, icon: M.value[1], "aria-label": I === "Years" ? n.lang.date.nextYear : n.lang.date.nextMonth, tabindex: u.value, disable: ot.next === false, ...l("go+#" + I, { onClick() {
+      } })))]))]), i("div", { class: "row items-center q-date__arrow" }, [i(Ve, __spreadValues({ round: true, dense: true, size: "sm", flat: true, icon: M.value[1], "aria-label": I === "Years" ? n.lang.date.nextYear : n.lang.date.nextMonth, tabindex: u.value, disable: ot.next === false }, l("go+#" + I, { onClick() {
         ye(1);
-      } }) })])];
+      } })))])];
     }
-    let Xe = { Calendar: () => [i("div", { key: "calendar-view", class: "q-date__view q-date__calendar" }, [i("div", { class: "q-date__navigation row items-center no-wrap" }, $e({ label: y.value.months[h.value.month - 1], type: "Months", key: h.value.month, dir: L.value, goTo: J, boundaries: ce.value.month, cls: " col" }).concat($e({ label: h.value.year, type: "Years", key: h.value.year, dir: D.value, goTo: ue, boundaries: ce.value.year, cls: "" }))), i("div", { class: "q-date__calendar-weekdays row items-center no-wrap" }, ae.value.map((R) => i("div", { class: "q-date__calendar-item" }, [i("div", R)]))), i("div", { class: "q-date__calendar-days-container relative-position overflow-hidden" }, [i(st, { name: "q-transition--slide-" + L.value }, () => i("div", { key: de.value, class: "q-date__calendar-days fit" }, nt.value.map((R) => i("div", { class: R.classes }, [R.in === true ? i(Ve, { class: R.today === true ? "q-date__today" : "", dense: true, flat: R.flat, unelevated: R.unelevated, color: R.color, textColor: R.textColor, label: R.i, tabindex: u.value, ...l("day#" + R.i, { onClick: () => {
+    let Xe = { Calendar: () => [i("div", { key: "calendar-view", class: "q-date__view q-date__calendar" }, [i("div", { class: "q-date__navigation row items-center no-wrap" }, $e({ label: y.value.months[h.value.month - 1], type: "Months", key: h.value.month, dir: L.value, goTo: J, boundaries: ce.value.month, cls: " col" }).concat($e({ label: h.value.year, type: "Years", key: h.value.year, dir: D.value, goTo: ue, boundaries: ce.value.year, cls: "" }))), i("div", { class: "q-date__calendar-weekdays row items-center no-wrap" }, ae.value.map((R) => i("div", { class: "q-date__calendar-item" }, [i("div", R)]))), i("div", { class: "q-date__calendar-days-container relative-position overflow-hidden" }, [i(st, { name: "q-transition--slide-" + L.value }, () => i("div", { key: de.value, class: "q-date__calendar-days fit" }, nt.value.map((R) => i("div", { class: R.classes }, [R.in === true ? i(Ve, __spreadValues({ class: R.today === true ? "q-date__today" : "", dense: true, flat: R.flat, unelevated: R.unelevated, color: R.color, textColor: R.textColor, label: R.i, tabindex: u.value }, l("day#" + R.i, { onClick: () => {
       St(R.i);
     }, onMouseover: () => {
       bt(R.i);
-    } }) }, R.event !== false ? () => i("div", { class: "q-date__event bg-" + R.event }) : null) : i("div", "" + R.i)]))))])])], Months() {
+    } })), R.event !== false ? () => i("div", { class: "q-date__event bg-" + R.event }) : null) : i("div", "" + R.i)]))))])])], Months() {
       let R = h.value.year === b.value.year, I = (pe) => ke.value !== null && h.value.year === ke.value.year && ke.value.month > pe || X.value !== null && h.value.year === X.value.year && X.value.month < pe, ne = y.value.monthsShort.map((pe, ye) => {
         let ot = h.value.month === ye + 1;
-        return i("div", { class: "q-date__months-item flex flex-center" }, [i(Ve, { class: R === true && b.value.month === ye + 1 ? "q-date__today" : null, flat: ot !== true, label: pe, unelevated: ot, color: ot === true ? q.value : null, textColor: ot === true ? C.value : null, tabindex: u.value, disable: I(ye + 1), ...l("month#" + ye, { onClick: () => {
+        return i("div", { class: "q-date__months-item flex flex-center" }, [i(Ve, __spreadValues({ class: R === true && b.value.month === ye + 1 ? "q-date__today" : null, flat: ot !== true, label: pe, unelevated: ot, color: ot === true ? q.value : null, textColor: ot === true ? C.value : null, tabindex: u.value, disable: I(ye + 1) }, l("month#" + ye, { onClick: () => {
           Ke(ye + 1);
-        } }) })]);
+        } })))]);
       });
       return e.yearsInMonthView === true && ne.unshift(i("div", { class: "row no-wrap full-width" }, [$e({ label: h.value.year, type: "Years", key: h.value.year, dir: D.value, goTo: ue, boundaries: ce.value.year, cls: " col" })])), i("div", { key: "months-view", class: "q-date__view q-date__months flex flex-center" }, ne);
     }, Years() {
       let R = B.value, I = R + en, ne = [], pe = (ye) => ke.value !== null && ke.value.year > ye || X.value !== null && X.value.year < ye;
       for (let ye = R; ye <= I; ye++) {
         let ot = h.value.year === ye;
-        ne.push(i("div", { class: "q-date__years-item flex flex-center" }, [i(Ve, { key: "yr" + ye, class: b.value.year === ye ? "q-date__today" : null, flat: !ot, label: ye, dense: true, unelevated: ot, color: ot === true ? q.value : null, textColor: ot === true ? C.value : null, tabindex: u.value, disable: pe(ye), ...l("yr#" + ye, { onClick: () => {
+        ne.push(i("div", { class: "q-date__years-item flex flex-center" }, [i(Ve, __spreadValues({ key: "yr" + ye, class: b.value.year === ye ? "q-date__today" : null, flat: !ot, label: ye, dense: true, unelevated: ot, color: ot === true ? q.value : null, textColor: ot === true ? C.value : null, tabindex: u.value, disable: pe(ye) }, l("yr#" + ye, { onClick: () => {
           we(ye);
-        } }) })]));
+        } })))]));
       }
-      return i("div", { class: "q-date__view q-date__years flex flex-center" }, [i("div", { class: "col-auto" }, [i(Ve, { round: true, dense: true, flat: true, icon: M.value[0], "aria-label": n.lang.date.prevRangeYears(en), tabindex: u.value, disable: pe(R), ...l("y-", { onClick: () => {
+      return i("div", { class: "q-date__view q-date__years flex flex-center" }, [i("div", { class: "col-auto" }, [i(Ve, __spreadValues({ round: true, dense: true, flat: true, icon: M.value[0], "aria-label": n.lang.date.prevRangeYears(en), tabindex: u.value, disable: pe(R) }, l("y-", { onClick: () => {
         B.value -= en;
-      } }) })]), i("div", { class: "q-date__years-content col self-stretch row items-center" }, ne), i("div", { class: "col-auto" }, [i(Ve, { round: true, dense: true, flat: true, icon: M.value[1], "aria-label": n.lang.date.nextRangeYears(en), tabindex: u.value, disable: pe(I), ...l("y+", { onClick: () => {
+      } })))]), i("div", { class: "q-date__years-content col self-stretch row items-center" }, ne), i("div", { class: "col-auto" }, [i(Ve, __spreadValues({ round: true, dense: true, flat: true, icon: M.value[1], "aria-label": n.lang.date.nextRangeYears(en), tabindex: u.value, disable: pe(I) }, l("y+", { onClick: () => {
         B.value += en;
-      } }) })])]);
+      } })))])]);
     } };
     function St(R) {
-      let I = { ...h.value, day: R };
+      let I = __spreadProps(__spreadValues({}, h.value), { day: R });
       if (e.range === false) {
         Pe(I, de.value);
         return;
@@ -3641,18 +3673,18 @@
         F.value = { init: I, initHash: pe, final: I, finalHash: pe }, o("rangeStart", Je(I));
       } else {
         let ne = F.value.initHash, pe = Co(I), ye = ne <= pe ? { from: F.value.init, to: I } : { from: I, to: F.value.init };
-        F.value = null, jo(ne === pe ? I : { target: I, ...ye }), o("rangeEnd", { from: Je(ye.from), to: Je(ye.to) });
+        F.value = null, jo(ne === pe ? I : __spreadValues({ target: I }, ye)), o("rangeEnd", { from: Je(ye.from), to: Je(ye.to) });
       }
     }
     function bt(R) {
       if (F.value !== null) {
-        let I = { ...h.value, day: R };
+        let I = __spreadProps(__spreadValues({}, h.value), { day: R });
         Object.assign(F.value, { final: I, finalHash: Co(I) });
       }
     }
     return Object.assign(r, { setToday: me, setView: De, offsetCalendar: Ue, setCalendarTo: Oe, setEditingRange: He }), () => {
       let R = [i("div", { class: "q-date__content col relative-position" }, [i(st, { name: "q-transition--fade" }, Xe[_.value])])], I = re(t.default);
-      return I !== void 0 && R.push(i("div", { class: "q-date__actions" }, I)), e.name !== void 0 && e.disable !== true && m(R, "push"), i("div", { class: $.value, ...ie.value }, [Ee(), i("div", { ref: v, class: "q-date__main col column", tabindex: -1 }, R)]);
+      return I !== void 0 && R.push(i("div", { class: "q-date__actions" }, I)), e.name !== void 0 && e.disable !== true && m(R, "push"), i("div", __spreadValues({ class: $.value }, ie.value), [Ee(), i("div", { ref: v, class: "q-date__main col column", tabindex: -1 }, R)]);
     };
   } });
   function wi(e, t, o) {
@@ -3693,9 +3725,9 @@
     let t = document.body, o = window.visualViewport !== void 0;
     if (e === "add") {
       let { overflowY: r, overflowX: n } = window.getComputedStyle(t);
-      nu = dn(window), ru = oo(window), gc = t.style.left, hc = t.style.top, pc = window.location.href, t.style.left = "-".concat(nu, "px"), t.style.top = "-".concat(ru, "px"), n !== "hidden" && (n === "scroll" || t.scrollWidth > window.innerWidth) && t.classList.add("q-body--force-scrollbar-x"), r !== "hidden" && (r === "scroll" || t.scrollHeight > window.innerHeight) && t.classList.add("q-body--force-scrollbar-y"), t.classList.add("q-body--prevent-scroll"), document.qScrollPrevented = true, Ae.is.ios === true && (o === true ? (window.scrollTo(0, 0), window.visualViewport.addEventListener("resize", ki, et.passiveCapture), window.visualViewport.addEventListener("scroll", ki, et.passiveCapture), window.scrollTo(0, 0)) : window.addEventListener("scroll", bc, et.passiveCapture));
+      nu = dn(window), ru = oo(window), gc = t.style.left, hc = t.style.top, pc = window.location.href, t.style.left = `-${nu}px`, t.style.top = `-${ru}px`, n !== "hidden" && (n === "scroll" || t.scrollWidth > window.innerWidth) && t.classList.add("q-body--force-scrollbar-x"), r !== "hidden" && (r === "scroll" || t.scrollHeight > window.innerHeight) && t.classList.add("q-body--force-scrollbar-y"), t.classList.add("q-body--prevent-scroll"), document.qScrollPrevented = true, Ae.is.ios === true && (o === true ? (window.scrollTo(0, 0), window.visualViewport.addEventListener("resize", ki, et.passiveCapture), window.visualViewport.addEventListener("scroll", ki, et.passiveCapture), window.scrollTo(0, 0)) : window.addEventListener("scroll", bc, et.passiveCapture));
     }
-    Ae.is.desktop === true && Ae.is.mac === true && window["".concat(e, "EventListener")]("wheel", uh, et.notPassive), e === "remove" && (Ae.is.ios === true && (o === true ? (window.visualViewport.removeEventListener("resize", ki, et.passiveCapture), window.visualViewport.removeEventListener("scroll", ki, et.passiveCapture)) : window.removeEventListener("scroll", bc, et.passiveCapture)), t.classList.remove("q-body--prevent-scroll"), t.classList.remove("q-body--force-scrollbar-x"), t.classList.remove("q-body--force-scrollbar-y"), document.qScrollPrevented = false, t.style.left = gc, t.style.top = hc, window.location.href === pc && window.scrollTo(nu, ru), sa = void 0);
+    Ae.is.desktop === true && Ae.is.mac === true && window[`${e}EventListener`]("wheel", uh, et.notPassive), e === "remove" && (Ae.is.ios === true && (o === true ? (window.visualViewport.removeEventListener("resize", ki, et.passiveCapture), window.visualViewport.removeEventListener("scroll", ki, et.passiveCapture)) : window.removeEventListener("scroll", bc, et.passiveCapture)), t.classList.remove("q-body--prevent-scroll"), t.classList.remove("q-body--force-scrollbar-x"), t.classList.remove("q-body--force-scrollbar-y"), document.qScrollPrevented = false, t.style.left = gc, t.style.top = hc, window.location.href === pc && window.scrollTo(nu, ru), sa = void 0);
   }
   function ca(e) {
     let t = "add";
@@ -3722,8 +3754,8 @@
       t !== e && (e !== void 0 || t === true) && (e = t, ca(t));
     } };
   }
-  var Ti = 0, ch = { standard: "fixed-full flex-center", top: "fixed-top justify-center", bottom: "fixed-bottom justify-center", right: "fixed-right items-center", left: "fixed-left items-center" }, Sc = { standard: ["scale", "scale"], top: ["slide-down", "slide-up"], bottom: ["slide-up", "slide-down"], right: ["slide-left", "slide-right"], left: ["slide-right", "slide-left"] }, Ho = P({ name: "QDialog", inheritAttrs: false, props: { ...go, ...yo, transitionShow: String, transitionHide: String, persistent: Boolean, autoClose: Boolean, allowFocusOutside: Boolean, noEscDismiss: Boolean, noBackdropDismiss: Boolean, noRouteDismiss: Boolean, noRefocus: Boolean, noFocus: Boolean, noShake: Boolean, seamless: Boolean, maximized: Boolean, fullWidth: Boolean, fullHeight: Boolean, square: Boolean, backdropFilter: String, position: { type: String, default: "standard", validator: (e) => ["standard", "top", "bottom", "left", "right"].includes(e) } }, emits: [...ho, "shake", "click", "escapeKey"], setup(e, { slots: t, emit: o, attrs: r }) {
-    let n = K(), a = T(null), l = T(false), u = T(false), c = null, f = null, d, p, g = s(() => e.persistent !== true && e.noRouteDismiss !== true && e.seamless !== true), { preventBodyScroll: m } = qi(), { registerTimeout: v } = Vt(), { registerTick: x, removeTick: y } = So(), { transitionProps: k, transitionStyle: S } = cn(e, () => Sc[e.position][0], () => Sc[e.position][1]), b = s(() => S.value + (e.backdropFilter !== void 0 ? ";backdrop-filter:".concat(e.backdropFilter, ";-webkit-backdrop-filter:").concat(e.backdropFilter) : "")), { showPortal: h, hidePortal: _, portalIsAccessible: E, renderPortal: L } = ir(n, a, le, "dialog"), { hide: D } = po({ showing: l, hideOnRouteChange: g, handleShow: A, handleHide: z, processOnMount: true }), { addToHistory: Z, removeFromHistory: B } = wi(l, D, g), F = s(() => "q-dialog__inner flex no-pointer-events q-dialog__inner--".concat(e.maximized === true ? "maximized" : "minimized", " q-dialog__inner--").concat(e.position, " ").concat(ch[e.position]) + (u.value === true ? " q-dialog__inner--animating" : "") + (e.fullWidth === true ? " q-dialog__inner--fullwidth" : "") + (e.fullHeight === true ? " q-dialog__inner--fullheight" : "") + (e.square === true ? " q-dialog__inner--square" : "")), $ = s(() => l.value === true && e.seamless !== true), q = s(() => e.autoClose === true ? { onClick: w } : {}), C = s(() => ["q-dialog fullscreen no-pointer-events q-dialog--".concat($.value === true ? "modal" : "seamless"), r.class]);
+  var Ti = 0, ch = { standard: "fixed-full flex-center", top: "fixed-top justify-center", bottom: "fixed-bottom justify-center", right: "fixed-right items-center", left: "fixed-left items-center" }, Sc = { standard: ["scale", "scale"], top: ["slide-down", "slide-up"], bottom: ["slide-up", "slide-down"], right: ["slide-left", "slide-right"], left: ["slide-right", "slide-left"] }, Ho = P({ name: "QDialog", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues({}, go), yo), { transitionShow: String, transitionHide: String, persistent: Boolean, autoClose: Boolean, allowFocusOutside: Boolean, noEscDismiss: Boolean, noBackdropDismiss: Boolean, noRouteDismiss: Boolean, noRefocus: Boolean, noFocus: Boolean, noShake: Boolean, seamless: Boolean, maximized: Boolean, fullWidth: Boolean, fullHeight: Boolean, square: Boolean, backdropFilter: String, position: { type: String, default: "standard", validator: (e) => ["standard", "top", "bottom", "left", "right"].includes(e) } }), emits: [...ho, "shake", "click", "escapeKey"], setup(e, { slots: t, emit: o, attrs: r }) {
+    let n = K(), a = T(null), l = T(false), u = T(false), c = null, f = null, d, p, g = s(() => e.persistent !== true && e.noRouteDismiss !== true && e.seamless !== true), { preventBodyScroll: m } = qi(), { registerTimeout: v } = Vt(), { registerTick: x, removeTick: y } = So(), { transitionProps: k, transitionStyle: S } = cn(e, () => Sc[e.position][0], () => Sc[e.position][1]), b = s(() => S.value + (e.backdropFilter !== void 0 ? `;backdrop-filter:${e.backdropFilter};-webkit-backdrop-filter:${e.backdropFilter}` : "")), { showPortal: h, hidePortal: _, portalIsAccessible: E, renderPortal: L } = ir(n, a, le, "dialog"), { hide: D } = po({ showing: l, hideOnRouteChange: g, handleShow: A, handleHide: z, processOnMount: true }), { addToHistory: Z, removeFromHistory: B } = wi(l, D, g), F = s(() => `q-dialog__inner flex no-pointer-events q-dialog__inner--${e.maximized === true ? "maximized" : "minimized"} q-dialog__inner--${e.position} ${ch[e.position]}` + (u.value === true ? " q-dialog__inner--animating" : "") + (e.fullWidth === true ? " q-dialog__inner--fullwidth" : "") + (e.fullHeight === true ? " q-dialog__inner--fullheight" : "") + (e.square === true ? " q-dialog__inner--square" : "")), $ = s(() => l.value === true && e.seamless !== true), q = s(() => e.autoClose === true ? { onClick: w } : {}), C = s(() => [`q-dialog fullscreen no-pointer-events q-dialog--${$.value === true ? "modal" : "seamless"}`, r.class]);
     Y(() => e.maximized, (M) => {
       l.value === true && O(M);
     }), Y($, (M) => {
@@ -3791,11 +3823,11 @@
       f = M || null;
     } }), be(ve);
     function le() {
-      return i("div", { role: "dialog", "aria-modal": $.value === true ? "true" : "false", ...r, class: C.value }, [i(st, { name: "q-transition--fade", appear: true }, () => $.value === true ? i("div", { class: "q-dialog__backdrop fixed-full", style: b.value, "aria-hidden": "true", tabindex: -1, onClick: W }) : null), i(st, k.value, () => l.value === true ? i("div", { ref: a, class: F.value, style: S.value, tabindex: -1, ...q.value }, re(t.default)) : null)]);
+      return i("div", __spreadProps(__spreadValues({ role: "dialog", "aria-modal": $.value === true ? "true" : "false" }, r), { class: C.value }), [i(st, { name: "q-transition--fade", appear: true }, () => $.value === true ? i("div", { class: "q-dialog__backdrop fixed-full", style: b.value, "aria-hidden": "true", tabindex: -1, onClick: W }) : null), i(st, k.value, () => l.value === true ? i("div", __spreadValues({ ref: a, class: F.value, style: S.value, tabindex: -1 }, q.value), re(t.default)) : null)]);
     }
     return L;
   } });
-  var xc = 150, _c = P({ name: "QDrawer", inheritAttrs: false, props: { ...go, ...Se, side: { type: String, default: "left", validator: (e) => ["left", "right"].includes(e) }, width: { type: Number, default: 300 }, mini: Boolean, miniToOverlay: Boolean, miniWidth: { type: Number, default: 57 }, noMiniAnimation: Boolean, breakpoint: { type: Number, default: 1023 }, showIfAbove: Boolean, behavior: { type: String, validator: (e) => ["default", "desktop", "mobile"].includes(e), default: "default" }, bordered: Boolean, elevated: Boolean, overlay: Boolean, persistent: Boolean, noSwipeOpen: Boolean, noSwipeClose: Boolean, noSwipeBackdrop: Boolean }, emits: [...ho, "onLayout", "miniState"], setup(e, { slots: t, emit: o, attrs: r }) {
+  var xc = 150, _c = P({ name: "QDrawer", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues({}, go), Se), { side: { type: String, default: "left", validator: (e) => ["left", "right"].includes(e) }, width: { type: Number, default: 300 }, mini: Boolean, miniToOverlay: Boolean, miniWidth: { type: Number, default: 57 }, noMiniAnimation: Boolean, breakpoint: { type: Number, default: 1023 }, showIfAbove: Boolean, behavior: { type: String, validator: (e) => ["default", "desktop", "mobile"].includes(e), default: "default" }, bordered: Boolean, elevated: Boolean, overlay: Boolean, persistent: Boolean, noSwipeOpen: Boolean, noSwipeClose: Boolean, noSwipeBackdrop: Boolean }), emits: [...ho, "onLayout", "miniState"], setup(e, { slots: t, emit: o, attrs: r }) {
     let n = K(), { proxy: { $q: a } } = n, l = xe(e, a), { preventBodyScroll: u } = qi(), { registerTimeout: c, removeTimeout: f } = Vt(), d = pt(eo, Ze);
     if (d === Ze) return console.error("QDrawer needs to be child of QLayout"), Ze;
     let p, g = null, m, v = T(e.behavior === "mobile" || e.behavior !== "desktop" && d.totalWidth.value <= e.breakpoint), x = s(() => e.mini === true && v.value !== true), y = s(() => x.value === true ? e.miniWidth : e.width), k = T(e.showIfAbove === true && v.value === false ? true : e.modelValue === true), S = s(() => e.persistent !== true && (v.value === true || ve.value === true));
@@ -3813,13 +3845,13 @@
         o("hide", G);
       }, xc) : f();
     }
-    let { show: _, hide: E } = po({ showing: k, hideOnRouteChange: S, handleShow: b, handleHide: h }), { addToHistory: L, removeFromHistory: D } = wi(k, E, S), Z = { belowBreakpoint: v, hide: E }, B = s(() => e.side === "right"), F = s(() => (a.lang.rtl === true ? -1 : 1) * (B.value === true ? 1 : -1)), $ = T(0), q = T(false), C = T(false), A = T(y.value * F.value), z = s(() => B.value === true ? "left" : "right"), H = s(() => k.value === true && v.value === false && e.overlay === false ? e.miniToOverlay === true ? e.miniWidth : y.value : 0), Q = s(() => e.overlay === true || e.miniToOverlay === true || d.view.value.indexOf(B.value ? "R" : "L") !== -1 || a.platform.is.ios === true && d.isContainer.value === true), ee = s(() => e.overlay === false && k.value === true && v.value === false), ve = s(() => e.overlay === true && k.value === true && v.value === false), O = s(() => "fullscreen q-drawer__backdrop" + (k.value === false && q.value === false ? " hidden" : "")), w = s(() => ({ backgroundColor: "rgba(0,0,0,".concat($.value * 0.4, ")") })), W = s(() => B.value === true ? d.rows.value.top[2] === "r" : d.rows.value.top[0] === "l"), U = s(() => B.value === true ? d.rows.value.bottom[2] === "r" : d.rows.value.bottom[0] === "l"), le = s(() => {
+    let { show: _, hide: E } = po({ showing: k, hideOnRouteChange: S, handleShow: b, handleHide: h }), { addToHistory: L, removeFromHistory: D } = wi(k, E, S), Z = { belowBreakpoint: v, hide: E }, B = s(() => e.side === "right"), F = s(() => (a.lang.rtl === true ? -1 : 1) * (B.value === true ? 1 : -1)), $ = T(0), q = T(false), C = T(false), A = T(y.value * F.value), z = s(() => B.value === true ? "left" : "right"), H = s(() => k.value === true && v.value === false && e.overlay === false ? e.miniToOverlay === true ? e.miniWidth : y.value : 0), Q = s(() => e.overlay === true || e.miniToOverlay === true || d.view.value.indexOf(B.value ? "R" : "L") !== -1 || a.platform.is.ios === true && d.isContainer.value === true), ee = s(() => e.overlay === false && k.value === true && v.value === false), ve = s(() => e.overlay === true && k.value === true && v.value === false), O = s(() => "fullscreen q-drawer__backdrop" + (k.value === false && q.value === false ? " hidden" : "")), w = s(() => ({ backgroundColor: `rgba(0,0,0,${$.value * 0.4})` })), W = s(() => B.value === true ? d.rows.value.top[2] === "r" : d.rows.value.top[0] === "l"), U = s(() => B.value === true ? d.rows.value.bottom[2] === "r" : d.rows.value.bottom[0] === "l"), le = s(() => {
       let G = {};
-      return d.header.space === true && W.value === false && (Q.value === true ? G.top = "".concat(d.header.offset, "px") : d.header.space === true && (G.top = "".concat(d.header.size, "px"))), d.footer.space === true && U.value === false && (Q.value === true ? G.bottom = "".concat(d.footer.offset, "px") : d.footer.space === true && (G.bottom = "".concat(d.footer.size, "px"))), G;
+      return d.header.space === true && W.value === false && (Q.value === true ? G.top = `${d.header.offset}px` : d.header.space === true && (G.top = `${d.header.size}px`)), d.footer.space === true && U.value === false && (Q.value === true ? G.bottom = `${d.footer.offset}px` : d.footer.space === true && (G.bottom = `${d.footer.size}px`)), G;
     }), M = s(() => {
-      let G = { width: "".concat(y.value, "px"), transform: "translateX(".concat(A.value, "px)") };
+      let G = { width: `${y.value}px`, transform: `translateX(${A.value}px)` };
       return v.value === true ? G : Object.assign(G, le.value);
-    }), V = s(() => "q-drawer__content fit " + (d.isContainer.value !== true ? "scroll" : "overflow-auto")), ae = s(() => "q-drawer q-drawer--".concat(e.side) + (C.value === true ? " q-drawer--mini-animate" : "") + (e.bordered === true ? " q-drawer--bordered" : "") + (l.value === true ? " q-drawer--dark q-dark" : "") + (q.value === true ? " no-transition" : k.value === true ? "" : " q-layout--prevent-focus") + (v.value === true ? " fixed q-drawer--on-top q-drawer--mobile q-drawer--top-padding" : " q-drawer--".concat(x.value === true ? "mini" : "standard") + (Q.value === true || ee.value !== true ? " fixed" : "") + (e.overlay === true || e.miniToOverlay === true ? " q-drawer--on-top" : "") + (W.value === true ? " q-drawer--top-padding" : ""))), j = s(() => {
+    }), V = s(() => "q-drawer__content fit " + (d.isContainer.value !== true ? "scroll" : "overflow-auto")), ae = s(() => `q-drawer q-drawer--${e.side}` + (C.value === true ? " q-drawer--mini-animate" : "") + (e.bordered === true ? " q-drawer--bordered" : "") + (l.value === true ? " q-drawer--dark q-dark" : "") + (q.value === true ? " no-transition" : k.value === true ? "" : " q-layout--prevent-focus") + (v.value === true ? " fixed q-drawer--on-top q-drawer--mobile q-drawer--top-padding" : ` q-drawer--${x.value === true ? "mini" : "standard"}` + (Q.value === true || ee.value !== true ? " fixed" : "") + (e.overlay === true || e.miniToOverlay === true ? " q-drawer--on-top" : "") + (W.value === true ? " q-drawer--top-padding" : ""))), j = s(() => {
       let G = a.lang.rtl === true ? e.side : z.value;
       return [[Pt, de, void 0, { [G]: true, mouse: true }]];
     }), fe = s(() => {
@@ -3923,8 +3955,8 @@
       m == null ? void 0 : m(), g !== null && (clearTimeout(g), g = null), k.value === true && ze(), d.instances[e.side] === Z && (d.instances[e.side] = void 0, Ie("size", 0), Ie("offset", 0), Ie("space", false));
     }), () => {
       let G = [];
-      v.value === true && (e.noSwipeOpen === false && G.push(Bt(i("div", { key: "open", class: "q-drawer__opener fixed-".concat(e.side), "aria-hidden": "true" }), j.value)), G.push(Rt("div", { ref: "backdrop", class: O.value, style: w.value, "aria-hidden": "true", onClick: E }, void 0, "backdrop", e.noSwipeBackdrop !== true && k.value === true, () => ke.value)));
-      let me = x.value === true && t.mini !== void 0, De = [i("div", { ...r, key: "" + me, class: [V.value, r.class] }, me === true ? t.mini() : re(t.default))];
+      v.value === true && (e.noSwipeOpen === false && G.push(Bt(i("div", { key: "open", class: `q-drawer__opener fixed-${e.side}`, "aria-hidden": "true" }), j.value)), G.push(Rt("div", { ref: "backdrop", class: O.value, style: w.value, "aria-hidden": "true", onClick: E }, void 0, "backdrop", e.noSwipeBackdrop !== true && k.value === true, () => ke.value)));
+      let me = x.value === true && t.mini !== void 0, De = [i("div", __spreadProps(__spreadValues({}, r), { key: "" + me, class: [V.value, r.class] }), me === true ? t.mini() : re(t.default))];
       return e.elevated === true && k.value === true && De.push(i("div", { class: "q-layout__shadow absolute-full overflow-hidden no-pointer-events" })), G.push(Rt("aside", { ref: "content", class: ae.value, style: M.value }, De, "contentclose", e.noSwipeClose !== true && v.value === true, () => fe.value)), i("div", { class: "q-drawer-container" }, G);
     };
   } });
@@ -4010,7 +4042,7 @@
           return document.queryCommandValue(t) === o;
         case "fontName":
           let r = document.queryCommandValue(t);
-          return r === '"'.concat(o, '"') || r === o;
+          return r === `"${o}"` || r === o;
         case "fullscreen":
           return this.eVm.inFullscreen.value;
         case "viewsource":
@@ -4035,7 +4067,17 @@
       else if (t === "print") {
         r();
         let n = window.open();
-        n.document.write("\n        <!doctype html>\n        <html>\n          <head>\n            <title>Print - ".concat(document.title, "</title>\n          </head>\n          <body>\n            <div>").concat(this.el.innerHTML, "</div>\n          </body>\n        </html>\n      ")), n.print(), n.close();
+        n.document.write(`
+        <!doctype html>
+        <html>
+          <head>
+            <title>Print - ${document.title}</title>
+          </head>
+          <body>
+            <div>${this.el.innerHTML}</div>
+          </body>
+        </html>
+      `), n.print(), n.close();
         return;
       } else if (t === "link") {
         let n = this.getParentAttribute("href");
@@ -4064,7 +4106,7 @@
       return t.collapse(t.anchorNode, t.anchorOffset), t.modify("move", r[0], "character"), t.modify("move", r[1], "word"), t.extend(n, a), t.modify("extend", r[1], "character"), t.modify("extend", r[0], "word"), t;
     }
   };
-  var Mi = P({ name: "QTooltip", inheritAttrs: false, props: { ...El, ...go, ...yo, maxHeight: { type: String, default: null }, maxWidth: { type: String, default: null }, transitionShow: { ...yo.transitionShow, default: "jump-down" }, transitionHide: { ...yo.transitionHide, default: "jump-up" }, anchor: { type: String, default: "bottom middle", validator: mr }, self: { type: String, default: "top middle", validator: mr }, offset: { type: Array, default: () => [14, 14], validator: Ga }, scrollTarget: to, delay: { type: Number, default: 0 }, hideDelay: { type: Number, default: 0 }, persistent: Boolean }, emits: [...ho], setup(e, { slots: t, emit: o, attrs: r }) {
+  var Mi = P({ name: "QTooltip", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, El), go), yo), { maxHeight: { type: String, default: null }, maxWidth: { type: String, default: null }, transitionShow: __spreadProps(__spreadValues({}, yo.transitionShow), { default: "jump-down" }), transitionHide: __spreadProps(__spreadValues({}, yo.transitionHide), { default: "jump-up" }), anchor: { type: String, default: "bottom middle", validator: mr }, self: { type: String, default: "top middle", validator: mr }, offset: { type: Array, default: () => [14, 14], validator: Ga }, scrollTarget: to, delay: { type: Number, default: 0 }, hideDelay: { type: Number, default: 0 }, persistent: Boolean }), emits: [...ho], setup(e, { slots: t, emit: o, attrs: r }) {
     let n, a, l = K(), { proxy: { $q: u } } = l, c = T(null), f = T(false), d = s(() => vr(e.anchor, u.lang.rtl)), p = s(() => vr(e.self, u.lang.rtl)), g = s(() => e.persistent !== true), { registerTick: m, removeTick: v } = So(), { registerTimeout: x } = Vt(), { transitionProps: y, transitionStyle: k } = cn(e), { localScrollTarget: S, changeScrollEvent: b, unconfigureScrollTarget: h } = ja(e, ve), { anchorEl: _, canShow: E, anchorEvents: L } = nr({ showing: f, configureAnchorEl: ee }), { show: D, hide: Z } = po({ showing: f, canShow: E, handleShow: q, handleHide: C, hideOnRouteChange: g, processOnMount: true });
     Object.assign(L, { delayShow: H, delayHide: Q });
     let { showPortal: B, hidePortal: F, renderPortal: $ } = ir(l, c, w, "tooltip");
@@ -4126,15 +4168,15 @@
       }
     }
     function O() {
-      return f.value === true ? i("div", { ...r, ref: c, class: ["q-tooltip q-tooltip--style q-position-engine no-pointer-events", r.class], style: [r.style, k.value], role: "tooltip" }, re(t.default)) : null;
+      return f.value === true ? i("div", __spreadProps(__spreadValues({}, r), { ref: c, class: ["q-tooltip q-tooltip--style q-position-engine no-pointer-events", r.class], style: [r.style, k.value], role: "tooltip" }), re(t.default)) : null;
     }
     function w() {
       return i(st, y.value, O);
     }
     return be(A), Object.assign(l.proxy, { updatePosition: z }), $;
   } });
-  var No = P({ name: "QItem", props: { ...Se, ...Zo, tag: { type: String, default: "div" }, active: { type: Boolean, default: null }, clickable: Boolean, dense: Boolean, insetLevel: Number, tabindex: [String, Number], focused: Boolean, manualFocus: Boolean }, emits: ["click", "keyup"], setup(e, { slots: t, emit: o }) {
-    let { proxy: { $q: r } } = K(), n = xe(e, r), { hasLink: a, linkAttrs: l, linkClass: u, linkTag: c, navigateOnClick: f } = ln(), d = T(null), p = T(null), g = s(() => e.clickable === true || a.value === true || e.tag === "label"), m = s(() => e.disable !== true && g.value === true), v = s(() => "q-item q-item-type row no-wrap" + (e.dense === true ? " q-item--dense" : "") + (n.value === true ? " q-item--dark" : "") + (a.value === true && e.active === null ? u.value : e.active === true ? " q-item--active".concat(e.activeClass !== void 0 ? " ".concat(e.activeClass) : "") : "") + (e.disable === true ? " disabled" : "") + (m.value === true ? " q-item--clickable q-link cursor-pointer " + (e.manualFocus === true ? "q-manual-focusable" : "q-focusable q-hoverable") + (e.focused === true ? " q-manual-focusable--focused" : "") : "")), x = s(() => e.insetLevel === void 0 ? null : { ["padding" + (r.lang.rtl === true ? "Right" : "Left")]: 16 + e.insetLevel * 56 + "px" });
+  var No = P({ name: "QItem", props: __spreadProps(__spreadValues(__spreadValues({}, Se), Zo), { tag: { type: String, default: "div" }, active: { type: Boolean, default: null }, clickable: Boolean, dense: Boolean, insetLevel: Number, tabindex: [String, Number], focused: Boolean, manualFocus: Boolean }), emits: ["click", "keyup"], setup(e, { slots: t, emit: o }) {
+    let { proxy: { $q: r } } = K(), n = xe(e, r), { hasLink: a, linkAttrs: l, linkClass: u, linkTag: c, navigateOnClick: f } = ln(), d = T(null), p = T(null), g = s(() => e.clickable === true || a.value === true || e.tag === "label"), m = s(() => e.disable !== true && g.value === true), v = s(() => "q-item q-item-type row no-wrap" + (e.dense === true ? " q-item--dense" : "") + (n.value === true ? " q-item--dark" : "") + (a.value === true && e.active === null ? u.value : e.active === true ? ` q-item--active${e.activeClass !== void 0 ? ` ${e.activeClass}` : ""}` : "") + (e.disable === true ? " disabled" : "") + (m.value === true ? " q-item--clickable q-link cursor-pointer " + (e.manualFocus === true ? "q-manual-focusable" : "q-focusable q-hoverable") + (e.focused === true ? " q-manual-focusable--focused" : "") : "")), x = s(() => e.insetLevel === void 0 ? null : { ["padding" + (r.lang.rtl === true ? "Right" : "Left")]: 16 + e.insetLevel * 56 + "px" });
     function y(b) {
       m.value === true && (p.value !== null && b.qAvoidFocus !== true && (b.qKeyEvent !== true && document.activeElement === d.value ? p.value.focus() : document.activeElement === p.value && d.value.focus()), f(b));
     }
@@ -4156,7 +4198,7 @@
     };
   } });
   var ro = P({ name: "QItemSection", props: { avatar: Boolean, thumbnail: Boolean, side: Boolean, top: Boolean, noWrap: Boolean }, setup(e, { slots: t }) {
-    let o = s(() => "q-item__section column q-item__section--".concat(e.avatar === true || e.side === true || e.thumbnail === true ? "side" : "main") + (e.top === true ? " q-item__section--top justify-start" : " justify-center") + (e.avatar === true ? " q-item__section--avatar" : "") + (e.thumbnail === true ? " q-item__section--thumbnail" : "") + (e.noWrap === true ? " q-item__section--nowrap" : ""));
+    let o = s(() => `q-item__section column q-item__section--${e.avatar === true || e.side === true || e.thumbnail === true ? "side" : "main"}` + (e.top === true ? " q-item__section--top justify-start" : " justify-center") + (e.avatar === true ? " q-item__section--avatar" : "") + (e.thumbnail === true ? " q-item__section--thumbnail" : "") + (e.noWrap === true ? " q-item__section--nowrap" : ""));
     return () => i("div", { class: o.value }, re(t.default));
   } });
   function kc(e, t, o) {
@@ -4168,12 +4210,12 @@
   function qc(e, t, o, r = false) {
     let n = r || (t.type === "toggle" ? t.toggled ? t.toggled(e) : t.cmd && e.caret.is(t.cmd, t.param) : false), a = [];
     if (e.$q.platform.is.desktop && (t.tip || t.htmlTip)) {
-      let l = t.key ? i("div", [i("small", "(CTRL + ".concat(String.fromCharCode(t.key), ")"))]) : null;
+      let l = t.key ? i("div", [i("small", `(CTRL + ${String.fromCharCode(t.key)})`)]) : null;
       a.push(i(Mi, { delay: 1e3 }, () => [i("div", t.htmlTip ? { innerHTML: t.htmlTip } : t.tip), l]));
     }
-    return i(Ve, { ...e.buttonProps.value, icon: t.icon !== null ? t.icon : void 0, color: n ? t.toggleColor || e.props.toolbarToggleColor : t.color || e.props.toolbarColor, textColor: n && !e.props.toolbarPush ? null : t.textColor || e.props.toolbarTextColor, label: t.label, "aria-label": t.label == null ? t.tip : void 0, disable: t.disable ? typeof t.disable == "function" ? t.disable(e) : true : false, size: "sm", onClick(l) {
+    return i(Ve, __spreadProps(__spreadValues({}, e.buttonProps.value), { icon: t.icon !== null ? t.icon : void 0, color: n ? t.toggleColor || e.props.toolbarToggleColor : t.color || e.props.toolbarColor, textColor: n && !e.props.toolbarPush ? null : t.textColor || e.props.toolbarTextColor, label: t.label, "aria-label": t.label == null ? t.tip : void 0, disable: t.disable ? typeof t.disable == "function" ? t.disable(e) : true : false, size: "sm", onClick(l) {
       o == null ? void 0 : o(), kc(l, t, e);
-    } }, () => a);
+    } }), () => a);
   }
   function fh(e, t) {
     let o = t.list === "only-icons", r = t.label, n = t.icon !== null ? t.icon : void 0, a, l;
@@ -4185,7 +4227,7 @@
       return p && (r = d.tip, n = d.icon !== null ? d.icon : void 0), qc(e, d, u, p);
     }), a = e.toolbarBackgroundClass.value, l = [lu(l)];
     else {
-      let d = e.props.toolbarToggleColor !== void 0 ? "text-".concat(e.props.toolbarToggleColor) : null, p = e.props.toolbarTextColor !== void 0 ? "text-".concat(e.props.toolbarTextColor) : null, g = t.list === "no-icons";
+      let d = e.props.toolbarToggleColor !== void 0 ? `text-${e.props.toolbarToggleColor}` : null, p = e.props.toolbarTextColor !== void 0 ? `text-${e.props.toolbarTextColor}` : null, g = t.list === "no-icons";
       l = t.options.map((m) => {
         let v = m.disable ? m.disable(e) : false, x = m.type === void 0 ? e.caret.is(m.cmd, m.param) : false;
         x && (r = m.tip, n = m.icon !== null ? m.icon : void 0);
@@ -4196,7 +4238,7 @@
         } }, () => [g === true ? null : i(ro, { class: x ? d : p, side: true }, () => i(Re, { name: m.icon !== null ? m.icon : void 0 })), i(ro, y ? () => i("div", { class: "text-no-wrap", innerHTML: m.htmlTip }) : m.tip ? () => i("div", { class: "text-no-wrap" }, m.tip) : void 0)]);
       }), a = [e.toolbarBackgroundClass.value, p];
     }
-    let c = t.highlight && r !== t.label, f = i(Ja, { ...e.buttonProps.value, noCaps: true, noWrap: true, color: c ? e.props.toolbarToggleColor : e.props.toolbarColor, textColor: c && !e.props.toolbarPush ? null : e.props.toolbarTextColor, label: t.fixedLabel ? t.label : r, icon: t.fixedIcon ? t.icon !== null ? t.icon : void 0 : n, contentClass: a, onShow: (d) => e.emit("dropdownShow", d), onHide: (d) => e.emit("dropdownHide", d), onBeforeShow: (d) => e.emit("dropdownBeforeShow", d), onBeforeHide: (d) => e.emit("dropdownBeforeHide", d) }, () => l);
+    let c = t.highlight && r !== t.label, f = i(Ja, __spreadProps(__spreadValues({}, e.buttonProps.value), { noCaps: true, noWrap: true, color: c ? e.props.toolbarToggleColor : e.props.toolbarColor, textColor: c && !e.props.toolbarPush ? null : e.props.toolbarTextColor, label: t.fixedLabel ? t.label : r, icon: t.fixedIcon ? t.icon !== null ? t.icon : void 0 : n, contentClass: a, onShow: (d) => e.emit("dropdownShow", d), onHide: (d) => e.emit("dropdownHide", d), onBeforeShow: (d) => e.emit("dropdownBeforeShow", d), onBeforeHide: (d) => e.emit("dropdownBeforeHide", d) }), () => l);
     return f;
   }
   function Tc(e) {
@@ -4208,7 +4250,7 @@
     let a = { default_font: { cmd: "fontName", param: e, icon: o, tip: t } };
     return n.forEach((l) => {
       let u = r[l];
-      a[l] = { cmd: "fontName", param: u, icon: o, tip: u, htmlTip: '<font face="'.concat(u, '">').concat(u, "</font>") };
+      a[l] = { cmd: "fontName", param: u, icon: o, tip: u, htmlTip: `<font face="${u}">${u}</font>` };
     }), a;
   }
   function Rc(e) {
@@ -4216,7 +4258,7 @@
       let t = e.props.toolbarColor || e.props.toolbarTextColor, o = e.editLinkUrl.value, r = () => {
         e.caret.restore(), o !== e.editLinkUrl.value && document.execCommand("createLink", false, o === "" ? " " : o), e.editLinkUrl.value = null;
       };
-      return [i("div", { class: "q-mx-xs text-".concat(t) }, "".concat(e.$q.lang.editor.url, ": ")), i("input", { key: "qedt_btm_input", class: "col q-editor__link-input", value: o, onInput: (n) => {
+      return [i("div", { class: `q-mx-xs text-${t}` }, `${e.$q.lang.editor.url}: `), i("input", { key: "qedt_btm_input", class: "col q-editor__link-input", value: o, onInput: (n) => {
         it(n), o = n.target.value;
       }, onKeydown: (n) => {
         if (io(n) !== true) switch (n.keyCode) {
@@ -4226,9 +4268,9 @@
             gt(n), e.caret.restore(), (!e.editLinkUrl.value || e.editLinkUrl.value === "https://") && document.execCommand("unlink"), e.editLinkUrl.value = null;
             break;
         }
-      } }), lu([i(Ve, { key: "qedt_btm_rem", ...e.buttonProps.value, label: e.$q.lang.label.remove, noCaps: true, onClick: () => {
+      } }), lu([i(Ve, __spreadProps(__spreadValues({ key: "qedt_btm_rem" }, e.buttonProps.value), { label: e.$q.lang.label.remove, noCaps: true, onClick: () => {
         e.caret.restore(), document.execCommand("unlink"), e.editLinkUrl.value = null;
-      } }), i(Ve, { key: "qedt_btm_upd", ...e.buttonProps.value, label: e.$q.lang.label.update, noCaps: true, onClick: r })])];
+      } })), i(Ve, __spreadProps(__spreadValues({ key: "qedt_btm_upd" }, e.buttonProps.value), { label: e.$q.lang.label.update, noCaps: true, onClick: r }))])];
     }
   }
   var Pc = /^on[A-Z]/;
@@ -4254,12 +4296,12 @@
     for (typeof l == "boolean" && (c = l, l = arguments[1] || {}, u = 2), Object(l) !== l && typeof l != "function" && (l = {}), f === u && (l = this, u--); u < f; u++) if ((e = arguments[u]) !== null) for (t in e) o = l[t], r = e[t], l !== r && (c === true && r && ((n = Array.isArray(r)) || Ac(r) === true) ? (n === true ? a = Array.isArray(o) === true ? o : [] : a = Ac(o) === true ? o : {}, l[t] = hn(c, a, r)) : r !== void 0 && (l[t] = r));
     return l;
   }
-  var $c = P({ name: "QEditor", props: { ...Se, ...Cr, modelValue: { type: String, required: true }, readonly: Boolean, disable: Boolean, minHeight: { type: String, default: "10rem" }, maxHeight: String, height: String, definitions: Object, fonts: Object, placeholder: String, toolbar: { type: Array, validator: (e) => e.length === 0 || e.every((t) => t.length), default: () => [["left", "center", "right", "justify"], ["bold", "italic", "underline", "strike"], ["undo", "redo"]] }, toolbarColor: String, toolbarBg: String, toolbarTextColor: String, toolbarToggleColor: { type: String, default: "primary" }, toolbarOutline: Boolean, toolbarPush: Boolean, toolbarRounded: Boolean, paragraphTag: { type: String, validator: (e) => ["div", "p"].includes(e), default: "div" }, contentStyle: Object, contentClass: [Object, Array, String], square: Boolean, flat: Boolean, dense: Boolean }, emits: [...wr, "update:modelValue", "keydown", "click", "focus", "blur", "dropdownShow", "dropdownHide", "dropdownBeforeShow", "dropdownBeforeHide", "linkShow", "linkHide"], setup(e, { slots: t, emit: o }) {
+  var $c = P({ name: "QEditor", props: __spreadProps(__spreadValues(__spreadValues({}, Se), Cr), { modelValue: { type: String, required: true }, readonly: Boolean, disable: Boolean, minHeight: { type: String, default: "10rem" }, maxHeight: String, height: String, definitions: Object, fonts: Object, placeholder: String, toolbar: { type: Array, validator: (e) => e.length === 0 || e.every((t) => t.length), default: () => [["left", "center", "right", "justify"], ["bold", "italic", "underline", "strike"], ["undo", "redo"]] }, toolbarColor: String, toolbarBg: String, toolbarTextColor: String, toolbarToggleColor: { type: String, default: "primary" }, toolbarOutline: Boolean, toolbarPush: Boolean, toolbarRounded: Boolean, paragraphTag: { type: String, validator: (e) => ["div", "p"].includes(e), default: "div" }, contentStyle: Object, contentClass: [Object, Array, String], square: Boolean, flat: Boolean, dense: Boolean }), emits: [...wr, "update:modelValue", "keydown", "click", "focus", "blur", "dropdownShow", "dropdownHide", "dropdownBeforeShow", "dropdownBeforeHide", "linkShow", "linkHide"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = xe(e, n), { inFullscreen: l, toggleFullscreen: u } = kr(), c = Br(), f = T(null), d = T(null), p = T(null), g = T(false), m = s(() => !e.readonly && !e.disable), v, x, y = e.modelValue;
     document.execCommand("defaultParagraphSeparator", false, e.paragraphTag), v = window.getComputedStyle(document.body).fontFamily;
-    let k = s(() => e.toolbarBg ? " bg-".concat(e.toolbarBg) : ""), S = s(() => ({ type: "a", flat: e.toolbarOutline !== true && e.toolbarPush !== true, noWrap: true, outline: e.toolbarOutline, push: e.toolbarPush, rounded: e.toolbarRounded, dense: true, color: e.toolbarColor, disable: !m.value, size: "sm" })), b = s(() => {
+    let k = s(() => e.toolbarBg ? ` bg-${e.toolbarBg}` : ""), S = s(() => ({ type: "a", flat: e.toolbarOutline !== true && e.toolbarPush !== true, noWrap: true, outline: e.toolbarOutline, push: e.toolbarPush, rounded: e.toolbarRounded, dense: true, color: e.toolbarColor, disable: !m.value, size: "sm" })), b = s(() => {
       let M = n.lang.editor, V = n.iconSet.editor;
-      return { bold: { cmd: "bold", icon: V.bold, tip: M.bold, key: 66 }, italic: { cmd: "italic", icon: V.italic, tip: M.italic, key: 73 }, strike: { cmd: "strikeThrough", icon: V.strikethrough, tip: M.strikethrough, key: 83 }, underline: { cmd: "underline", icon: V.underline, tip: M.underline, key: 85 }, unordered: { cmd: "insertUnorderedList", icon: V.unorderedList, tip: M.unorderedList }, ordered: { cmd: "insertOrderedList", icon: V.orderedList, tip: M.orderedList }, subscript: { cmd: "subscript", icon: V.subscript, tip: M.subscript, htmlTip: "x<subscript>2</subscript>" }, superscript: { cmd: "superscript", icon: V.superscript, tip: M.superscript, htmlTip: "x<superscript>2</superscript>" }, link: { cmd: "link", disable: (ae) => ae.caret && !ae.caret.can("link"), icon: V.hyperlink, tip: M.hyperlink, key: 76 }, fullscreen: { cmd: "fullscreen", icon: V.toggleFullscreen, tip: M.toggleFullscreen, key: 70 }, viewsource: { cmd: "viewsource", icon: V.viewSource, tip: M.viewSource }, quote: { cmd: "formatBlock", param: "BLOCKQUOTE", icon: V.quote, tip: M.quote, key: 81 }, left: { cmd: "justifyLeft", icon: V.left, tip: M.left }, center: { cmd: "justifyCenter", icon: V.center, tip: M.center }, right: { cmd: "justifyRight", icon: V.right, tip: M.right }, justify: { cmd: "justifyFull", icon: V.justify, tip: M.justify }, print: { type: "no-state", cmd: "print", icon: V.print, tip: M.print, key: 80 }, outdent: { type: "no-state", disable: (ae) => ae.caret && !ae.caret.can("outdent"), cmd: "outdent", icon: V.outdent, tip: M.outdent }, indent: { type: "no-state", disable: (ae) => ae.caret && !ae.caret.can("indent"), cmd: "indent", icon: V.indent, tip: M.indent }, removeFormat: { type: "no-state", cmd: "removeFormat", icon: V.removeFormat, tip: M.removeFormat }, hr: { type: "no-state", cmd: "insertHorizontalRule", icon: V.hr, tip: M.hr }, undo: { type: "no-state", cmd: "undo", icon: V.undo, tip: M.undo, key: 90 }, redo: { type: "no-state", cmd: "redo", icon: V.redo, tip: M.redo, key: 89 }, h1: { cmd: "formatBlock", param: "H1", icon: V.heading1 || V.heading, tip: M.heading1, htmlTip: '<h1 class="q-ma-none">'.concat(M.heading1, "</h1>") }, h2: { cmd: "formatBlock", param: "H2", icon: V.heading2 || V.heading, tip: M.heading2, htmlTip: '<h2 class="q-ma-none">'.concat(M.heading2, "</h2>") }, h3: { cmd: "formatBlock", param: "H3", icon: V.heading3 || V.heading, tip: M.heading3, htmlTip: '<h3 class="q-ma-none">'.concat(M.heading3, "</h3>") }, h4: { cmd: "formatBlock", param: "H4", icon: V.heading4 || V.heading, tip: M.heading4, htmlTip: '<h4 class="q-ma-none">'.concat(M.heading4, "</h4>") }, h5: { cmd: "formatBlock", param: "H5", icon: V.heading5 || V.heading, tip: M.heading5, htmlTip: '<h5 class="q-ma-none">'.concat(M.heading5, "</h5>") }, h6: { cmd: "formatBlock", param: "H6", icon: V.heading6 || V.heading, tip: M.heading6, htmlTip: '<h6 class="q-ma-none">'.concat(M.heading6, "</h6>") }, p: { cmd: "formatBlock", param: e.paragraphTag, icon: V.heading, tip: M.paragraph }, code: { cmd: "formatBlock", param: "PRE", icon: V.code, htmlTip: "<code>".concat(M.code, "</code>") }, "size-1": { cmd: "fontSize", param: "1", icon: V.size1 || V.size, tip: M.size1, htmlTip: '<font size="1">'.concat(M.size1, "</font>") }, "size-2": { cmd: "fontSize", param: "2", icon: V.size2 || V.size, tip: M.size2, htmlTip: '<font size="2">'.concat(M.size2, "</font>") }, "size-3": { cmd: "fontSize", param: "3", icon: V.size3 || V.size, tip: M.size3, htmlTip: '<font size="3">'.concat(M.size3, "</font>") }, "size-4": { cmd: "fontSize", param: "4", icon: V.size4 || V.size, tip: M.size4, htmlTip: '<font size="4">'.concat(M.size4, "</font>") }, "size-5": { cmd: "fontSize", param: "5", icon: V.size5 || V.size, tip: M.size5, htmlTip: '<font size="5">'.concat(M.size5, "</font>") }, "size-6": { cmd: "fontSize", param: "6", icon: V.size6 || V.size, tip: M.size6, htmlTip: '<font size="6">'.concat(M.size6, "</font>") }, "size-7": { cmd: "fontSize", param: "7", icon: V.size7 || V.size, tip: M.size7, htmlTip: '<font size="7">'.concat(M.size7, "</font>") } };
+      return { bold: { cmd: "bold", icon: V.bold, tip: M.bold, key: 66 }, italic: { cmd: "italic", icon: V.italic, tip: M.italic, key: 73 }, strike: { cmd: "strikeThrough", icon: V.strikethrough, tip: M.strikethrough, key: 83 }, underline: { cmd: "underline", icon: V.underline, tip: M.underline, key: 85 }, unordered: { cmd: "insertUnorderedList", icon: V.unorderedList, tip: M.unorderedList }, ordered: { cmd: "insertOrderedList", icon: V.orderedList, tip: M.orderedList }, subscript: { cmd: "subscript", icon: V.subscript, tip: M.subscript, htmlTip: "x<subscript>2</subscript>" }, superscript: { cmd: "superscript", icon: V.superscript, tip: M.superscript, htmlTip: "x<superscript>2</superscript>" }, link: { cmd: "link", disable: (ae) => ae.caret && !ae.caret.can("link"), icon: V.hyperlink, tip: M.hyperlink, key: 76 }, fullscreen: { cmd: "fullscreen", icon: V.toggleFullscreen, tip: M.toggleFullscreen, key: 70 }, viewsource: { cmd: "viewsource", icon: V.viewSource, tip: M.viewSource }, quote: { cmd: "formatBlock", param: "BLOCKQUOTE", icon: V.quote, tip: M.quote, key: 81 }, left: { cmd: "justifyLeft", icon: V.left, tip: M.left }, center: { cmd: "justifyCenter", icon: V.center, tip: M.center }, right: { cmd: "justifyRight", icon: V.right, tip: M.right }, justify: { cmd: "justifyFull", icon: V.justify, tip: M.justify }, print: { type: "no-state", cmd: "print", icon: V.print, tip: M.print, key: 80 }, outdent: { type: "no-state", disable: (ae) => ae.caret && !ae.caret.can("outdent"), cmd: "outdent", icon: V.outdent, tip: M.outdent }, indent: { type: "no-state", disable: (ae) => ae.caret && !ae.caret.can("indent"), cmd: "indent", icon: V.indent, tip: M.indent }, removeFormat: { type: "no-state", cmd: "removeFormat", icon: V.removeFormat, tip: M.removeFormat }, hr: { type: "no-state", cmd: "insertHorizontalRule", icon: V.hr, tip: M.hr }, undo: { type: "no-state", cmd: "undo", icon: V.undo, tip: M.undo, key: 90 }, redo: { type: "no-state", cmd: "redo", icon: V.redo, tip: M.redo, key: 89 }, h1: { cmd: "formatBlock", param: "H1", icon: V.heading1 || V.heading, tip: M.heading1, htmlTip: `<h1 class="q-ma-none">${M.heading1}</h1>` }, h2: { cmd: "formatBlock", param: "H2", icon: V.heading2 || V.heading, tip: M.heading2, htmlTip: `<h2 class="q-ma-none">${M.heading2}</h2>` }, h3: { cmd: "formatBlock", param: "H3", icon: V.heading3 || V.heading, tip: M.heading3, htmlTip: `<h3 class="q-ma-none">${M.heading3}</h3>` }, h4: { cmd: "formatBlock", param: "H4", icon: V.heading4 || V.heading, tip: M.heading4, htmlTip: `<h4 class="q-ma-none">${M.heading4}</h4>` }, h5: { cmd: "formatBlock", param: "H5", icon: V.heading5 || V.heading, tip: M.heading5, htmlTip: `<h5 class="q-ma-none">${M.heading5}</h5>` }, h6: { cmd: "formatBlock", param: "H6", icon: V.heading6 || V.heading, tip: M.heading6, htmlTip: `<h6 class="q-ma-none">${M.heading6}</h6>` }, p: { cmd: "formatBlock", param: e.paragraphTag, icon: V.heading, tip: M.paragraph }, code: { cmd: "formatBlock", param: "PRE", icon: V.code, htmlTip: `<code>${M.code}</code>` }, "size-1": { cmd: "fontSize", param: "1", icon: V.size1 || V.size, tip: M.size1, htmlTip: `<font size="1">${M.size1}</font>` }, "size-2": { cmd: "fontSize", param: "2", icon: V.size2 || V.size, tip: M.size2, htmlTip: `<font size="2">${M.size2}</font>` }, "size-3": { cmd: "fontSize", param: "3", icon: V.size3 || V.size, tip: M.size3, htmlTip: `<font size="3">${M.size3}</font>` }, "size-4": { cmd: "fontSize", param: "4", icon: V.size4 || V.size, tip: M.size4, htmlTip: `<font size="4">${M.size4}</font>` }, "size-5": { cmd: "fontSize", param: "5", icon: V.size5 || V.size, tip: M.size5, htmlTip: `<font size="5">${M.size5}</font>` }, "size-6": { cmd: "fontSize", param: "6", icon: V.size6 || V.size, tip: M.size6, htmlTip: `<font size="6">${M.size6}</font>` }, "size-7": { cmd: "fontSize", param: "7", icon: V.size7 || V.size, tip: M.size7, htmlTip: `<font size="7">${M.size7}</font>` } };
     }), h = s(() => {
       let M = e.definitions || {}, V = e.definitions || e.fonts ? hn(true, {}, b.value, M, Mc(v, n.lang.editor.defaultFont, n.iconSet.editor.font, e.fonts)) : b.value;
       return e.toolbar.map((ae) => ae.map((j) => {
@@ -4271,7 +4313,7 @@
     Y(() => e.modelValue, (M) => {
       y !== M && (y = M, O(M, true));
     }), Y(p, (M) => {
-      o("link".concat(M ? "Show" : "Hide"));
+      o(`link${M ? "Show" : "Hide"}`);
     });
     let E = s(() => e.toolbar && e.toolbar.length !== 0), L = s(() => {
       let M = {}, V = (ae) => {
@@ -4282,10 +4324,10 @@
           j.options ? j.options.forEach(V) : V(j);
         });
       }), M;
-    }), D = s(() => l.value ? e.contentStyle : [{ minHeight: e.minHeight, height: e.height, maxHeight: e.maxHeight }, e.contentStyle]), Z = s(() => "q-editor q-editor--".concat(g.value === true ? "source" : "default") + (e.disable === true ? " disabled" : "") + (l.value === true ? " fullscreen column" : "") + (e.square === true ? " q-editor--square no-border-radius" : "") + (e.flat === true ? " q-editor--flat" : "") + (e.dense === true ? " q-editor--dense" : "") + (a.value === true ? " q-editor--dark q-dark" : "")), B = s(() => [e.contentClass, "q-editor__content", { col: l.value, "overflow-auto": l.value || e.maxHeight }]), F = s(() => e.disable === true ? { "aria-disabled": "true" } : {});
+    }), D = s(() => l.value ? e.contentStyle : [{ minHeight: e.minHeight, height: e.height, maxHeight: e.maxHeight }, e.contentStyle]), Z = s(() => `q-editor q-editor--${g.value === true ? "source" : "default"}` + (e.disable === true ? " disabled" : "") + (l.value === true ? " fullscreen column" : "") + (e.square === true ? " q-editor--square no-border-radius" : "") + (e.flat === true ? " q-editor--flat" : "") + (e.dense === true ? " q-editor--dense" : "") + (a.value === true ? " q-editor--dark q-dark" : "")), B = s(() => [e.contentClass, "q-editor__content", { col: l.value, "overflow-auto": l.value || e.maxHeight }]), F = s(() => e.disable === true ? { "aria-disabled": "true" } : {});
     function $() {
       if (d.value !== null) {
-        let M = "inner".concat(g.value === true ? "Text" : "HTML"), V = d.value[M];
+        let M = `inner${g.value === true ? "Text" : "HTML"}`, V = d.value[M];
         V !== e.modelValue && (y = V, o("update:modelValue", V));
       }
     }
@@ -4318,7 +4360,7 @@
     function H(M) {
       let V = f.value;
       if (V !== null && V.contains(M.target) === true && (M.relatedTarget === null || V.contains(M.relatedTarget) !== true)) {
-        let ae = "inner".concat(g.value === true ? "Text" : "HTML");
+        let ae = `inner${g.value === true ? "Text" : "HTML"}`;
         _.caret.restorePosition(d.value[ae].length), W();
       }
     }
@@ -4335,7 +4377,7 @@
     function O(M, V) {
       if (d.value !== null) {
         V === true && _.caret.savePosition();
-        let ae = "inner".concat(g.value === true ? "Text" : "HTML");
+        let ae = `inner${g.value === true ? "Text" : "HTML"}`;
         d.value[ae] = M, V === true && (_.caret.restorePosition(d.value[ae].length), W());
       }
     }
@@ -4368,7 +4410,7 @@
         let V = [i("div", { key: "qedt_top", class: "q-editor__toolbar row no-wrap scroll-x" + k.value }, Tc(_))];
         p.value !== null && V.push(i("div", { key: "qedt_btm", class: "q-editor__toolbar row no-wrap items-center scroll-x" + k.value }, Rc(_))), M = i("div", { key: "toolbar_ctainer", class: "q-editor__toolbars-container" }, V);
       }
-      return i("div", { ref: f, class: Z.value, style: { height: l.value === true ? "100%" : null }, ...F.value, onFocusin: H, onFocusout: Q }, [M, i("div", { ref: d, style: D.value, class: B.value, contenteditable: m.value, placeholder: e.placeholder, ...c.listeners.value, onInput: $, onKeydown: q, onClick: C, onBlur: A, onFocus: z, onMousedown: ee, onTouchstartPassive: ee })]);
+      return i("div", __spreadProps(__spreadValues({ ref: f, class: Z.value, style: { height: l.value === true ? "100%" : null } }, F.value), { onFocusin: H, onFocusout: Q }), [M, i("div", __spreadProps(__spreadValues({ ref: d, style: D.value, class: B.value, contenteditable: m.value, placeholder: e.placeholder }, c.listeners.value), { onInput: $, onKeydown: q, onClick: C, onBlur: A, onFocus: z, onMousedown: ee, onTouchstartPassive: ee }))]);
     };
   } });
   var Ln = P({ name: "QItemLabel", props: { overline: Boolean, caption: Boolean, header: Boolean, lines: [Number, String] }, setup(e, { slots: t }) {
@@ -4381,7 +4423,7 @@
       n == null ? void 0 : n(), n = null, r = false, l !== null && (clearTimeout(l), l = null), u !== null && (clearTimeout(u), u = null), a == null ? void 0 : a.removeEventListener("transitionend", c), c = null;
     }
     function p(x, y, k) {
-      y !== void 0 && (x.style.height = "".concat(y, "px")), x.style.transition = "height ".concat(e.duration, "ms cubic-bezier(.25, .8, .50, 1)"), r = true, n = k;
+      y !== void 0 && (x.style.height = `${y}px`), x.style.transition = `height ${e.duration}ms cubic-bezier(.25, .8, .50, 1)`, r = true, n = k;
     }
     function g(x, y) {
       x.style.overflowY = null, x.style.height = null, x.style.transition = null, d(), y !== f && o(y);
@@ -4389,7 +4431,7 @@
     function m(x, y) {
       let k = 0;
       a = x, r === true ? (d(), k = x.offsetHeight === x.scrollHeight ? 0 : void 0) : (f = "hide", x.style.overflowY = "hidden"), p(x, k, y), l = setTimeout(() => {
-        l = null, x.style.height = "".concat(x.scrollHeight, "px"), c = (S) => {
+        l = null, x.style.height = `${x.scrollHeight}px`, c = (S) => {
           u = null, (Object(S) !== S || S.target === x) && g(x, "show");
         }, x.addEventListener("transitionend", c), u = setTimeout(c, e.duration * 1.1);
       }, 100);
@@ -4406,19 +4448,19 @@
       r === true && d();
     }), () => i(st, { css: false, appear: e.appear, onEnter: m, onLeave: v }, t.default);
   } });
-  var gh = { true: "inset", item: "item-inset", "item-thumbnail": "item-thumbnail-inset" }, su = { xs: 2, sm: 4, md: 8, lg: 16, xl: 24 }, uo = P({ name: "QSeparator", props: { ...Se, spaced: [Boolean, String], inset: [Boolean, String], vertical: Boolean, color: String, size: String }, setup(e) {
-    let t = K(), o = xe(e, t.proxy.$q), r = s(() => e.vertical === true ? "vertical" : "horizontal"), n = s(() => " q-separator--".concat(r.value)), a = s(() => e.inset !== false ? "".concat(n.value, "-").concat(gh[e.inset]) : ""), l = s(() => "q-separator".concat(n.value).concat(a.value) + (e.color !== void 0 ? " bg-".concat(e.color) : "") + (o.value === true ? " q-separator--dark" : "")), u = s(() => {
+  var gh = { true: "inset", item: "item-inset", "item-thumbnail": "item-thumbnail-inset" }, su = { xs: 2, sm: 4, md: 8, lg: 16, xl: 24 }, uo = P({ name: "QSeparator", props: __spreadProps(__spreadValues({}, Se), { spaced: [Boolean, String], inset: [Boolean, String], vertical: Boolean, color: String, size: String }), setup(e) {
+    let t = K(), o = xe(e, t.proxy.$q), r = s(() => e.vertical === true ? "vertical" : "horizontal"), n = s(() => ` q-separator--${r.value}`), a = s(() => e.inset !== false ? `${n.value}-${gh[e.inset]}` : ""), l = s(() => `q-separator${n.value}${a.value}` + (e.color !== void 0 ? ` bg-${e.color}` : "") + (o.value === true ? " q-separator--dark" : "")), u = s(() => {
       let c = {};
       if (e.size !== void 0 && (c[e.vertical === true ? "width" : "height"] = e.size), e.spaced !== false) {
-        let f = e.spaced === true ? "".concat(su.md, "px") : e.spaced in su ? "".concat(su[e.spaced], "px") : e.spaced, d = e.vertical === true ? ["Left", "Right"] : ["Top", "Bottom"];
-        c["margin".concat(d[0])] = c["margin".concat(d[1])] = f;
+        let f = e.spaced === true ? `${su.md}px` : e.spaced in su ? `${su[e.spaced]}px` : e.spaced, d = e.vertical === true ? ["Left", "Right"] : ["Top", "Bottom"];
+        c[`margin${d[0]}`] = c[`margin${d[1]}`] = f;
       }
       return c;
     });
     return () => i("hr", { class: l.value, style: u.value, "aria-orientation": r.value });
   } });
-  var Dn = $u({}), hh = Object.keys(Zo), Ec = P({ name: "QExpansionItem", props: { ...Zo, ...go, ...Se, icon: String, label: String, labelLines: [Number, String], caption: String, captionLines: [Number, String], dense: Boolean, toggleAriaLabel: String, expandIcon: String, expandedIcon: String, expandIconClass: [Array, String, Object], duration: {}, headerInsetLevel: Number, contentInsetLevel: Number, expandSeparator: Boolean, defaultOpened: Boolean, hideExpandIcon: Boolean, expandIconToggle: Boolean, switchToggleSide: Boolean, denseToggle: Boolean, group: String, popup: Boolean, headerStyle: [Array, String, Object], headerClass: [Array, String, Object] }, emits: [...ho, "click", "afterShow", "afterHide"], setup(e, { slots: t, emit: o }) {
-    let { proxy: { $q: r } } = K(), n = xe(e, r), a = T(e.modelValue !== null ? e.modelValue : e.defaultOpened), l = T(null), u = Do(), { show: c, hide: f, toggle: d } = po({ showing: a }), p, g, m = s(() => "q-expansion-item q-item-type q-expansion-item--".concat(a.value === true ? "expanded" : "collapsed", " q-expansion-item--").concat(e.popup === true ? "popup" : "standard")), v = s(() => e.contentInsetLevel === void 0 ? null : { ["padding" + (r.lang.rtl === true ? "Right" : "Left")]: e.contentInsetLevel * 56 + "px" }), x = s(() => e.disable !== true && (e.href !== void 0 || e.to !== void 0 && e.to !== null && e.to !== "")), y = s(() => {
+  var Dn = $u({}), hh = Object.keys(Zo), Ec = P({ name: "QExpansionItem", props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Zo), go), Se), { icon: String, label: String, labelLines: [Number, String], caption: String, captionLines: [Number, String], dense: Boolean, toggleAriaLabel: String, expandIcon: String, expandedIcon: String, expandIconClass: [Array, String, Object], duration: {}, headerInsetLevel: Number, contentInsetLevel: Number, expandSeparator: Boolean, defaultOpened: Boolean, hideExpandIcon: Boolean, expandIconToggle: Boolean, switchToggleSide: Boolean, denseToggle: Boolean, group: String, popup: Boolean, headerStyle: [Array, String, Object], headerClass: [Array, String, Object] }), emits: [...ho, "click", "afterShow", "afterHide"], setup(e, { slots: t, emit: o }) {
+    let { proxy: { $q: r } } = K(), n = xe(e, r), a = T(e.modelValue !== null ? e.modelValue : e.defaultOpened), l = T(null), u = Do(), { show: c, hide: f, toggle: d } = po({ showing: a }), p, g, m = s(() => `q-expansion-item q-item-type q-expansion-item--${a.value === true ? "expanded" : "collapsed"} q-expansion-item--${e.popup === true ? "popup" : "standard"}`), v = s(() => e.contentInsetLevel === void 0 ? null : { ["padding" + (r.lang.rtl === true ? "Right" : "Left")]: e.contentInsetLevel * 56 + "px" }), x = s(() => e.disable !== true && (e.href !== void 0 || e.to !== void 0 && e.to !== null && e.to !== "")), y = s(() => {
       let H = {};
       return hh.forEach((Q) => {
         H[Q] = e[Q];
@@ -4458,8 +4500,8 @@
       };
     }
     function $() {
-      let H = { class: ["q-focusable relative-position cursor-pointer".concat(e.denseToggle === true && e.switchToggleSide === true ? " items-end" : ""), e.expandIconClass], side: e.switchToggleSide !== true, avatar: e.switchToggleSide }, Q = [i(Re, { class: "q-expansion-item__toggle-icon" + (e.expandedIcon === void 0 && a.value === true ? " q-expansion-item__toggle-icon--rotated" : ""), name: S.value })];
-      return b.value === true && (Object.assign(H, { tabindex: 0, ..._.value, onClick: D, onKeyup: L }), Q.unshift(i("div", { ref: l, class: "q-expansion-item__toggle-focus q-icon q-focus-helper q-focus-helper--rounded", tabindex: -1 }))), i(ro, H, () => Q);
+      let H = { class: [`q-focusable relative-position cursor-pointer${e.denseToggle === true && e.switchToggleSide === true ? " items-end" : ""}`, e.expandIconClass], side: e.switchToggleSide !== true, avatar: e.switchToggleSide }, Q = [i(Re, { class: "q-expansion-item__toggle-icon" + (e.expandedIcon === void 0 && a.value === true ? " q-expansion-item__toggle-icon--rotated" : ""), name: S.value })];
+      return b.value === true && (Object.assign(H, __spreadProps(__spreadValues({ tabindex: 0 }, _.value), { onClick: D, onKeyup: L })), Q.unshift(i("div", { ref: l, class: "q-expansion-item__toggle-focus q-icon q-focus-helper q-focus-helper--rounded", tabindex: -1 }))), i(ro, H, () => Q);
     }
     function q() {
       let H;
@@ -4482,21 +4524,21 @@
   } });
   var ph = ["top", "right", "bottom", "left"], fa = { type: { type: String, default: "a" }, outline: Boolean, push: Boolean, flat: Boolean, unelevated: Boolean, color: String, textColor: String, glossy: Boolean, square: Boolean, padding: String, label: { type: [String, Number], default: "" }, labelPosition: { type: String, default: "right", validator: (e) => ph.includes(e) }, externalLabel: Boolean, hideLabel: { type: Boolean }, labelClass: [Array, String, Object], labelStyle: [Array, String, Object], disable: Boolean, tabindex: [Number, String] };
   function Ri(e, t) {
-    return { formClass: s(() => "q-fab--form-".concat(e.square === true ? "square" : "rounded")), stacked: s(() => e.externalLabel === false && ["top", "bottom"].includes(e.labelPosition)), labelProps: s(() => {
+    return { formClass: s(() => `q-fab--form-${e.square === true ? "square" : "rounded"}`), stacked: s(() => e.externalLabel === false && ["top", "bottom"].includes(e.labelPosition)), labelProps: s(() => {
       if (e.externalLabel === true) {
         let o = e.hideLabel === null ? t.value === false : e.hideLabel;
-        return { action: "push", data: { class: [e.labelClass, "q-fab__label q-tooltip--style q-fab__label--external q-fab__label--external-".concat(e.labelPosition) + (o === true ? " q-fab__label--external-hidden" : "")], style: e.labelStyle } };
+        return { action: "push", data: { class: [e.labelClass, `q-fab__label q-tooltip--style q-fab__label--external q-fab__label--external-${e.labelPosition}` + (o === true ? " q-fab__label--external-hidden" : "")], style: e.labelStyle } };
       }
-      return { action: ["left", "top"].includes(e.labelPosition) ? "unshift" : "push", data: { class: [e.labelClass, "q-fab__label q-fab__label--internal q-fab__label--internal-".concat(e.labelPosition) + (e.hideLabel === true ? " q-fab__label--internal-hidden" : "")], style: e.labelStyle } };
+      return { action: ["left", "top"].includes(e.labelPosition) ? "unshift" : "push", data: { class: [e.labelClass, `q-fab__label q-fab__label--internal q-fab__label--internal-${e.labelPosition}` + (e.hideLabel === true ? " q-fab__label--internal-hidden" : "")], style: e.labelStyle } };
     }) };
   }
-  var bh = ["up", "right", "down", "left"], yh = ["left", "center", "right"], Bc = P({ name: "QFab", props: { ...fa, ...go, icon: String, activeIcon: String, hideIcon: Boolean, hideLabel: { ...fa.hideLabel, default: null }, direction: { type: String, default: "right", validator: (e) => bh.includes(e) }, persistent: Boolean, verticalActionsAlign: { type: String, default: "center", validator: (e) => yh.includes(e) } }, emits: ho, setup(e, { slots: t }) {
-    let o = T(null), r = T(e.modelValue === true), n = Do(), { proxy: { $q: a } } = K(), { formClass: l, labelProps: u } = Ri(e, r), c = s(() => e.persistent !== true), { hide: f, toggle: d } = po({ showing: r, hideOnRouteChange: c }), p = s(() => ({ opened: r.value })), g = s(() => "q-fab z-fab row inline justify-center q-fab--align-".concat(e.verticalActionsAlign, " ").concat(l.value) + (r.value === true ? " q-fab--opened" : " q-fab--closed")), m = s(() => "q-fab__actions flex no-wrap inline q-fab__actions--".concat(e.direction, " q-fab__actions--").concat(r.value === true ? "opened" : "closed")), v = s(() => {
+  var bh = ["up", "right", "down", "left"], yh = ["left", "center", "right"], Bc = P({ name: "QFab", props: __spreadProps(__spreadValues(__spreadValues({}, fa), go), { icon: String, activeIcon: String, hideIcon: Boolean, hideLabel: __spreadProps(__spreadValues({}, fa.hideLabel), { default: null }), direction: { type: String, default: "right", validator: (e) => bh.includes(e) }, persistent: Boolean, verticalActionsAlign: { type: String, default: "center", validator: (e) => yh.includes(e) } }), emits: ho, setup(e, { slots: t }) {
+    let o = T(null), r = T(e.modelValue === true), n = Do(), { proxy: { $q: a } } = K(), { formClass: l, labelProps: u } = Ri(e, r), c = s(() => e.persistent !== true), { hide: f, toggle: d } = po({ showing: r, hideOnRouteChange: c }), p = s(() => ({ opened: r.value })), g = s(() => `q-fab z-fab row inline justify-center q-fab--align-${e.verticalActionsAlign} ${l.value}` + (r.value === true ? " q-fab--opened" : " q-fab--closed")), m = s(() => `q-fab__actions flex no-wrap inline q-fab__actions--${e.direction} q-fab__actions--${r.value === true ? "opened" : "closed"}`), v = s(() => {
       let S = { id: n.value, role: "menu" };
       return r.value !== true && (S["aria-hidden"] = "true"), S;
-    }), x = s(() => "q-fab__icon-holder  q-fab__icon-holder--".concat(r.value === true ? "opened" : "closed"));
+    }), x = s(() => `q-fab__icon-holder  q-fab__icon-holder--${r.value === true ? "opened" : "closed"}`);
     function y(S, b) {
-      let h = t[S], _ = "q-fab__".concat(S, " absolute-full");
+      let h = t[S], _ = `q-fab__${S} absolute-full`;
       return h === void 0 ? i(Re, { class: _, name: e[b] || a.iconSet.fab[b] }) : i("div", { class: _ }, h(p.value));
     }
     function k() {
@@ -4506,12 +4548,12 @@
     return Kt(Ea, { showing: r, onChildClick(S) {
       var _a2;
       f(S), (S == null ? void 0 : S.qAvoidFocus) !== true && ((_a2 = o.value) == null ? void 0 : _a2.$el.focus());
-    } }), () => i("div", { class: g.value }, [i(Ve, { ref: o, class: l.value, ...e, noWrap: true, stack: e.stacked, align: void 0, icon: void 0, label: void 0, noCaps: true, fab: true, "aria-expanded": r.value === true ? "true" : "false", "aria-haspopup": "true", "aria-controls": n.value, onClick: d }, k), i("div", { class: m.value, ...v.value }, re(t.default))]);
+    } }), () => i("div", { class: g.value }, [i(Ve, __spreadProps(__spreadValues({ ref: o, class: l.value }, e), { noWrap: true, stack: e.stacked, align: void 0, icon: void 0, label: void 0, noCaps: true, fab: true, "aria-expanded": r.value === true ? "true" : "false", "aria-haspopup": "true", "aria-controls": n.value, onClick: d }), k), i("div", __spreadValues({ class: m.value }, v.value), re(t.default))]);
   } });
-  var Fc = { start: "self-end", center: "self-center", end: "self-start" }, Sh = Object.keys(Fc), Lc = P({ name: "QFabAction", props: { ...fa, icon: { type: String, default: "" }, anchor: { type: String, validator: (e) => Sh.includes(e) }, to: [String, Object], replace: Boolean }, emits: ["click"], setup(e, { slots: t, emit: o }) {
+  var Fc = { start: "self-end", center: "self-center", end: "self-start" }, Sh = Object.keys(Fc), Lc = P({ name: "QFabAction", props: __spreadProps(__spreadValues({}, fa), { icon: { type: String, default: "" }, anchor: { type: String, validator: (e) => Sh.includes(e) }, to: [String, Object], replace: Boolean }), emits: ["click"], setup(e, { slots: t, emit: o }) {
     let r = pt(Ea, () => ({ showing: { value: true }, onChildClick: Ye })), { formClass: n, labelProps: a } = Ri(e, r.showing), l = s(() => {
       let p = Fc[e.anchor];
-      return n.value + (p !== void 0 ? " ".concat(p) : "");
+      return n.value + (p !== void 0 ? ` ${p}` : "");
     }), u = s(() => e.disable === true || r.showing.value !== true);
     function c(p) {
       r.onChildClick(p), o("click", p);
@@ -4521,7 +4563,7 @@
       return t.icon !== void 0 ? p.push(t.icon()) : e.icon !== "" && p.push(i(Re, { name: e.icon })), (e.label !== "" || t.label !== void 0) && p[a.value.action](i("div", a.value.data, t.label !== void 0 ? t.label() : [e.label])), Ge(t.default, p);
     }
     let d = K();
-    return Object.assign(d.proxy, { click: c }), () => i(Ve, { class: l.value, ...e, noWrap: true, stack: e.stacked, icon: void 0, label: void 0, noCaps: true, fabMini: true, disable: u.value, onClick: c }, f);
+    return Object.assign(d.proxy, { click: c }), () => i(Ve, __spreadProps(__spreadValues({ class: l.value }, e), { noWrap: true, stack: e.stacked, icon: void 0, label: void 0, noCaps: true, fabMini: true, disable: u.value, onClick: c }), f);
   } });
   function Pi({ validate: e, resetValidation: t, requiresQForm: o }) {
     let r = pt(Xo, false);
@@ -4582,7 +4624,7 @@
   function Qo(e) {
     return e != null && ("" + e).length !== 0;
   }
-  var cu = { ...Se, ...Dc, label: String, stackLabel: Boolean, hint: String, hideHint: Boolean, prefix: String, suffix: String, labelColor: String, color: String, bgColor: String, filled: Boolean, outlined: Boolean, borderless: Boolean, standout: [Boolean, String], square: Boolean, loading: Boolean, labelSlot: Boolean, bottomSlots: Boolean, hideBottomSpace: Boolean, rounded: Boolean, dense: Boolean, itemAligned: Boolean, counter: Boolean, clearable: Boolean, clearIcon: String, disable: Boolean, readonly: Boolean, autofocus: Boolean, for: String }, On = { ...cu, maxlength: [Number, String] }, bn = ["update:modelValue", "clear", "focus", "blur"];
+  var cu = __spreadProps(__spreadValues(__spreadValues({}, Se), Dc), { label: String, stackLabel: Boolean, hint: String, hideHint: Boolean, prefix: String, suffix: String, labelColor: String, color: String, bgColor: String, filled: Boolean, outlined: Boolean, borderless: Boolean, standout: [Boolean, String], square: Boolean, loading: Boolean, labelSlot: Boolean, bottomSlots: Boolean, hideBottomSpace: Boolean, rounded: Boolean, dense: Boolean, itemAligned: Boolean, counter: Boolean, clearable: Boolean, clearIcon: String, disable: Boolean, readonly: Boolean, autofocus: Boolean, for: String }), On = __spreadProps(__spreadValues({}, cu), { maxlength: [Number, String] }), bn = ["update:modelValue", "clear", "focus", "blur"];
   function yn({ requiredForAttr: e = true, tagProp: t, changeEvent: o = false } = {}) {
     let { props: r, proxy: n } = K(), a = xe(r, n.$q), l = Do({ required: e, getValue: () => r.for });
     return { requiredForAttr: e, changeEvent: o, tag: t === true ? s(() => r.tag) : { value: "label" }, isDark: a, editable: s(() => r.disable !== true && r.readonly !== true), innerLoading: T(false), focused: T(false), hasPopupOpen: false, splitAttrs: Br(), targetUid: l, rootRef: T(null), targetRef: T(null), controlRef: T(null) };
@@ -4597,7 +4639,7 @@
         return Q + (ee !== void 0 ? " / " + ee : "");
       }
     }));
-    let { isDirtyModel: c, hasRules: f, hasError: d, errorMessage: p, resetValidation: g } = Oc(e.focused, e.innerLoading), m = e.floatingLabel !== void 0 ? s(() => t.stackLabel === true || e.focused.value === true || e.floatingLabel.value === true) : s(() => t.stackLabel === true || e.focused.value === true || e.hasValue.value === true), v = s(() => t.bottomSlots === true || t.hint !== void 0 || f.value === true || t.counter === true || t.error !== null), x = s(() => t.filled === true ? "filled" : t.outlined === true ? "outlined" : t.borderless === true ? "borderless" : t.standout ? "standout" : "standard"), y = s(() => "q-field row no-wrap items-start q-field--".concat(x.value) + (e.fieldClass !== void 0 ? " ".concat(e.fieldClass.value) : "") + (t.rounded === true ? " q-field--rounded" : "") + (t.square === true ? " q-field--square" : "") + (m.value === true ? " q-field--float" : "") + (S.value === true ? " q-field--labeled" : "") + (t.dense === true ? " q-field--dense" : "") + (t.itemAligned === true ? " q-field--item-aligned q-item-type" : "") + (e.isDark.value === true ? " q-field--dark" : "") + (e.getControl === void 0 ? " q-field--auto-height" : "") + (e.focused.value === true ? " q-field--focused" : "") + (d.value === true ? " q-field--error" : "") + (d.value === true || e.focused.value === true ? " q-field--highlighted" : "") + (t.hideBottomSpace !== true && v.value === true ? " q-field--with-bottom" : "") + (t.disable === true ? " q-field--disabled" : t.readonly === true ? " q-field--readonly" : "")), k = s(() => "q-field__control relative-position row no-wrap" + (t.bgColor !== void 0 ? " bg-".concat(t.bgColor) : "") + (d.value === true ? " text-negative" : typeof t.standout == "string" && t.standout.length !== 0 && e.focused.value === true ? " ".concat(t.standout) : t.color !== void 0 ? " text-".concat(t.color) : "")), S = s(() => t.labelSlot === true || t.label !== void 0), b = s(() => "q-field__label no-pointer-events absolute ellipsis" + (t.labelColor !== void 0 && d.value !== true ? " text-".concat(t.labelColor) : "")), h = s(() => ({ id: e.targetUid.value, editable: e.editable.value, focused: e.focused.value, floatingLabel: m.value, modelValue: t.modelValue, emitValue: e.emitValue })), _ = s(() => {
+    let { isDirtyModel: c, hasRules: f, hasError: d, errorMessage: p, resetValidation: g } = Oc(e.focused, e.innerLoading), m = e.floatingLabel !== void 0 ? s(() => t.stackLabel === true || e.focused.value === true || e.floatingLabel.value === true) : s(() => t.stackLabel === true || e.focused.value === true || e.hasValue.value === true), v = s(() => t.bottomSlots === true || t.hint !== void 0 || f.value === true || t.counter === true || t.error !== null), x = s(() => t.filled === true ? "filled" : t.outlined === true ? "outlined" : t.borderless === true ? "borderless" : t.standout ? "standout" : "standard"), y = s(() => `q-field row no-wrap items-start q-field--${x.value}` + (e.fieldClass !== void 0 ? ` ${e.fieldClass.value}` : "") + (t.rounded === true ? " q-field--rounded" : "") + (t.square === true ? " q-field--square" : "") + (m.value === true ? " q-field--float" : "") + (S.value === true ? " q-field--labeled" : "") + (t.dense === true ? " q-field--dense" : "") + (t.itemAligned === true ? " q-field--item-aligned q-item-type" : "") + (e.isDark.value === true ? " q-field--dark" : "") + (e.getControl === void 0 ? " q-field--auto-height" : "") + (e.focused.value === true ? " q-field--focused" : "") + (d.value === true ? " q-field--error" : "") + (d.value === true || e.focused.value === true ? " q-field--highlighted" : "") + (t.hideBottomSpace !== true && v.value === true ? " q-field--with-bottom" : "") + (t.disable === true ? " q-field--disabled" : t.readonly === true ? " q-field--readonly" : "")), k = s(() => "q-field__control relative-position row no-wrap" + (t.bgColor !== void 0 ? ` bg-${t.bgColor}` : "") + (d.value === true ? " text-negative" : typeof t.standout == "string" && t.standout.length !== 0 && e.focused.value === true ? ` ${t.standout}` : t.color !== void 0 ? ` text-${t.color}` : "")), S = s(() => t.labelSlot === true || t.label !== void 0), b = s(() => "q-field__label no-pointer-events absolute ellipsis" + (t.labelColor !== void 0 && d.value !== true ? ` text-${t.labelColor}` : "")), h = s(() => ({ id: e.targetUid.value, editable: e.editable.value, focused: e.focused.value, floatingLabel: m.value, modelValue: t.modelValue, emitValue: e.emitValue })), _ = s(() => {
       let Q = {};
       return e.targetUid.value && (Q.for = e.targetUid.value), t.disable === true && (Q["aria-disabled"] = "true"), Q;
     });
@@ -4638,11 +4680,11 @@
     }
     function C() {
       let Q = [];
-      return t.prefix !== void 0 && t.prefix !== null && Q.push(i("div", { class: "q-field__prefix no-pointer-events row items-center" }, t.prefix)), e.getShadowControl !== void 0 && e.hasShadow.value === true && Q.push(e.getShadowControl()), S.value === true && Q.push(i("div", { class: b.value }, re(r.label, t.label))), e.getControl !== void 0 ? Q.push(e.getControl()) : r.rawControl !== void 0 ? Q.push(r.rawControl()) : r.control !== void 0 && Q.push(i("div", { ref: e.targetRef, class: "q-field__native row", tabindex: -1, ...e.splitAttrs.attributes.value, "data-autofocus": t.autofocus === true || void 0 }, r.control(h.value))), t.suffix !== void 0 && t.suffix !== null && Q.push(i("div", { class: "q-field__suffix no-pointer-events row items-center" }, t.suffix)), Q.concat(re(r.default));
+      return t.prefix !== void 0 && t.prefix !== null && Q.push(i("div", { class: "q-field__prefix no-pointer-events row items-center" }, t.prefix)), e.getShadowControl !== void 0 && e.hasShadow.value === true && Q.push(e.getShadowControl()), S.value === true && Q.push(i("div", { class: b.value }, re(r.label, t.label))), e.getControl !== void 0 ? Q.push(e.getControl()) : r.rawControl !== void 0 ? Q.push(r.rawControl()) : r.control !== void 0 && Q.push(i("div", __spreadProps(__spreadValues({ ref: e.targetRef, class: "q-field__native row", tabindex: -1 }, e.splitAttrs.attributes.value), { "data-autofocus": t.autofocus === true || void 0 }), r.control(h.value))), t.suffix !== void 0 && t.suffix !== null && Q.push(i("div", { class: "q-field__suffix no-pointer-events row items-center" }, t.suffix)), Q.concat(re(r.default));
     }
     function A() {
       let Q, ee;
-      d.value === true ? p.value !== null ? (Q = [i("div", { role: "alert" }, p.value)], ee = "q--slot-error-".concat(p.value)) : (Q = re(r.error), ee = "q--slot-error") : (t.hideHint !== true || e.focused.value === true) && (t.hint !== void 0 ? (Q = [i("div", t.hint)], ee = "q--slot-hint-".concat(t.hint)) : (Q = re(r.hint), ee = "q--slot-hint"));
+      d.value === true ? p.value !== null ? (Q = [i("div", { role: "alert" }, p.value)], ee = `q--slot-error-${p.value}`) : (Q = re(r.error), ee = "q--slot-error") : (t.hideHint !== true || e.focused.value === true) && (t.hint !== void 0 ? (Q = [i("div", t.hint)], ee = `q--slot-hint-${t.hint}`) : (Q = re(r.hint), ee = "q--slot-hint"));
       let ve = t.counter === true || r.counter !== void 0;
       if (t.hideBottomSpace === true && ve === false && Q === void 0) return;
       let O = i("div", { key: ee, class: "q-field__messages col" }, Q);
@@ -4661,11 +4703,11 @@
     }), be(() => {
       u !== null && clearTimeout(u);
     }), Object.assign(a, { focus: L, blur: D }), function() {
-      let ee = e.getControl === void 0 && r.control === void 0 ? { ...e.splitAttrs.attributes.value, "data-autofocus": t.autofocus === true || void 0, ..._.value } : _.value;
-      return i(e.tag.value, { ref: e.rootRef, class: [y.value, n.class], style: n.style, ...ee }, [r.before !== void 0 ? i("div", { class: "q-field__before q-field__marginal row no-wrap items-center", onClick: gt }, r.before()) : null, i("div", { class: "q-field__inner relative-position col self-stretch" }, [i("div", { ref: e.controlRef, class: k.value, tabindex: -1, ...e.controlEvents }, q()), v.value === true ? A() : null]), r.after !== void 0 ? i("div", { class: "q-field__after q-field__marginal row no-wrap items-center", onClick: gt }, r.after()) : null]);
+      let ee = e.getControl === void 0 && r.control === void 0 ? __spreadValues(__spreadProps(__spreadValues({}, e.splitAttrs.attributes.value), { "data-autofocus": t.autofocus === true || void 0 }), _.value) : _.value;
+      return i(e.tag.value, __spreadValues({ ref: e.rootRef, class: [y.value, n.class], style: n.style }, ee), [r.before !== void 0 ? i("div", { class: "q-field__before q-field__marginal row no-wrap items-center", onClick: gt }, r.before()) : null, i("div", { class: "q-field__inner relative-position col self-stretch" }, [i("div", __spreadValues({ ref: e.controlRef, class: k.value, tabindex: -1 }, e.controlEvents), q()), v.value === true ? A() : null]), r.after !== void 0 ? i("div", { class: "q-field__after q-field__marginal row no-wrap items-center", onClick: gt }, r.after()) : null]);
     };
   }
-  var Ai = P({ name: "QField", inheritAttrs: false, props: { ...On, tag: { type: String, default: "label" } }, emits: bn, setup() {
+  var Ai = P({ name: "QField", inheritAttrs: false, props: __spreadProps(__spreadValues({}, On), { tag: { type: String, default: "label" } }), emits: bn, setup() {
     return Sn(yn({ tagProp: true }));
   } });
   function Fr(e, t, o, r) {
@@ -4733,7 +4775,7 @@
       b.length !== 0 && r(null, b), t.value = false;
     }
     function k(S) {
-      if (t.value === true) return i("div", { ref: u, class: "q-".concat(S, "__dnd absolute-full"), onDragenter: $i, onDragover: $i, onDragleave: x, onDrop: y });
+      if (t.value === true) return i("div", { ref: u, class: `q-${S}__dnd absolute-full`, onDragenter: $i, onDragover: $i, onDragleave: x, onDrop: y });
     }
     return Object.assign(l, { pickFiles: p, addFiles: g }), { pickFiles: p, addFiles: g, onDragover: v, onDragleave: x, processFiles: m, getDndNode: k, maxFilesNumber: f, maxTotalSizeNumber: d };
   }
@@ -4745,7 +4787,7 @@
         return Object(r) === r && ("length" in r ? Array.from(r) : [r]).forEach((a) => {
           n.items.add(a);
         }), { files: n.files };
-      } catch {
+      } catch (e2) {
         return { files: void 0 };
       }
     }
@@ -4753,8 +4795,8 @@
       if (e.type === "file") return o();
     }) : s(o);
   }
-  var Vc = P({ name: "QFile", inheritAttrs: false, props: { ...cu, ...kt, ...Ei, modelValue: [File, FileList, Array], append: Boolean, useChips: Boolean, displayValue: [String, Number], tabindex: { type: [String, Number], default: 0 }, counterLabel: Function, inputClass: [Array, String, Object], inputStyle: [Array, String, Object] }, emits: [...bn, ...Bi], setup(e, { slots: t, emit: o, attrs: r }) {
-    let { proxy: n } = K(), a = yn(), l = T(null), u = T(false), c = gr(e), { pickFiles: f, onDragover: d, onDragleave: p, processFiles: g, getDndNode: m } = Fi({ editable: a.editable, dnd: u, getFileInput: $, addFilesToQueue: q }), v = Li(e), x = s(() => Object(e.modelValue) === e.modelValue ? "length" in e.modelValue ? Array.from(e.modelValue) : [e.modelValue] : []), y = s(() => Qo(x.value)), k = s(() => x.value.map((H) => H.name).join(", ")), S = s(() => Un(x.value.reduce((H, Q) => H + Q.size, 0))), b = s(() => ({ totalSize: S.value, filesNumber: x.value.length, maxFiles: e.maxFiles })), h = s(() => ({ tabindex: -1, type: "file", title: "", accept: e.accept, capture: e.capture, name: c.value, ...r, id: a.targetUid.value, disabled: a.editable.value !== true })), _ = s(() => "q-file q-field--auto-height" + (u.value === true ? " q-file--dnd" : "")), E = s(() => e.multiple === true && e.append === true);
+  var Vc = P({ name: "QFile", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, cu), kt), Ei), { modelValue: [File, FileList, Array], append: Boolean, useChips: Boolean, displayValue: [String, Number], tabindex: { type: [String, Number], default: 0 }, counterLabel: Function, inputClass: [Array, String, Object], inputStyle: [Array, String, Object] }), emits: [...bn, ...Bi], setup(e, { slots: t, emit: o, attrs: r }) {
+    let { proxy: n } = K(), a = yn(), l = T(null), u = T(false), c = gr(e), { pickFiles: f, onDragover: d, onDragleave: p, processFiles: g, getDndNode: m } = Fi({ editable: a.editable, dnd: u, getFileInput: $, addFilesToQueue: q }), v = Li(e), x = s(() => Object(e.modelValue) === e.modelValue ? "length" in e.modelValue ? Array.from(e.modelValue) : [e.modelValue] : []), y = s(() => Qo(x.value)), k = s(() => x.value.map((H) => H.name).join(", ")), S = s(() => Un(x.value.reduce((H, Q) => H + Q.size, 0))), b = s(() => ({ totalSize: S.value, filesNumber: x.value.length, maxFiles: e.maxFiles })), h = s(() => __spreadProps(__spreadValues({ tabindex: -1, type: "file", title: "", accept: e.accept, capture: e.capture, name: c.value }, r), { id: a.targetUid.value, disabled: a.editable.value !== true })), _ = s(() => "q-file q-field--auto-height" + (u.value === true ? " q-file--dnd" : "")), E = s(() => e.multiple === true && e.append === true);
     function L(H) {
       let Q = x.value.slice();
       Q.splice(H, 1), Z(Q);
@@ -4792,13 +4834,13 @@
       return H.length !== 0 ? [i("div", { class: e.inputClass, style: e.inputStyle, textContent: H })] : C();
     }
     function z() {
-      let H = { ref: l, ...h.value, ...v.value, class: "q-field__input fit absolute-full cursor-pointer", onChange: q };
+      let H = __spreadProps(__spreadValues(__spreadValues({ ref: l }, h.value), v.value), { class: "q-field__input fit absolute-full cursor-pointer", onChange: q });
       return e.multiple === true && (H.multiple = true), i("input", H);
     }
     return Object.assign(a, { fieldClass: _, emitValue: Z, hasValue: y, inputRef: l, innerValue: x, floatingLabel: s(() => y.value === true || Qo(e.displayValue)), computedCounter: s(() => {
       if (e.counterLabel !== void 0) return e.counterLabel(b.value);
       let H = e.maxFiles;
-      return "".concat(x.value.length).concat(H !== void 0 ? " / " + H : "", " (").concat(S.value, ")");
+      return `${x.value.length}${H !== void 0 ? " / " + H : ""} (${S.value})`;
     }), getControlChild: () => m("file"), getControl: () => {
       let H = { ref: a.targetRef, class: "q-field__native row items-center cursor-pointer", tabindex: e.tabindex };
       return a.editable.value === true && Object.assign(H, { onDragover: d, onDragleave: p, onKeydown: B, onKeyup: F }), i("div", H, [z()].concat(A()));
@@ -4814,7 +4856,7 @@
       return _ > 0 ? _ : 0;
     }), p = s(() => e.modelValue !== true || c.value === true && l.value !== true), g = s(() => e.modelValue === true && p.value === true && e.reveal === true), m = s(() => "q-footer q-layout__section--marginal " + (c.value === true ? "fixed" : "absolute") + "-bottom" + (e.bordered === true ? " q-footer--bordered" : "") + (p.value === true ? " q-footer--hidden" : "") + (e.modelValue !== true ? " q-layout--prevent-focus" + (c.value !== true ? " hidden" : "") : "")), v = s(() => {
       let _ = n.rows.value.bottom, E = {};
-      return _[0] === "l" && n.left.space === true && (E[r.lang.rtl === true ? "right" : "left"] = "".concat(n.left.size, "px")), _[2] === "r" && n.right.space === true && (E[r.lang.rtl === true ? "left" : "right"] = "".concat(n.right.size, "px")), E;
+      return _[0] === "l" && n.left.space === true && (E[r.lang.rtl === true ? "right" : "left"] = `${n.left.size}px`), _[2] === "r" && n.right.space === true && (E[r.lang.rtl === true ? "left" : "right"] = `${n.right.size}px`), E;
     });
     function x(_, E) {
       n.update("footer", _, E);
@@ -4856,7 +4898,7 @@
     let r = K(), n = T(null), a = 0, l = [];
     function u(m) {
       let v = typeof m == "boolean" ? m : e.noErrorFocus !== true, x = ++a, y = (b, h) => {
-        o("validation".concat(b === true ? "Success" : "Error"), h);
+        o(`validation${b === true ? "Success" : "Error"}`, h);
       }, k = (b) => {
         let h = b.validate();
         return typeof h.then == "function" ? h.then((_) => ({ valid: _, comp: b }), (_) => ({ valid: false, comp: b, err: _ })) : Promise.resolve({ valid: h, comp: b });
@@ -4936,7 +4978,7 @@
       return S > 0 ? S : 0;
     }), f = s(() => e.modelValue !== true || u.value === true && l.value !== true), d = s(() => e.modelValue === true && f.value === true && e.reveal === true), p = s(() => "q-header q-layout__section--marginal " + (u.value === true ? "fixed" : "absolute") + "-top" + (e.bordered === true ? " q-header--bordered" : "") + (f.value === true ? " q-header--hidden" : "") + (e.modelValue !== true ? " q-layout--prevent-focus" : "")), g = s(() => {
       let S = n.rows.value.top, b = {};
-      return S[0] === "l" && n.left.space === true && (b[r.lang.rtl === true ? "right" : "left"] = "".concat(n.left.size, "px")), S[2] === "r" && n.right.space === true && (b[r.lang.rtl === true ? "left" : "right"] = "".concat(n.right.size, "px")), b;
+      return S[0] === "l" && n.left.space === true && (b[r.lang.rtl === true ? "right" : "left"] = `${n.left.size}px`), S[2] === "r" && n.right.space === true && (b[r.lang.rtl === true ? "left" : "right"] = `${n.right.size}px`), b;
     });
     function m(S, b) {
       n.update("header", S, b);
@@ -4973,11 +5015,11 @@
   function Dr(e, t) {
     return s(() => {
       let o = Number(e.ratio || (t !== void 0 ? t.value : void 0));
-      return isNaN(o) !== true && o > 0 ? { paddingBottom: "".concat(100 / o, "%") } : null;
+      return isNaN(o) !== true && o > 0 ? { paddingBottom: `${100 / o}%` } : null;
     });
   }
-  var _h = 1.7778, Qc = P({ name: "QImg", props: { ...Lr, src: String, srcset: String, sizes: String, alt: String, crossorigin: String, decoding: String, referrerpolicy: String, draggable: Boolean, loading: { type: String, default: "lazy" }, loadingShowDelay: { type: [Number, String], default: 0 }, fetchpriority: { type: String, default: "auto" }, width: String, height: String, initialRatio: { type: [Number, String], default: _h }, placeholderSrc: String, errorSrc: String, fit: { type: String, default: "cover" }, position: { type: String, default: "50% 50%" }, imgClass: String, imgStyle: Object, noSpinner: Boolean, noNativeMenu: Boolean, noTransition: Boolean, spinnerColor: String, spinnerSize: String }, emits: ["load", "error"], setup(e, { slots: t, emit: o }) {
-    let r = T(e.initialRatio), n = Dr(e, r), a = K(), { registerTimeout: l, removeTimeout: u } = Vt(), { registerTimeout: c, removeTimeout: f } = Vt(), d = s(() => e.placeholderSrc !== void 0 ? { src: e.placeholderSrc } : null), p = s(() => e.errorSrc !== void 0 ? { src: e.errorSrc, __qerror: true } : null), g = [T(null), T(d.value)], m = T(0), v = T(false), x = T(false), y = s(() => "q-img q-img--".concat(e.noNativeMenu === true ? "no-" : "", "menu")), k = s(() => ({ width: e.width, height: e.height })), S = s(() => "q-img__image ".concat(e.imgClass !== void 0 ? e.imgClass + " " : "", "q-img__image--with").concat(e.noTransition === true ? "out" : "", "-transition q-img__image--")), b = s(() => ({ ...e.imgStyle, objectFit: e.fit, objectPosition: e.position }));
+  var _h = 1.7778, Qc = P({ name: "QImg", props: __spreadProps(__spreadValues({}, Lr), { src: String, srcset: String, sizes: String, alt: String, crossorigin: String, decoding: String, referrerpolicy: String, draggable: Boolean, loading: { type: String, default: "lazy" }, loadingShowDelay: { type: [Number, String], default: 0 }, fetchpriority: { type: String, default: "auto" }, width: String, height: String, initialRatio: { type: [Number, String], default: _h }, placeholderSrc: String, errorSrc: String, fit: { type: String, default: "cover" }, position: { type: String, default: "50% 50%" }, imgClass: String, imgStyle: Object, noSpinner: Boolean, noNativeMenu: Boolean, noTransition: Boolean, spinnerColor: String, spinnerSize: String }), emits: ["load", "error"], setup(e, { slots: t, emit: o }) {
+    let r = T(e.initialRatio), n = Dr(e, r), a = K(), { registerTimeout: l, removeTimeout: u } = Vt(), { registerTimeout: c, removeTimeout: f } = Vt(), d = s(() => e.placeholderSrc !== void 0 ? { src: e.placeholderSrc } : null), p = s(() => e.errorSrc !== void 0 ? { src: e.errorSrc, __qerror: true } : null), g = [T(null), T(d.value)], m = T(0), v = T(false), x = T(false), y = s(() => `q-img q-img--${e.noNativeMenu === true ? "no-" : ""}menu`), k = s(() => ({ width: e.width, height: e.height })), S = s(() => `q-img__image ${e.imgClass !== void 0 ? e.imgClass + " " : ""}q-img__image--with${e.noTransition === true ? "out" : ""}-transition q-img__image--`), b = s(() => __spreadProps(__spreadValues({}, e.imgStyle), { objectFit: e.fit, objectPosition: e.position }));
     function h() {
       if (f(), e.loadingShowDelay === 0) {
         v.value = true;
@@ -5005,7 +5047,7 @@
       u(), _(), x.value = true, g[m.value].value = p.value, g[m.value ^ 1].value = d.value, o("error", $);
     }
     function B($) {
-      let q = g[$].value, C = { key: "img_" + $, class: S.value, style: b.value, alt: e.alt, crossorigin: e.crossorigin, decoding: e.decoding, referrerpolicy: e.referrerpolicy, height: e.height, width: e.width, loading: e.loading, fetchpriority: e.fetchpriority, "aria-hidden": "true", draggable: e.draggable, ...q };
+      let q = g[$].value, C = __spreadValues({ key: "img_" + $, class: S.value, style: b.value, alt: e.alt, crossorigin: e.crossorigin, decoding: e.decoding, referrerpolicy: e.referrerpolicy, height: e.height, width: e.width, loading: e.loading, fetchpriority: e.fetchpriority, "aria-hidden": "true", draggable: e.draggable }, q);
       return m.value === $ ? Object.assign(C, { class: C.class + "current", onLoad: E, onError: Z }) : C.class += "loaded", i("div", { class: "q-img__container absolute-full", key: "img" + $ }, i("img", C));
     }
     function F() {
@@ -5080,7 +5122,7 @@
           });
           return;
         }
-        let D = "".concat(r.value === true ? "un" : "", "pauseAnimations");
+        let D = `${r.value === true ? "un" : ""}pauseAnimations`;
         Array.from(l.value.getElementsByTagName("svg")).forEach((Z) => {
           Z[D]();
         });
@@ -5112,8 +5154,8 @@
       return h.value === true && L[e.reverse === false ? "push" : "unshift"](i("div", { ref: l, class: d.value }, re(t.loading))), i("div", { class: "q-infinite-scroll", ref: a }, L);
     };
   } });
-  var Uc = P({ name: "QInnerLoading", props: { ...Se, ...yo, showing: Boolean, color: String, size: { type: [String, Number], default: "42px" }, label: String, labelClass: String, labelStyle: [String, Array, Object] }, setup(e, { slots: t }) {
-    let o = K(), r = xe(e, o.proxy.$q), { transitionProps: n, transitionStyle: a } = cn(e), l = s(() => "q-inner-loading q--avoid-card-border absolute-full column flex-center" + (r.value === true ? " q-inner-loading--dark" : "")), u = s(() => "q-inner-loading__label" + (e.labelClass !== void 0 ? " ".concat(e.labelClass) : ""));
+  var Uc = P({ name: "QInnerLoading", props: __spreadProps(__spreadValues(__spreadValues({}, Se), yo), { showing: Boolean, color: String, size: { type: [String, Number], default: "42px" }, label: String, labelClass: String, labelStyle: [String, Array, Object] }), setup(e, { slots: t }) {
+    let o = K(), r = xe(e, o.proxy.$q), { transitionProps: n, transitionStyle: a } = cn(e), l = s(() => "q-inner-loading q--avoid-card-border absolute-full column flex-center" + (r.value === true ? " q-inner-loading--dark" : "")), u = s(() => "q-inner-loading__label" + (e.labelClass !== void 0 ? ` ${e.labelClass}` : ""));
     function c() {
       let d = [i(wt, { size: e.size, color: e.color })];
       return e.label !== void 0 && d.push(i("div", { class: u.value, style: e.labelStyle }, [e.label])), d;
@@ -5128,7 +5170,7 @@
     let t = Object.keys(e), o = {};
     return t.forEach((r) => {
       let n = e[r];
-      o[r] = { ...n, regex: new RegExp(n.pattern) };
+      o[r] = __spreadProps(__spreadValues({}, n), { regex: new RegExp(n.pattern) });
     }), { tokenMap: o, tokenKeys: t };
   }
   function Gc(e) {
@@ -5138,7 +5180,7 @@
   function Jc(e, t, o, r) {
     let n, a, l, u, c, f, d = s(() => {
       if (e.maskTokens === void 0 || e.maskTokens === null) return { tokenMap: Wc, tokenRegexMask: wh };
-      let { tokenMap: B } = Xc(e.maskTokens), F = { ...Wc, ...B };
+      let { tokenMap: B } = Xc(e.maskTokens), F = __spreadValues(__spreadValues({}, Wc), B);
       return { tokenMap: F, tokenRegexMask: Gc(Object.keys(F)) };
     }), p = T(null), g = T(v());
     function m() {
@@ -5332,12 +5374,12 @@
       } else o.type === "compositionupdate" && o.target.qComposing !== true && typeof o.data == "string" && (Ae.is.firefox === true ? Mh.test(o.data) === false : kh.test(o.data) === true || qh.test(o.data) === true || Th.test(o.data) === true) === true && (o.target.qComposing = true);
     };
   }
-  var Or = P({ name: "QInput", inheritAttrs: false, props: { ...On, ...Zc, ...kt, modelValue: [String, Number, FileList], shadowText: String, type: { type: String, default: "text" }, debounce: [String, Number], autogrow: Boolean, inputClass: [Array, String, Object], inputStyle: [Array, String, Object] }, emits: [...bn, "paste", "change", "keydown", "click", "animationend"], setup(e, { emit: t, attrs: o }) {
+  var Or = P({ name: "QInput", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, On), Zc), kt), { modelValue: [String, Number, FileList], shadowText: String, type: { type: String, default: "text" }, debounce: [String, Number], autogrow: Boolean, inputClass: [Array, String, Object], inputStyle: [Array, String, Object] }), emits: [...bn, "paste", "change", "keydown", "click", "animationend"], setup(e, { emit: t, attrs: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = {}, l = NaN, u, c, f = null, d, p = T(null), g = gr(e), { innerValue: m, hasMask: v, moveCursorForPaste: x, updateMaskValue: y, onMaskedKeydown: k, onMaskedClick: S } = Jc(e, t, z, p), b = Li(e, true), h = s(() => Qo(m.value)), _ = Di(C), E = yn({ changeEvent: true }), L = s(() => e.type === "textarea" || e.autogrow === true), D = s(() => L.value === true || ["text", "search", "url", "tel", "password"].includes(e.type)), Z = s(() => {
-      let w = { ...E.splitAttrs.listeners.value, onInput: C, onPaste: q, onChange: Q, onBlur: ee, onFocus: it };
+      let w = __spreadProps(__spreadValues({}, E.splitAttrs.listeners.value), { onInput: C, onPaste: q, onChange: Q, onBlur: ee, onFocus: it });
       return w.onCompositionstart = w.onCompositionupdate = w.onCompositionend = _, v.value === true && (w.onKeydown = k, w.onClick = S), e.autogrow === true && (w.onAnimationend = A), w;
     }), B = s(() => {
-      let w = { tabindex: 0, "data-autofocus": e.autofocus === true || void 0, rows: e.type === "textarea" ? 6 : void 0, "aria-label": e.label, name: g.value, ...E.splitAttrs.attributes.value, id: E.targetUid.value, maxlength: e.maxlength, disabled: e.disable === true, readonly: e.readonly === true };
+      let w = __spreadProps(__spreadValues({ tabindex: 0, "data-autofocus": e.autofocus === true || void 0, rows: e.type === "textarea" ? 6 : void 0, "aria-label": e.label, name: g.value }, E.splitAttrs.attributes.value), { id: E.targetUid.value, maxlength: e.maxlength, disabled: e.disable === true, readonly: e.readonly === true });
       return L.value === false && (w.type = e.type), e.autogrow === true && (w.rows = 1), w;
     });
     Y(() => e.type, () => {
@@ -5424,7 +5466,7 @@
       ee();
     }), Qe(() => {
       e.autogrow === true && H();
-    }), Object.assign(E, { innerValue: m, fieldClass: s(() => "q-".concat(L.value === true ? "textarea" : "input") + (e.autogrow === true ? " q-textarea--autogrow" : "")), hasShadow: s(() => e.type !== "file" && typeof e.shadowText == "string" && e.shadowText.length !== 0), inputRef: p, emitValue: z, hasValue: h, floatingLabel: s(() => h.value === true && (e.type !== "number" || isNaN(m.value) === false) || Qo(e.displayValue)), getControl: () => i(L.value === true ? "textarea" : "input", { ref: p, class: ["q-field__native q-placeholder", e.inputClass], style: e.inputStyle, ...B.value, ...Z.value, ...e.type !== "file" ? { value: ve() } : b.value }), getShadowControl: () => i("div", { class: "q-field__native q-field__shadow absolute-bottom no-pointer-events" + (L.value === true ? "" : " text-no-wrap") }, [i("span", { class: "invisible" }, ve()), i("span", e.shadowText)]) });
+    }), Object.assign(E, { innerValue: m, fieldClass: s(() => `q-${L.value === true ? "textarea" : "input"}` + (e.autogrow === true ? " q-textarea--autogrow" : "")), hasShadow: s(() => e.type !== "file" && typeof e.shadowText == "string" && e.shadowText.length !== 0), inputRef: p, emitValue: z, hasValue: h, floatingLabel: s(() => h.value === true && (e.type !== "number" || isNaN(m.value) === false) || Qo(e.displayValue)), getControl: () => i(L.value === true ? "textarea" : "input", __spreadValues(__spreadValues(__spreadValues({ ref: p, class: ["q-field__native q-placeholder", e.inputClass], style: e.inputStyle }, B.value), Z.value), e.type !== "file" ? { value: ve() } : b.value)), getShadowControl: () => i("div", { class: "q-field__native q-field__shadow absolute-bottom no-pointer-events" + (L.value === true ? "" : " text-no-wrap") }, [i("span", { class: "invisible" }, ve()), i("span", e.shadowText)]) });
     let O = Sn(E);
     return Object.assign(r, { focus: F, select: $, getNativeElement: () => p.value }), ft(r, "nativeEl", () => p.value), O;
   } });
@@ -5455,7 +5497,7 @@
     o !== void 0 && td(e, o, t.value);
   }, beforeUnmount: od });
   var nd = P({ name: "QIntersection", props: { tag: { type: String, default: "div" }, once: Boolean, transition: String, transitionDuration: { type: [String, Number], default: 300 }, ssrPrerender: Boolean, margin: String, threshold: [Number, Array], root: { default: null }, disable: Boolean, onVisibility: Function }, setup(e, { slots: t, emit: o }) {
-    let r = T(xt.value === true ? e.ssrPrerender : false), n = s(() => e.root !== void 0 || e.margin !== void 0 || e.threshold !== void 0 ? { handler: c, cfg: { root: e.root, rootMargin: e.margin, threshold: e.threshold } } : c), a = s(() => e.disable !== true && (xt.value !== true || e.once !== true || e.ssrPrerender !== true)), l = s(() => [[Oi, n.value, void 0, { once: e.once }]]), u = s(() => "--q-transition-duration: ".concat(e.transitionDuration, "ms"));
+    let r = T(xt.value === true ? e.ssrPrerender : false), n = s(() => e.root !== void 0 || e.margin !== void 0 || e.threshold !== void 0 ? { handler: c, cfg: { root: e.root, rootMargin: e.margin, threshold: e.threshold } } : c), a = s(() => e.disable !== true && (xt.value !== true || e.once !== true || e.ssrPrerender !== true)), l = s(() => [[Oi, n.value, void 0, { once: e.once }]]), u = s(() => `--q-transition-duration: ${e.transitionDuration}ms`);
     function c(d) {
       r.value !== d.isIntersecting && (r.value = d.isIntersecting, e.onVisibility !== void 0 && o("visibility", r.value));
     }
@@ -5468,17 +5510,17 @@
       return Rt(e.tag, { class: "q-intersection" }, d, "main", a.value, () => l.value);
     };
   } });
-  var Rh = ["ul", "ol"], Vi = P({ name: "QList", props: { ...Se, bordered: Boolean, dense: Boolean, separator: Boolean, padding: Boolean, tag: { type: String, default: "div" } }, setup(e, { slots: t }) {
+  var Rh = ["ul", "ol"], Vi = P({ name: "QList", props: __spreadProps(__spreadValues({}, Se), { bordered: Boolean, dense: Boolean, separator: Boolean, padding: Boolean, tag: { type: String, default: "div" } }), setup(e, { slots: t }) {
     let o = K(), r = xe(e, o.proxy.$q), n = s(() => Rh.includes(e.tag) ? null : "list"), a = s(() => "q-list" + (e.bordered === true ? " q-list--bordered" : "") + (e.dense === true ? " q-list--dense" : "") + (e.separator === true ? " q-list--separator" : "") + (r.value === true ? " q-list--dark" : "") + (e.padding === true ? " q-list--padding" : ""));
     return () => i(e.tag, { class: a.value, role: n.value }, re(t.default));
   } });
-  var rd = [34, 37, 40, 33, 39, 38], Ph = Object.keys(na), ad = P({ name: "QKnob", props: { ...kt, ...na, modelValue: { type: Number, required: true }, innerMin: Number, innerMax: Number, step: { type: Number, default: 1, validator: (e) => e >= 0 }, tabindex: { type: [Number, String], default: 0 }, disable: Boolean, readonly: Boolean }, emits: ["update:modelValue", "change", "dragValue"], setup(e, { slots: t, emit: o }) {
+  var rd = [34, 37, 40, 33, 39, 38], Ph = Object.keys(na), ad = P({ name: "QKnob", props: __spreadProps(__spreadValues(__spreadValues({}, kt), na), { modelValue: { type: Number, required: true }, innerMin: Number, innerMax: Number, step: { type: Number, default: 1, validator: (e) => e >= 0 }, tabindex: { type: [Number, String], default: 0 }, disable: Boolean, readonly: Boolean }), emits: ["update:modelValue", "change", "dragValue"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = T(e.modelValue), l = T(false), u = s(() => isNaN(e.innerMin) === true || e.innerMin < e.min ? e.min : e.innerMin), c = s(() => isNaN(e.innerMax) === true || e.innerMax > e.max ? e.max : e.innerMax), f;
     function d() {
       a.value = e.modelValue === null ? u.value : tt(e.modelValue, u.value, c.value), F(true);
     }
-    Y(() => "".concat(e.modelValue, "|").concat(u.value, "|").concat(c.value), d), d();
-    let p = s(() => e.disable === false && e.readonly === false), g = s(() => "q-knob non-selectable" + (p.value === true ? " q-knob--editable" : e.disable === true ? " disabled" : "")), m = s(() => (String(e.step).trim().split(".")[1] || "").length), v = s(() => e.step === 0 ? 1 : e.step), x = s(() => e.instantFeedback === true || l.value === true), y = n.platform.is.mobile === true ? s(() => p.value === true ? { onClick: L } : {}) : s(() => p.value === true ? { onMousedown: E, onClick: L, onKeydown: D, onKeyup: B } : {}), k = s(() => p.value === true ? { tabindex: e.tabindex } : { ["aria-".concat(e.disable === true ? "disabled" : "readonly")]: "true" }), S = s(() => {
+    Y(() => `${e.modelValue}|${u.value}|${c.value}`, d), d();
+    let p = s(() => e.disable === false && e.readonly === false), g = s(() => "q-knob non-selectable" + (p.value === true ? " q-knob--editable" : e.disable === true ? " disabled" : "")), m = s(() => (String(e.step).trim().split(".")[1] || "").length), v = s(() => e.step === 0 ? 1 : e.step), x = s(() => e.instantFeedback === true || l.value === true), y = n.platform.is.mobile === true ? s(() => p.value === true ? { onClick: L } : {}) : s(() => p.value === true ? { onMousedown: E, onClick: L, onKeydown: D, onKeyup: B } : {}), k = s(() => p.value === true ? { tabindex: e.tabindex } : { [`aria-${e.disable === true ? "disabled" : "readonly"}`]: "true" }), S = s(() => {
       let C = {};
       return Ph.forEach((A) => {
         C[A] = e[A];
@@ -5505,7 +5547,7 @@
       a.value = tt(parseFloat((a.value + z).toFixed(m.value)), u.value, c.value), F();
     }
     function Z(C, A) {
-      let z = _t(C), H = Math.abs(z.top - f.top), Q = Math.sqrt(H ** 2 + Math.abs(z.left - f.left) ** 2), ee = Math.asin(H / Q) * (180 / Math.PI);
+      let z = _t(C), H = Math.abs(z.top - f.top), Q = Math.sqrt(__pow(H, 2) + __pow(Math.abs(z.left - f.left), 2)), ee = Math.asin(H / Q) * (180 / Math.PI);
       z.top < f.top ? ee = f.left < z.left ? 90 - ee : 270 + ee : ee = f.left < z.left ? ee + 90 : 270 - ee, n.lang.rtl === true ? ee = Cn(-ee - e.angle, 0, 360) : e.angle && (ee = Cn(ee - e.angle, 0, 360)), e.reverse === true && (ee = 360 - ee);
       let ve = e.min + ee / 360 * (e.max - e.min);
       if (v.value !== 0) {
@@ -5525,7 +5567,7 @@
       return i("input", $.value);
     }
     return () => {
-      let C = { class: g.value, role: "slider", "aria-valuemin": u.value, "aria-valuemax": c.value, "aria-valuenow": e.modelValue, ...k.value, ...S.value, value: a.value, instantFeedback: x.value, ...y.value }, A = { default: t.default };
+      let C = __spreadValues(__spreadProps(__spreadValues(__spreadValues({ class: g.value, role: "slider", "aria-valuemin": u.value, "aria-valuemax": c.value, "aria-valuenow": e.modelValue }, k.value), S.value), { value: a.value, instantFeedback: x.value }), y.value), A = { default: t.default };
       return p.value === true && e.name !== void 0 && (A.internal = q), Rt(Tr, C, A, "knob", p.value, () => h.value);
     };
   } });
@@ -5539,7 +5581,7 @@
       let p = Math.max(0, oo(n)), g = dn(n), m = { top: p - o.position.top, left: g - o.position.left };
       if (e.axis === "vertical" && m.top === 0 || e.axis === "horizontal" && m.left === 0) return;
       let v = Math.abs(m.top) >= Math.abs(m.left) ? m.top < 0 ? "up" : "down" : m.left < 0 ? "left" : "right";
-      o.position = { top: p, left: g }, o.directionChanged = o.direction !== v, o.delta = m, o.directionChanged === true && (o.direction = v, o.inflectionPoint = o.position), t("scroll", { ...o });
+      o.position = { top: p, left: g }, o.directionChanged = o.direction !== v, o.delta = m, o.directionChanged === true && (o.direction = v, o.inflectionPoint = o.position), t("scroll", __spreadValues({}, o));
     }
     function u() {
       n = Ft(a, e.scrollTarget), n.addEventListener("scroll", f, id), f(true);
@@ -5564,7 +5606,7 @@
     }), Object.assign(d, { trigger: f, getPosition: () => o }), Ye;
   } });
   var ld = P({ name: "QLayout", props: { container: Boolean, view: { type: String, default: "hhh lpr fff", validator: (e) => /^(h|l)h(h|r) lpr (f|l)f(f|r)$/.test(e.toLowerCase()) }, onScroll: Function, onScrollHeight: Function, onResize: Function }, setup(e, { slots: t, emit: o }) {
-    let { proxy: { $q: r } } = K(), n = T(null), a = T(r.screen.height), l = T(e.container === true ? 0 : r.screen.width), u = T({ position: 0, direction: "down", inflectionPoint: 0 }), c = T(0), f = T(xt.value === true ? 0 : Tn()), d = s(() => "q-layout q-layout--" + (e.container === true ? "containerized" : "standard")), p = s(() => e.container === false ? { minHeight: r.screen.height + "px" } : null), g = s(() => f.value !== 0 ? { [r.lang.rtl === true ? "left" : "right"]: "".concat(f.value, "px") } : null), m = s(() => f.value !== 0 ? { [r.lang.rtl === true ? "right" : "left"]: 0, [r.lang.rtl === true ? "left" : "right"]: "-".concat(f.value, "px"), width: "calc(100% + ".concat(f.value, "px)") } : null);
+    let { proxy: { $q: r } } = K(), n = T(null), a = T(r.screen.height), l = T(e.container === true ? 0 : r.screen.width), u = T({ position: 0, direction: "down", inflectionPoint: 0 }), c = T(0), f = T(xt.value === true ? 0 : Tn()), d = s(() => "q-layout q-layout--" + (e.container === true ? "containerized" : "standard")), p = s(() => e.container === false ? { minHeight: r.screen.height + "px" } : null), g = s(() => f.value !== 0 ? { [r.lang.rtl === true ? "left" : "right"]: `${f.value}px` } : null), m = s(() => f.value !== 0 ? { [r.lang.rtl === true ? "right" : "left"]: 0, [r.lang.rtl === true ? "left" : "right"]: `-${f.value}px`, width: `calc(100% + ${f.value}px)` } : null);
     function v(h) {
       if (e.container === true || document.qScrollPrevented !== true) {
         let _ = { position: h.position.top, direction: h.direction, directionChanged: h.directionChanged, inflectionPoint: h.inflectionPoint.top, delta: h.delta.top };
@@ -5604,7 +5646,7 @@
         } else clearTimeout(h);
         h = setTimeout(E, 300);
       }, D = function(Z) {
-        h !== null && Z === "remove" && (clearTimeout(h), E()), window["".concat(Z, "EventListener")]("resize", L);
+        h !== null && Z === "remove" && (clearTimeout(h), E()), window[`${Z}EventListener`]("resize", L);
       }, h = null, _ = document.body;
       Y(() => e.container !== true ? "add" : "remove", D), e.container !== true && D("add"), Nn(() => {
         D("remove");
@@ -5615,8 +5657,8 @@
       return e.container === true ? i("div", { class: "q-layout-container overflow-hidden", ref: n }, [i(no, { onResize: y }), i("div", { class: "absolute-full", style: g.value }, [i("div", { class: "scroll", style: m.value }, [_])])]) : _;
     };
   } });
-  var $h = ["horizontal", "vertical", "cell", "none"], zi = P({ name: "QMarkupTable", props: { ...Se, dense: Boolean, flat: Boolean, bordered: Boolean, square: Boolean, wrapCells: Boolean, separator: { type: String, default: "horizontal", validator: (e) => $h.includes(e) } }, setup(e, { slots: t }) {
-    let o = K(), r = xe(e, o.proxy.$q), n = s(() => "q-markup-table q-table__container q-table__card q-table--".concat(e.separator, "-separator") + (r.value === true ? " q-table--dark q-table__card--dark q-dark" : "") + (e.dense === true ? " q-table--dense" : "") + (e.flat === true ? " q-table--flat" : "") + (e.bordered === true ? " q-table--bordered" : "") + (e.square === true ? " q-table--square" : "") + (e.wrapCells === false ? " q-table--no-wrap" : ""));
+  var $h = ["horizontal", "vertical", "cell", "none"], zi = P({ name: "QMarkupTable", props: __spreadProps(__spreadValues({}, Se), { dense: Boolean, flat: Boolean, bordered: Boolean, square: Boolean, wrapCells: Boolean, separator: { type: String, default: "horizontal", validator: (e) => $h.includes(e) } }), setup(e, { slots: t }) {
+    let o = K(), r = xe(e, o.proxy.$q), n = s(() => `q-markup-table q-table__container q-table__card q-table--${e.separator}-separator` + (r.value === true ? " q-table--dark q-table__card--dark q-dark" : "") + (e.dense === true ? " q-table--dense" : "") + (e.flat === true ? " q-table--flat" : "") + (e.bordered === true ? " q-table--bordered" : "") + (e.square === true ? " q-table--square" : "") + (e.wrapCells === false ? " q-table--no-wrap" : ""));
     return () => i("div", { class: n.value }, [i("table", { class: "q-table" }, re(t.default))]);
   } });
   var ud = P({ name: "QNoSsr", props: { tag: { type: String, default: "div" }, placeholder: String }, setup(e, { slots: t }) {
@@ -5631,10 +5673,10 @@
       if (e.placeholder !== void 0) return i(e.tag, r, e.placeholder);
     };
   } });
-  var Eh = () => i("svg", { key: "svg", class: "q-radio__bg absolute non-selectable", viewBox: "0 0 24 24" }, [i("path", { d: "M12,22a10,10 0 0 1 -10,-10a10,10 0 0 1 10,-10a10,10 0 0 1 10,10a10,10 0 0 1 -10,10m0,-22a12,12 0 0 0 -12,12a12,12 0 0 0 12,12a12,12 0 0 0 12,-12a12,12 0 0 0 -12,-12" }), i("path", { class: "q-radio__check", d: "M12,6a6,6 0 0 0 -6,6a6,6 0 0 0 6,6a6,6 0 0 0 6,-6a6,6 0 0 0 -6,-6" })]), Ii = P({ name: "QRadio", props: { ...Se, ...Dt, ...kt, modelValue: { required: true }, val: { required: true }, label: String, leftLabel: Boolean, checkedIcon: String, uncheckedIcon: String, color: String, keepColor: Boolean, dense: Boolean, disable: Boolean, tabindex: [String, Number] }, emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
+  var Eh = () => i("svg", { key: "svg", class: "q-radio__bg absolute non-selectable", viewBox: "0 0 24 24" }, [i("path", { d: "M12,22a10,10 0 0 1 -10,-10a10,10 0 0 1 10,-10a10,10 0 0 1 10,10a10,10 0 0 1 -10,10m0,-22a12,12 0 0 0 -12,12a12,12 0 0 0 12,12a12,12 0 0 0 12,-12a12,12 0 0 0 -12,-12" }), i("path", { class: "q-radio__check", d: "M12,6a6,6 0 0 0 -6,6a6,6 0 0 0 6,6a6,6 0 0 0 6,-6a6,6 0 0 0 -6,-6" })]), Ii = P({ name: "QRadio", props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Se), Dt), kt), { modelValue: { required: true }, val: { required: true }, label: String, leftLabel: Boolean, checkedIcon: String, uncheckedIcon: String, color: String, keepColor: Boolean, dense: Boolean, disable: Boolean, tabindex: [String, Number] }), emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), n = xe(e, r.$q), a = Ot(e, ni), l = T(null), { refocusTargetEl: u, refocusTarget: c } = oi(e, l), f = s(() => fo(e.modelValue) === fo(e.val)), d = s(() => "q-radio cursor-pointer no-outline row inline no-wrap items-center" + (e.disable === true ? " disabled" : "") + (n.value === true ? " q-radio--dark" : "") + (e.dense === true ? " q-radio--dense" : "") + (e.leftLabel === true ? " reverse" : "")), p = s(() => {
-      let h = e.color !== void 0 && (e.keepColor === true || f.value === true) ? " text-".concat(e.color) : "";
-      return "q-radio__inner relative-position q-radio__inner--".concat(f.value === true ? "truthy" : "falsy").concat(h);
+      let h = e.color !== void 0 && (e.keepColor === true || f.value === true) ? ` text-${e.color}` : "";
+      return `q-radio__inner relative-position q-radio__inner--${f.value === true ? "truthy" : "falsy"}${h}`;
     }), g = s(() => (f.value === true ? e.checkedIcon : e.uncheckedIcon) || null), m = s(() => e.disable === true ? -1 : e.tabindex || 0), v = s(() => {
       let h = { type: "radio" };
       return e.name !== void 0 && Object.assign(h, { ".checked": f.value === true, "^checked": f.value === true ? "checked" : void 0, name: e.name, value: e.val }), h;
@@ -5659,7 +5701,7 @@
       return E !== void 0 && _.push(i("div", { class: "q-radio__label q-anchor--skip" }, E)), i("div", { ref: l, class: d.value, tabindex: m.value, role: "radio", "aria-label": e.label, "aria-checked": f.value === true ? "true" : "false", "aria-disabled": e.disable === true ? "true" : void 0, onClick: y, onKeydown: k, onKeyup: S }, _);
     };
   } });
-  var Hi = P({ name: "QToggle", props: { ...ri, icon: String, iconColor: String }, emits: ai, setup(e) {
+  var Hi = P({ name: "QToggle", props: __spreadProps(__spreadValues({}, ri), { icon: String, iconColor: String }), emits: ai, setup(e) {
     function t(o, r) {
       let n = s(() => (o.value === true ? e.checkedIcon : r.value === true ? e.indeterminateIcon : e.uncheckedIcon) || e.icon), a = s(() => o.value === true ? e.iconColor : null);
       return () => [i("div", { class: "q-toggle__track" }), i("div", { class: "q-toggle__thumb absolute flex flex-center no-wrap" }, n.value !== void 0 ? [i(Re, { name: n.value, color: a.value })] : void 0)];
@@ -5672,7 +5714,7 @@
     let o = e !== void 0 ? e : t;
     return (r) => r[o];
   }
-  var Ni = P({ name: "QOptionGroup", props: { ...Se, modelValue: { required: true }, options: { type: Array, validator: (e) => e.every(ct), default: () => [] }, optionValue: [Function, String], optionLabel: [Function, String], optionDisable: [Function, String], name: String, type: { type: String, default: "radio", validator: (e) => Bh.includes(e) }, color: String, keepColor: Boolean, dense: Boolean, size: String, leftLabel: Boolean, inline: Boolean, disable: Boolean }, emits: ["update:modelValue"], setup(e, { emit: t, slots: o }) {
+  var Ni = P({ name: "QOptionGroup", props: __spreadProps(__spreadValues({}, Se), { modelValue: { required: true }, options: { type: Array, validator: (e) => e.every(ct), default: () => [] }, optionValue: [Function, String], optionLabel: [Function, String], optionDisable: [Function, String], name: String, type: { type: String, default: "radio", validator: (e) => Bh.includes(e) }, color: String, keepColor: Boolean, dense: Boolean, size: String, leftLabel: Boolean, inline: Boolean, disable: Boolean }), emits: ["update:modelValue"], setup(e, { emit: t, slots: o }) {
     let { proxy: { $q: r } } = K(), n = Array.isArray(e.modelValue);
     e.type === "radio" ? n === true && console.error("q-option-group: model should not be array") : n === false && console.error("q-option-group: model should be array in your case");
     let a = xe(e, r), l = s(() => sd[e.type]), u = s(() => du(e.optionValue, "value")), c = s(() => du(e.optionLabel, "label")), f = s(() => du(e.optionDisable, "disable")), d = s(() => e.options.map((v) => ({ val: u.value(v), name: v.name === void 0 ? e.name : v.name, disable: e.disable || f.value(v), leftLabel: v.leftLabel === void 0 ? e.leftLabel : v.leftLabel, color: v.color === void 0 ? e.color : v.color, checkedIcon: v.checkedIcon, uncheckedIcon: v.uncheckedIcon, dark: v.dark === void 0 ? a.value : v.dark, size: v.size === void 0 ? e.size : v.size, dense: e.dense, keepColor: v.keepColor === void 0 ? e.keepColor : v.keepColor }))), p = s(() => "q-option-group q-gutter-x-sm" + (e.inline === true ? " q-option-group--inline" : "")), g = s(() => {
@@ -5682,9 +5724,9 @@
     function m(v) {
       t("update:modelValue", v);
     }
-    return () => i("div", { class: p.value, ...g.value }, e.options.map((v, x) => {
+    return () => i("div", __spreadValues({ class: p.value }, g.value), e.options.map((v, x) => {
       let y = o["label-" + x] !== void 0 ? () => o["label-" + x](v) : o.label !== void 0 ? () => o.label(v) : void 0;
-      return i("div", [i(l.value, { label: y === void 0 ? c.value(v) : null, modelValue: e.modelValue, "onUpdate:modelValue": m, ...d.value[x] }, y)]);
+      return i("div", [i(l.value, __spreadValues({ label: y === void 0 ? c.value(v) : null, modelValue: e.modelValue, "onUpdate:modelValue": m }, d.value[x]), y)]);
     }));
   } });
   var cd = P({ name: "QPage", props: { padding: Boolean, styleFn: Function }, setup(e, { slots: t }) {
@@ -5697,8 +5739,8 @@
         let c = r.isContainer.value === true ? r.containerHeight.value : o.screen.height;
         return e.styleFn(u, c);
       }
-      return { minHeight: r.isContainer.value === true ? r.containerHeight.value - u + "px" : o.screen.height === 0 ? u !== 0 ? "calc(100vh - ".concat(u, "px)") : "100vh" : o.screen.height - u + "px" };
-    }), l = s(() => "q-page".concat(e.padding === true ? " q-layout-padding" : ""));
+      return { minHeight: r.isContainer.value === true ? r.containerHeight.value - u + "px" : o.screen.height === 0 ? u !== 0 ? `calc(100vh - ${u}px)` : "100vh" : o.screen.height - u + "px" };
+    }), l = s(() => `q-page${e.padding === true ? " q-layout-padding" : ""}`);
     return () => i("main", { class: l.value, style: a.value }, re(t.default));
   } });
   var dd = P({ name: "QPageContainer", setup(e, { slots: t }) {
@@ -5707,7 +5749,7 @@
     Kt($a, true);
     let n = s(() => {
       let a = {};
-      return r.header.space === true && (a.paddingTop = "".concat(r.header.size, "px")), r.right.space === true && (a["padding".concat(o.lang.rtl === true ? "Left" : "Right")] = "".concat(r.right.size, "px")), r.footer.space === true && (a.paddingBottom = "".concat(r.footer.size, "px")), r.left.space === true && (a["padding".concat(o.lang.rtl === true ? "Right" : "Left")] = "".concat(r.left.size, "px")), a;
+      return r.header.space === true && (a.paddingTop = `${r.header.size}px`), r.right.space === true && (a[`padding${o.lang.rtl === true ? "Left" : "Right"}`] = `${r.right.size}px`), r.footer.space === true && (a.paddingBottom = `${r.footer.size}px`), r.left.space === true && (a[`padding${o.lang.rtl === true ? "Right" : "Left"}`] = `${r.left.size}px`), a;
     });
     return () => i("div", { class: "q-page-container", style: n.value }, re(t.default));
   } });
@@ -5720,17 +5762,17 @@
       return { top: p.indexOf("top") !== -1, right: p.indexOf("right") !== -1, bottom: p.indexOf("bottom") !== -1, left: p.indexOf("left") !== -1, vertical: p === "top" || p === "bottom", horizontal: p === "left" || p === "right" };
     }), n = s(() => o.header.offset), a = s(() => o.right.offset), l = s(() => o.footer.offset), u = s(() => o.left.offset), c = s(() => {
       let p = 0, g = 0, m = r.value, v = t.lang.rtl === true ? -1 : 1;
-      m.top === true && n.value !== 0 ? g = "".concat(n.value, "px") : m.bottom === true && l.value !== 0 && (g = "".concat(-l.value, "px")), m.left === true && u.value !== 0 ? p = "".concat(v * u.value, "px") : m.right === true && a.value !== 0 && (p = "".concat(-v * a.value, "px"));
-      let x = { transform: "translate(".concat(p, ", ").concat(g, ")") };
-      return e.offset && (x.margin = "".concat(e.offset[1], "px ").concat(e.offset[0], "px")), m.vertical === true ? (u.value !== 0 && (x[t.lang.rtl === true ? "right" : "left"] = "".concat(u.value, "px")), a.value !== 0 && (x[t.lang.rtl === true ? "left" : "right"] = "".concat(a.value, "px"))) : m.horizontal === true && (n.value !== 0 && (x.top = "".concat(n.value, "px")), l.value !== 0 && (x.bottom = "".concat(l.value, "px"))), x;
-    }), f = s(() => "q-page-sticky row flex-center fixed-".concat(e.position, " q-page-sticky--").concat(e.expand === true ? "expand" : "shrink"));
+      m.top === true && n.value !== 0 ? g = `${n.value}px` : m.bottom === true && l.value !== 0 && (g = `${-l.value}px`), m.left === true && u.value !== 0 ? p = `${v * u.value}px` : m.right === true && a.value !== 0 && (p = `${-v * a.value}px`);
+      let x = { transform: `translate(${p}, ${g})` };
+      return e.offset && (x.margin = `${e.offset[1]}px ${e.offset[0]}px`), m.vertical === true ? (u.value !== 0 && (x[t.lang.rtl === true ? "right" : "left"] = `${u.value}px`), a.value !== 0 && (x[t.lang.rtl === true ? "left" : "right"] = `${a.value}px`)) : m.horizontal === true && (n.value !== 0 && (x.top = `${n.value}px`), l.value !== 0 && (x.bottom = `${l.value}px`)), x;
+    }), f = s(() => `q-page-sticky row flex-center fixed-${e.position} q-page-sticky--${e.expand === true ? "expand" : "shrink"}`);
     function d(p) {
       let g = re(p.default);
       return i("div", { class: f.value, style: c.value }, e.expand === true ? g : [i("div", g)]);
     }
     return { $layout: o, getStickyContent: d };
   }
-  var fd = P({ name: "QPageScroller", props: { ...ma, scrollOffset: { type: Number, default: 1e3 }, reverse: Boolean, duration: { type: Number, default: 300 }, offset: { ...ma.offset, default: () => [18, 18] } }, emits: ["click"], setup(e, { slots: t, emit: o }) {
+  var fd = P({ name: "QPageScroller", props: __spreadProps(__spreadValues({}, ma), { scrollOffset: { type: Number, default: 1e3 }, reverse: Boolean, duration: { type: Number, default: 300 }, offset: __spreadProps(__spreadValues({}, ma.offset), { default: () => [18, 18] }) }), emits: ["click"], setup(e, { slots: t, emit: o }) {
     let { proxy: { $q: r } } = K(), { $layout: n, getStickyContent: a } = Qi(), l = T(null), u, c = s(() => n.height.value - (n.isContainer.value === true ? n.containerHeight.value : r.screen.height));
     function f() {
       return e.reverse === true ? c.value - n.scroll.value.position > e.scrollOffset : n.scroll.value.position > e.scrollOffset;
@@ -5763,23 +5805,23 @@
   function ji(e, t) {
     return [true, false].includes(e) ? e : t;
   }
-  var vd = P({ name: "QPagination", props: { ...Se, modelValue: { type: Number, required: true }, min: { type: [Number, String], default: 1 }, max: { type: [Number, String], required: true }, maxPages: { type: [Number, String], default: 0, validator: (e) => (typeof e == "string" ? parseInt(e, 10) : e) >= 0 }, inputStyle: [Array, String, Object], inputClass: [Array, String, Object], size: String, disable: Boolean, input: Boolean, iconPrev: String, iconNext: String, iconFirst: String, iconLast: String, toFn: Function, boundaryLinks: { type: Boolean, default: null }, boundaryNumbers: { type: Boolean, default: null }, directionLinks: { type: Boolean, default: null }, ellipses: { type: Boolean, default: null }, ripple: { type: [Boolean, Object], default: null }, round: Boolean, rounded: Boolean, flat: Boolean, outline: Boolean, unelevated: Boolean, push: Boolean, glossy: Boolean, color: { type: String, default: "primary" }, textColor: String, activeDesign: { type: String, default: "", values: (e) => e === "" || $l.includes(e) }, activeColor: String, activeTextColor: String, gutter: String, padding: { type: String, default: "3px 2px" } }, emits: ["update:modelValue"], setup(e, { emit: t }) {
+  var vd = P({ name: "QPagination", props: __spreadProps(__spreadValues({}, Se), { modelValue: { type: Number, required: true }, min: { type: [Number, String], default: 1 }, max: { type: [Number, String], required: true }, maxPages: { type: [Number, String], default: 0, validator: (e) => (typeof e == "string" ? parseInt(e, 10) : e) >= 0 }, inputStyle: [Array, String, Object], inputClass: [Array, String, Object], size: String, disable: Boolean, input: Boolean, iconPrev: String, iconNext: String, iconFirst: String, iconLast: String, toFn: Function, boundaryLinks: { type: Boolean, default: null }, boundaryNumbers: { type: Boolean, default: null }, directionLinks: { type: Boolean, default: null }, ellipses: { type: Boolean, default: null }, ripple: { type: [Boolean, Object], default: null }, round: Boolean, rounded: Boolean, flat: Boolean, outline: Boolean, unelevated: Boolean, push: Boolean, glossy: Boolean, color: { type: String, default: "primary" }, textColor: String, activeDesign: { type: String, default: "", values: (e) => e === "" || $l.includes(e) }, activeColor: String, activeTextColor: String, gutter: String, padding: { type: String, default: "3px 2px" } }), emits: ["update:modelValue"], setup(e, { emit: t }) {
     let { proxy: o } = K(), { $q: r } = o, n = xe(e, r), a = s(() => parseInt(e.min, 10)), l = s(() => parseInt(e.max, 10)), u = s(() => parseInt(e.maxPages, 10)), c = s(() => v.value + " / " + l.value), f = s(() => ji(e.boundaryLinks, e.input)), d = s(() => ji(e.boundaryNumbers, !e.input)), p = s(() => ji(e.directionLinks, e.input)), g = s(() => ji(e.ellipses, !e.input)), m = T(null), v = s({ get: () => e.modelValue, set: (A) => {
       if (A = parseInt(A, 10), e.disable || isNaN(A)) return;
       let z = tt(A, a.value, l.value);
       e.modelValue !== z && t("update:modelValue", z);
     } });
-    Y(() => "".concat(a.value, "|").concat(l.value), () => {
+    Y(() => `${a.value}|${l.value}`, () => {
       v.value = e.modelValue;
     });
-    let x = s(() => "q-pagination row no-wrap items-center" + (e.disable === true ? " disabled" : "")), y = s(() => e.gutter in Gr ? "".concat(Gr[e.gutter], "px") : e.gutter || null), k = s(() => y.value !== null ? "--q-pagination-gutter-parent:-".concat(y.value, ";--q-pagination-gutter-child:").concat(y.value) : null), S = s(() => {
+    let x = s(() => "q-pagination row no-wrap items-center" + (e.disable === true ? " disabled" : "")), y = s(() => e.gutter in Gr ? `${Gr[e.gutter]}px` : e.gutter || null), k = s(() => y.value !== null ? `--q-pagination-gutter-parent:-${y.value};--q-pagination-gutter-child:${y.value}` : null), S = s(() => {
       let A = [e.iconFirst || r.iconSet.pagination.first, e.iconPrev || r.iconSet.pagination.prev, e.iconNext || r.iconSet.pagination.next, e.iconLast || r.iconSet.pagination.last];
       return r.lang.rtl === true ? A.reverse() : A;
     }), b = s(() => ({ "aria-disabled": e.disable === true ? "true" : "false", role: "navigation" })), h = s(() => Ia(e, "flat")), _ = s(() => ({ [h.value]: true, round: e.round, rounded: e.rounded, padding: e.padding, color: e.color, textColor: e.textColor, size: e.size, ripple: e.ripple !== null ? e.ripple : true })), E = s(() => {
       let A = { [h.value]: false };
       return e.activeDesign !== "" && (A[e.activeDesign] = true), A;
-    }), L = s(() => ({ ...E.value, color: e.activeColor || e.color, textColor: e.activeTextColor || e.textColor })), D = s(() => {
-      let A = Math.max(u.value, 1 + (g.value ? 2 : 0) + (d.value ? 2 : 0)), z = { pgFrom: a.value, pgTo: l.value, ellipsesStart: false, ellipsesEnd: false, boundaryStart: false, boundaryEnd: false, marginalStyle: { minWidth: "".concat(Math.max(2, String(l.value).length), "em") } };
+    }), L = s(() => __spreadProps(__spreadValues({}, E.value), { color: e.activeColor || e.color, textColor: e.activeTextColor || e.textColor })), D = s(() => {
+      let A = Math.max(u.value, 1 + (g.value ? 2 : 0) + (d.value ? 2 : 0)), z = { pgFrom: a.value, pgTo: l.value, ellipsesStart: false, ellipsesEnd: false, boundaryStart: false, boundaryEnd: false, marginalStyle: { minWidth: `${Math.max(2, String(l.value).length)}em` } };
       return u.value && A < l.value - a.value + 1 && (A = 1 + Math.floor(A / 2) * 2, z.pgFrom = Math.max(a.value, Math.min(l.value - A + 1, e.modelValue - Math.floor(A / 2))), z.pgTo = Math.min(l.value, z.pgFrom + A - 1), d.value && (z.boundaryStart = true, z.pgFrom++), g.value && z.pgFrom > a.value + (d.value ? 1 : 0) && (z.ellipsesStart = true, z.pgFrom++), d.value && (z.boundaryEnd = true, z.pgTo--), g.value && z.pgTo < l.value - (d.value ? 1 : 0) && (z.ellipsesEnd = true, z.pgTo--)), z;
     });
     function Z(A) {
@@ -5798,8 +5840,8 @@
       Mt(A, 13) === true && F();
     }
     function C(A, z, H) {
-      let Q = { "aria-label": z, "aria-current": "false", ..._.value, ...A };
-      return H === true && Object.assign(Q, { "aria-current": "true", ...L.value }), z !== void 0 && (e.toFn !== void 0 ? Q.to = e.toFn(z) : Q.onClick = () => {
+      let Q = __spreadValues(__spreadValues({ "aria-label": z, "aria-current": "false" }, _.value), A);
+      return H === true && Object.assign(Q, __spreadValues({ "aria-current": "true" }, L.value)), z !== void 0 && (e.toFn !== void 0 ? Q.to = e.toFn(z) : Q.onClick = () => {
         Z(z);
       }), i(Ve, Q);
     }
@@ -5817,9 +5859,9 @@
           z.unshift(C({ key: "bne", style: ve, disable: e.disable, label: l.value }, l.value, O));
         }
         D.value.ellipsesStart === true && A.push(C({ key: "bes", style: ve, disable: e.disable, label: "\u2026", ripple: false }, Q - 1)), D.value.ellipsesEnd === true && z.unshift(C({ key: "bee", style: ve, disable: e.disable, label: "\u2026", ripple: false }, ee + 1));
-        for (let O = Q; O <= ee; O++) H.push(C({ key: "bpg".concat(O), style: ve, disable: e.disable, label: O }, O, O === e.modelValue));
+        for (let O = Q; O <= ee; O++) H.push(C({ key: `bpg${O}`, style: ve, disable: e.disable, label: O }, O, O === e.modelValue));
       }
-      return i("div", { class: x.value, ...b.value }, [i("div", { class: "q-pagination__content row no-wrap items-center", style: k.value }, [...A, e.input === true ? i(Or, { class: "inline", style: { width: "".concat(c.value.length / 1.5, "em") }, type: "number", dense: true, value: m.value, disable: e.disable, dark: n.value, borderless: true, inputClass: e.inputClass, inputStyle: e.inputStyle, placeholder: c.value, min: a.value, max: l.value, "onUpdate:modelValue": $, onKeyup: q, onBlur: F }) : i("div", { class: "q-pagination__middle row justify-center" }, H), ...z])]);
+      return i("div", __spreadValues({ class: x.value }, b.value), [i("div", { class: "q-pagination__content row no-wrap items-center", style: k.value }, [...A, e.input === true ? i(Or, { class: "inline", style: { width: `${c.value.length / 1.5}em` }, type: "number", dense: true, value: m.value, disable: e.disable, dark: n.value, borderless: true, inputClass: e.inputClass, inputStyle: e.inputStyle, placeholder: c.value, min: a.value, max: l.value, "onUpdate:modelValue": $, onKeyup: q, onBlur: F }) : i("div", { class: "q-pagination__middle row justify-center" }, H), ...z])]);
     };
   } });
   function zr(e) {
@@ -5853,7 +5895,7 @@
       }
     }
     let x = (b) => {
-      c.style.transform = "translate3d(-50%,".concat(Math.round(b), "px,0)");
+      c.style.transform = `translate3d(-50%,${Math.round(b)}px,0)`;
     };
     function y() {
       f = c.naturalHeight || c.videoHeight || Ao(c), u === true && v();
@@ -5870,7 +5912,7 @@
       }), p.observe(n.value)) : k();
     }), be(() => {
       S(), p == null ? void 0 : p.disconnect(), c.onload = c.onloadstart = c.loadedmetadata = null;
-    }), () => i("div", { ref: n, class: "q-parallax", style: { height: "".concat(e.height, "px") } }, [i("div", { ref: a, class: "q-parallax__media absolute-full" }, t.media !== void 0 ? t.media() : [i("img", { ref: l, src: e.src })]), i("div", { class: "q-parallax__content absolute-full column flex-center" }, t.content !== void 0 ? t.content({ percentScrolled: r.value }) : re(t.default))]);
+    }), () => i("div", { ref: n, class: "q-parallax", style: { height: `${e.height}px` } }, [i("div", { ref: a, class: "q-parallax__media absolute-full" }, t.media !== void 0 ? t.media() : [i("img", { ref: l, src: e.src })]), i("div", { class: "q-parallax__content absolute-full column flex-center" }, t.content !== void 0 ? t.content({ percentScrolled: r.value }) : re(t.default))]);
   } });
   function tn(e, t = /* @__PURE__ */ new WeakMap()) {
     if (Object(e) !== e) return e;
@@ -5936,7 +5978,7 @@
       if (e.disable !== true) return i(Fo, { ref: a, class: "q-popup-edit", cover: e.cover, onBeforeShow: x, onShow: y, onBeforeHide: k, onHide: S, onEscapeKey: p }, b);
     };
   } });
-  var pd = P({ name: "QPopupProxy", props: { ...Qa, breakpoint: { type: [String, Number], default: 450 } }, emits: ["show", "hide"], setup(e, { slots: t, emit: o, attrs: r }) {
+  var pd = P({ name: "QPopupProxy", props: __spreadProps(__spreadValues({}, Qa), { breakpoint: { type: [String, Number], default: 450 } }), emits: ["show", "hide"], setup(e, { slots: t, emit: o, attrs: r }) {
     let { proxy: n } = K(), { $q: a } = n, l = T(false), u = T(null), c = s(() => parseInt(e.breakpoint, 10)), { canShow: f } = nr({ showing: l });
     function d() {
       return a.screen.width < c.value || a.screen.height < c.value ? "dialog" : "menu";
@@ -5958,23 +6000,23 @@
     }, toggle(x) {
       u.value.toggle(x);
     } }), ft(n, "currentComponent", () => ({ type: p.value, ref: u.value })), () => {
-      let x = { ref: u, ...g.value, ...r, onShow: m, onHide: v }, y;
+      let x = __spreadProps(__spreadValues(__spreadValues({ ref: u }, g.value), r), { onShow: m, onHide: v }), y;
       return p.value === "dialog" ? y = Ho : (y = Fo, Object.assign(x, { target: e.target, contextMenu: e.contextMenu, noParentEvent: true, separateClosePopup: true })), i(y, x, t.default);
     };
   } });
   var Fh = { xs: 2, sm: 4, md: 6, lg: 10, xl: 14 };
   function bd(e, t, o) {
-    return { transform: t === true ? "translateX(".concat(o.lang.rtl === true ? "-" : "", "100%) scale3d(").concat(-e, ",1,1)") : "scale3d(".concat(e, ",1,1)") };
+    return { transform: t === true ? `translateX(${o.lang.rtl === true ? "-" : ""}100%) scale3d(${-e},1,1)` : `scale3d(${e},1,1)` };
   }
-  var Ki = P({ name: "QLinearProgress", props: { ...Se, ...Dt, value: { type: Number, default: 0 }, buffer: Number, color: String, trackColor: String, reverse: Boolean, stripe: Boolean, indeterminate: Boolean, query: Boolean, rounded: Boolean, animationSpeed: { type: [String, Number], default: 2100 }, instantFeedback: Boolean }, setup(e, { slots: t }) {
-    let { proxy: o } = K(), r = xe(e, o.$q), n = Ot(e, Fh), a = s(() => e.indeterminate === true || e.query === true), l = s(() => e.reverse !== e.query), u = s(() => ({ ...n.value !== null ? n.value : {}, "--q-linear-progress-speed": "".concat(e.animationSpeed, "ms") })), c = s(() => "q-linear-progress" + (e.color !== void 0 ? " text-".concat(e.color) : "") + (e.reverse === true || e.query === true ? " q-linear-progress--reverse" : "") + (e.rounded === true ? " rounded-borders" : "")), f = s(() => bd(e.buffer !== void 0 ? e.buffer : 1, l.value, o.$q)), d = s(() => "with".concat(e.instantFeedback === true ? "out" : "", "-transition")), p = s(() => "q-linear-progress__track absolute-full q-linear-progress__track--".concat(d.value, " q-linear-progress__track--").concat(r.value === true ? "dark" : "light") + (e.trackColor !== void 0 ? " bg-".concat(e.trackColor) : "")), g = s(() => bd(a.value === true ? 1 : e.value, l.value, o.$q)), m = s(() => "q-linear-progress__model absolute-full q-linear-progress__model--".concat(d.value, " q-linear-progress__model--").concat(a.value === true ? "in" : "", "determinate")), v = s(() => ({ width: "".concat(e.value * 100, "%") })), x = s(() => "q-linear-progress__stripe absolute-".concat(e.reverse === true ? "right" : "left", " q-linear-progress__stripe--").concat(d.value));
+  var Ki = P({ name: "QLinearProgress", props: __spreadProps(__spreadValues(__spreadValues({}, Se), Dt), { value: { type: Number, default: 0 }, buffer: Number, color: String, trackColor: String, reverse: Boolean, stripe: Boolean, indeterminate: Boolean, query: Boolean, rounded: Boolean, animationSpeed: { type: [String, Number], default: 2100 }, instantFeedback: Boolean }), setup(e, { slots: t }) {
+    let { proxy: o } = K(), r = xe(e, o.$q), n = Ot(e, Fh), a = s(() => e.indeterminate === true || e.query === true), l = s(() => e.reverse !== e.query), u = s(() => __spreadProps(__spreadValues({}, n.value !== null ? n.value : {}), { "--q-linear-progress-speed": `${e.animationSpeed}ms` })), c = s(() => "q-linear-progress" + (e.color !== void 0 ? ` text-${e.color}` : "") + (e.reverse === true || e.query === true ? " q-linear-progress--reverse" : "") + (e.rounded === true ? " rounded-borders" : "")), f = s(() => bd(e.buffer !== void 0 ? e.buffer : 1, l.value, o.$q)), d = s(() => `with${e.instantFeedback === true ? "out" : ""}-transition`), p = s(() => `q-linear-progress__track absolute-full q-linear-progress__track--${d.value} q-linear-progress__track--${r.value === true ? "dark" : "light"}` + (e.trackColor !== void 0 ? ` bg-${e.trackColor}` : "")), g = s(() => bd(a.value === true ? 1 : e.value, l.value, o.$q)), m = s(() => `q-linear-progress__model absolute-full q-linear-progress__model--${d.value} q-linear-progress__model--${a.value === true ? "in" : ""}determinate`), v = s(() => ({ width: `${e.value * 100}%` })), x = s(() => `q-linear-progress__stripe absolute-${e.reverse === true ? "right" : "left"} q-linear-progress__stripe--${d.value}`);
     return () => {
       let y = [i("div", { class: p.value, style: f.value }), i("div", { class: m.value, style: g.value })];
       return e.stripe === true && a.value === false && y.push(i("div", { class: x.value, style: v.value })), i("div", { class: c.value, style: u.value, role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 1, "aria-valuenow": e.indeterminate === true ? void 0 : e.value }, Ge(t.default, y));
     };
   } });
   var Ir = 40, fu = 20, yd = P({ name: "QPullToRefresh", props: { color: String, bgColor: String, icon: String, noMouse: Boolean, disable: Boolean, scrollTarget: to }, emits: ["refresh"], setup(e, { slots: t, emit: o }) {
-    let { proxy: r } = K(), { $q: n } = r, a = T("pull"), l = T(0), u = T(false), c = T(-Ir), f = T(false), d = T({}), p = s(() => ({ opacity: l.value, transform: "translateY(".concat(c.value, "px) rotate(").concat(l.value * 360, "deg)") })), g = s(() => "q-pull-to-refresh__puller row flex-center" + (f.value === true ? " q-pull-to-refresh__puller--animating" : "") + (e.bgColor !== void 0 ? " bg-".concat(e.bgColor) : ""));
+    let { proxy: r } = K(), { $q: n } = r, a = T("pull"), l = T(0), u = T(false), c = T(-Ir), f = T(false), d = T({}), p = s(() => ({ opacity: l.value, transform: `translateY(${c.value}px) rotate(${l.value * 360}deg)` })), g = s(() => "q-pull-to-refresh__puller row flex-center" + (f.value === true ? " q-pull-to-refresh__puller--animating" : "") + (e.bgColor !== void 0 ? ` bg-${e.bgColor}` : ""));
     function m(_) {
       if (_.isFinal === true) {
         u.value === true && (u.value = false, a.value === "pulled" ? (a.value = "refreshing", b({ pos: fu }), y()) : a.value === "pull" && b({ pos: -Ir, ratio: 0 }));
@@ -5996,7 +6038,7 @@
     let v = s(() => {
       let _ = { down: true };
       return e.noMouse !== true && (_.mouse = true), [[Pt, m, void 0, _]];
-    }), x = s(() => "q-pull-to-refresh__content".concat(u.value === true ? " no-pointer-events" : ""));
+    }), x = s(() => `q-pull-to-refresh__content${u.value === true ? " no-pointer-events" : ""}`);
     function y() {
       o("refresh", () => {
         b({ pos: -Ir, ratio: 0 }, () => {
@@ -6020,15 +6062,15 @@
       return Rt("div", { class: "q-pull-to-refresh" }, _, "main", e.disable === false, () => v.value);
     };
   } });
-  var xn = { MIN: 0, RANGE: 1, MAX: 2 }, Sd = P({ name: "QRange", props: { ...li, modelValue: { type: Object, default: () => ({ min: null, max: null }), validator: (e) => "min" in e && "max" in e }, dragRange: Boolean, dragOnlyRange: Boolean, leftLabelColor: String, leftLabelTextColor: String, rightLabelColor: String, rightLabelTextColor: String, leftLabelValue: [String, Number], rightLabelValue: [String, Number], leftThumbColor: String, rightThumbColor: String }, emits: ui, setup(e, { emit: t }) {
-    let { proxy: { $q: o } } = K(), { state: r, methods: n } = si({ updateValue: D, updatePosition: B, getDragging: Z, formAttrs: s(() => ({ type: "hidden", name: e.name, value: "".concat(e.modelValue.min, "|").concat(e.modelValue.max) })) }), a = T(null), l = T(0), u = T(0), c = T({ min: 0, max: 0 });
+  var xn = { MIN: 0, RANGE: 1, MAX: 2 }, Sd = P({ name: "QRange", props: __spreadProps(__spreadValues({}, li), { modelValue: { type: Object, default: () => ({ min: null, max: null }), validator: (e) => "min" in e && "max" in e }, dragRange: Boolean, dragOnlyRange: Boolean, leftLabelColor: String, leftLabelTextColor: String, rightLabelColor: String, rightLabelTextColor: String, leftLabelValue: [String, Number], rightLabelValue: [String, Number], leftThumbColor: String, rightThumbColor: String }), emits: ui, setup(e, { emit: t }) {
+    let { proxy: { $q: o } } = K(), { state: r, methods: n } = si({ updateValue: D, updatePosition: B, getDragging: Z, formAttrs: s(() => ({ type: "hidden", name: e.name, value: `${e.modelValue.min}|${e.modelValue.max}` })) }), a = T(null), l = T(0), u = T(0), c = T({ min: 0, max: 0 });
     function f() {
       c.value.min = e.modelValue.min === null ? r.innerMin.value : tt(e.modelValue.min, r.innerMin.value, r.innerMax.value), c.value.max = e.modelValue.max === null ? r.innerMax.value : tt(e.modelValue.max, r.innerMin.value, r.innerMax.value);
     }
-    Y(() => "".concat(e.modelValue.min, "|").concat(e.modelValue.max, "|").concat(r.innerMin.value, "|").concat(r.innerMax.value), f), f();
+    Y(() => `${e.modelValue.min}|${e.modelValue.max}|${r.innerMin.value}|${r.innerMax.value}`, f), f();
     let d = s(() => n.convertModelToRatio(c.value.min)), p = s(() => n.convertModelToRatio(c.value.max)), g = s(() => r.active.value === true ? l.value : d.value), m = s(() => r.active.value === true ? u.value : p.value), v = s(() => {
-      let $ = { [r.positionProp.value]: "".concat(100 * g.value, "%"), [r.sizeProp.value]: "".concat(100 * (m.value - g.value), "%") };
-      return e.selectionImg !== void 0 && ($.backgroundImage = "url(".concat(e.selectionImg, ") !important")), $;
+      let $ = { [r.positionProp.value]: `${100 * g.value}%`, [r.sizeProp.value]: `${100 * (m.value - g.value)}%` };
+      return e.selectionImg !== void 0 && ($.backgroundImage = `url(${e.selectionImg}) !important`), $;
     }), x = s(() => {
       if (r.editable.value !== true) return {};
       if (o.platform.is.mobile === true) return { onClick: n.onMobileClick };
@@ -6042,9 +6084,9 @@
         r.focus.value = $;
       }, onBlur: n.onBlur, onKeydown: F, onKeyup: n.onKeyup } : {};
     }
-    let k = s(() => e.dragOnlyRange !== true ? r.tabindex.value : null), S = s(() => o.platform.is.mobile !== true && (e.dragRange || e.dragOnlyRange === true) ? r.tabindex.value : null), b = T(null), h = s(() => y("min")), _ = n.getThumbRenderFn({ focusValue: "min", getNodeData: () => ({ ref: b, key: "tmin", ...h.value, tabindex: k.value }), ratio: g, label: s(() => e.leftLabelValue !== void 0 ? e.leftLabelValue : c.value.min), thumbColor: s(() => e.leftThumbColor || e.thumbColor || e.color), labelColor: s(() => e.leftLabelColor || e.labelColor), labelTextColor: s(() => e.leftLabelTextColor || e.labelTextColor) }), E = s(() => y("max")), L = n.getThumbRenderFn({ focusValue: "max", getNodeData: () => ({ ...E.value, key: "tmax", tabindex: k.value }), ratio: m, label: s(() => e.rightLabelValue !== void 0 ? e.rightLabelValue : c.value.max), thumbColor: s(() => e.rightThumbColor || e.thumbColor || e.color), labelColor: s(() => e.rightLabelColor || e.labelColor), labelTextColor: s(() => e.rightLabelTextColor || e.labelTextColor) });
+    let k = s(() => e.dragOnlyRange !== true ? r.tabindex.value : null), S = s(() => o.platform.is.mobile !== true && (e.dragRange || e.dragOnlyRange === true) ? r.tabindex.value : null), b = T(null), h = s(() => y("min")), _ = n.getThumbRenderFn({ focusValue: "min", getNodeData: () => __spreadProps(__spreadValues({ ref: b, key: "tmin" }, h.value), { tabindex: k.value }), ratio: g, label: s(() => e.leftLabelValue !== void 0 ? e.leftLabelValue : c.value.min), thumbColor: s(() => e.leftThumbColor || e.thumbColor || e.color), labelColor: s(() => e.leftLabelColor || e.labelColor), labelTextColor: s(() => e.leftLabelTextColor || e.labelTextColor) }), E = s(() => y("max")), L = n.getThumbRenderFn({ focusValue: "max", getNodeData: () => __spreadProps(__spreadValues({}, E.value), { key: "tmax", tabindex: k.value }), ratio: m, label: s(() => e.rightLabelValue !== void 0 ? e.rightLabelValue : c.value.max), thumbColor: s(() => e.rightThumbColor || e.thumbColor || e.color), labelColor: s(() => e.rightLabelColor || e.labelColor), labelTextColor: s(() => e.rightLabelTextColor || e.labelTextColor) });
     function D($) {
-      (c.value.min !== e.modelValue.min || c.value.max !== e.modelValue.max) && t("update:modelValue", { ...c.value }), $ === true && t("change", { ...c.value });
+      (c.value.min !== e.modelValue.min || c.value.max !== e.modelValue.max) && t("update:modelValue", __spreadValues({}, c.value)), $ === true && t("change", __spreadValues({}, c.value));
     }
     function Z($) {
       let { left: q, top: C, width: A, height: z } = a.value.getBoundingClientRect(), H = e.dragOnlyRange === true ? 0 : e.vertical === true ? b.value.offsetHeight / (2 * z) : b.value.offsetWidth / (2 * A), Q = { left: q, top: C, width: A, height: z, valueMin: c.value.min, valueMax: c.value.max, ratioMin: d.value, ratioMax: p.value }, ee = n.getDraggingRatio($, Q);
@@ -6077,7 +6119,7 @@
         if (r.focus.value === false) return;
         {
           let A = r.focus.value;
-          c.value = { ...c.value, [A]: tt(r.roundValueFn.value(c.value[A] + C), A === "min" ? r.innerMin.value : c.value.min, A === "max" ? r.innerMax.value : c.value.max) };
+          c.value = __spreadProps(__spreadValues({}, c.value), { [A]: tt(r.roundValueFn.value(c.value[A] + C), A === "min" ? r.innerMin.value : c.value.min, A === "max" ? r.innerMax.value : c.value.max) });
         }
       }
       D();
@@ -6086,28 +6128,28 @@
       let $ = n.getContent(v, S, x, (q) => {
         q.push(_(), L());
       });
-      return i("div", { ref: a, class: "q-range " + r.classes.value + (e.modelValue.min === null || e.modelValue.max === null ? " q-slider--no-value" : ""), ...r.attributes.value, "aria-valuenow": e.modelValue.min + "|" + e.modelValue.max }, $);
+      return i("div", __spreadProps(__spreadValues({ ref: a, class: "q-range " + r.classes.value + (e.modelValue.min === null || e.modelValue.max === null ? " q-slider--no-value" : "") }, r.attributes.value), { "aria-valuenow": e.modelValue.min + "|" + e.modelValue.max }), $);
     };
   } });
-  var xd = P({ name: "QRating", props: { ...Dt, ...kt, modelValue: { type: Number, required: true }, max: { type: [String, Number], default: 5 }, icon: [String, Array], iconHalf: [String, Array], iconSelected: [String, Array], iconAriaLabel: [String, Array], color: [String, Array], colorHalf: [String, Array], colorSelected: [String, Array], noReset: Boolean, noDimming: Boolean, readonly: Boolean, disable: Boolean }, emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
-    let { proxy: { $q: r } } = K(), n = Ot(e), a = Oo(e), l = Zt(a), u = T(0), c = {}, f = s(() => e.readonly !== true && e.disable !== true), d = s(() => "q-rating row inline items-center q-rating--".concat(f.value === true ? "" : "non-", "editable") + (e.noDimming === true ? " q-rating--no-dimming" : "") + (e.disable === true ? " disabled" : "") + (e.color !== void 0 && Array.isArray(e.color) === false ? " text-".concat(e.color) : "")), p = s(() => {
+  var xd = P({ name: "QRating", props: __spreadProps(__spreadValues(__spreadValues({}, Dt), kt), { modelValue: { type: Number, required: true }, max: { type: [String, Number], default: 5 }, icon: [String, Array], iconHalf: [String, Array], iconSelected: [String, Array], iconAriaLabel: [String, Array], color: [String, Array], colorHalf: [String, Array], colorSelected: [String, Array], noReset: Boolean, noDimming: Boolean, readonly: Boolean, disable: Boolean }), emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
+    let { proxy: { $q: r } } = K(), n = Ot(e), a = Oo(e), l = Zt(a), u = T(0), c = {}, f = s(() => e.readonly !== true && e.disable !== true), d = s(() => `q-rating row inline items-center q-rating--${f.value === true ? "" : "non-"}editable` + (e.noDimming === true ? " q-rating--no-dimming" : "") + (e.disable === true ? " disabled" : "") + (e.color !== void 0 && Array.isArray(e.color) === false ? ` text-${e.color}` : "")), p = s(() => {
       let b = Array.isArray(e.icon) === true ? e.icon.length : 0, h = Array.isArray(e.iconSelected) === true ? e.iconSelected.length : 0, _ = Array.isArray(e.iconHalf) === true ? e.iconHalf.length : 0, E = Array.isArray(e.color) === true ? e.color.length : 0, L = Array.isArray(e.colorSelected) === true ? e.colorSelected.length : 0, D = Array.isArray(e.colorHalf) === true ? e.colorHalf.length : 0;
       return { iconLen: b, icon: b > 0 ? e.icon[b - 1] : e.icon, selIconLen: h, selIcon: h > 0 ? e.iconSelected[h - 1] : e.iconSelected, halfIconLen: _, halfIcon: _ > 0 ? e.iconHalf[h - 1] : e.iconHalf, colorLen: E, color: E > 0 ? e.color[E - 1] : e.color, selColorLen: L, selColor: L > 0 ? e.colorSelected[L - 1] : e.colorSelected, halfColorLen: D, halfColor: D > 0 ? e.colorHalf[D - 1] : e.colorHalf };
     }), g = s(() => {
       if (typeof e.iconAriaLabel == "string") {
-        let b = e.iconAriaLabel.length !== 0 ? "".concat(e.iconAriaLabel, " ") : "";
-        return (h) => "".concat(b).concat(h);
+        let b = e.iconAriaLabel.length !== 0 ? `${e.iconAriaLabel} ` : "";
+        return (h) => `${b}${h}`;
       }
       if (Array.isArray(e.iconAriaLabel) === true) {
         let b = e.iconAriaLabel.length;
         if (b > 0) return (h) => e.iconAriaLabel[Math.min(h, b) - 1];
       }
-      return (b, h) => "".concat(h, " ").concat(b);
+      return (b, h) => `${h} ${b}`;
     }), m = s(() => {
       let b = [], h = p.value, _ = Math.ceil(e.modelValue), E = f.value === true ? 0 : null, L = e.iconHalf === void 0 || _ === e.modelValue ? -1 : _;
       for (let D = 1; D <= e.max; D++) {
         let Z = u.value === 0 && e.modelValue >= D || u.value > 0 && u.value >= D, B = L === D && u.value < D, F = u.value > 0 && (B === true ? _ : e.modelValue) >= D && u.value < D, $ = B === true ? D <= h.halfColorLen ? e.colorHalf[D - 1] : h.halfColor : h.selColor !== void 0 && Z === true ? D <= h.selColorLen ? e.colorSelected[D - 1] : h.selColor : D <= h.colorLen ? e.color[D - 1] : h.color, q = (B === true ? D <= h.halfIconLen ? e.iconHalf[D - 1] : h.halfIcon : h.selIcon !== void 0 && (Z === true || F === true) ? D <= h.selIconLen ? e.iconSelected[D - 1] : h.selIcon : D <= h.iconLen ? e.icon[D - 1] : h.icon) || r.iconSet.rating.icon;
-        b.push({ name: (B === true ? D <= h.halfIconLen ? e.iconHalf[D - 1] : h.halfIcon : h.selIcon !== void 0 && (Z === true || F === true) ? D <= h.selIconLen ? e.iconSelected[D - 1] : h.selIcon : D <= h.iconLen ? e.icon[D - 1] : h.icon) || r.iconSet.rating.icon, attrs: { tabindex: E, role: "radio", "aria-checked": e.modelValue === D ? "true" : "false", "aria-label": g.value(D, q) }, iconClass: "q-rating__icon" + (Z === true || B === true ? " q-rating__icon--active" : "") + (F === true ? " q-rating__icon--exselected" : "") + (u.value === D ? " q-rating__icon--hovered" : "") + ($ !== void 0 ? " text-".concat($) : "") });
+        b.push({ name: (B === true ? D <= h.halfIconLen ? e.iconHalf[D - 1] : h.halfIcon : h.selIcon !== void 0 && (Z === true || F === true) ? D <= h.selIconLen ? e.iconSelected[D - 1] : h.selIcon : D <= h.iconLen ? e.icon[D - 1] : h.icon) || r.iconSet.rating.icon, attrs: { tabindex: E, role: "radio", "aria-checked": e.modelValue === D ? "true" : "false", "aria-label": g.value(D, q) }, iconClass: "q-rating__icon" + (Z === true || B === true ? " q-rating__icon--active" : "") + (F === true ? " q-rating__icon--exselected" : "") + (u.value === D ? " q-rating__icon--hovered" : "") + ($ !== void 0 ? ` text-${$}` : "") });
       }
       return b;
     }), v = s(() => {
@@ -6130,10 +6172,10 @@
           return x(h), _e(b);
         case 37:
         case 40:
-          return c["rt".concat(h - 1)] && c["rt".concat(h - 1)].focus(), _e(b);
+          return c[`rt${h - 1}`] && c[`rt${h - 1}`].focus(), _e(b);
         case 39:
         case 38:
-          return c["rt".concat(h + 1)] && c["rt".concat(h + 1)].focus(), _e(b);
+          return c[`rt${h + 1}`] && c[`rt${h + 1}`].focus(), _e(b);
       }
     }
     function S() {
@@ -6145,9 +6187,9 @@
       let b = [];
       return m.value.forEach(({ iconClass: h, name: _, attrs: E }, L) => {
         let D = L + 1;
-        b.push(i("div", { key: D, ref: (Z) => {
-          c["rt".concat(D)] = Z;
-        }, class: "q-rating__icon-container flex flex-center", ...E, onClick() {
+        b.push(i("div", __spreadProps(__spreadValues({ key: D, ref: (Z) => {
+          c[`rt${D}`] = Z;
+        }, class: "q-rating__icon-container flex flex-center" }, E), { onClick() {
           x(D);
         }, onMouseover() {
           y(D);
@@ -6155,8 +6197,8 @@
           y(D);
         }, onBlur: S, onKeyup(Z) {
           k(Z, D);
-        } }, Ge(t["tip-".concat(D)], [i(Re, { class: h, name: _ })])));
-      }), e.name !== void 0 && e.disable !== true && l(b, "push"), i("div", { class: d.value, style: n.value, ...v.value }, b);
+        } }), Ge(t[`tip-${D}`], [i(Re, { class: h, name: _ })])));
+      }), e.name !== void 0 && e.disable !== true && l(b, "push"), i("div", __spreadValues({ class: d.value, style: n.value }, v.value), b);
     };
   } });
   var _d = P({ name: "QResponsive", props: Lr, setup(e, { slots: t }) {
@@ -6166,19 +6208,19 @@
   var Cd = P({ props: ["store", "barStyle", "verticalBarStyle", "horizontalBarStyle"], setup(e) {
     return () => [i("div", { class: e.store.scroll.vertical.barClass.value, style: [e.barStyle, e.verticalBarStyle], "aria-hidden": "true", onMousedown: e.store.onVerticalMousedown }), i("div", { class: e.store.scroll.horizontal.barClass.value, style: [e.barStyle, e.horizontalBarStyle], "aria-hidden": "true", onMousedown: e.store.onHorizontalMousedown }), Bt(i("div", { ref: e.store.scroll.vertical.ref, class: e.store.scroll.vertical.thumbClass.value, style: e.store.scroll.vertical.style.value, "aria-hidden": "true" }), e.store.thumbVertDir), Bt(i("div", { ref: e.store.scroll.horizontal.ref, class: e.store.scroll.horizontal.thumbClass.value, style: e.store.scroll.horizontal.style.value, "aria-hidden": "true" }), e.store.thumbHorizDir)];
   } });
-  var wd = ["vertical", "horizontal"], mu = { vertical: { offset: "offsetY", scroll: "scrollTop", dir: "down", dist: "y" }, horizontal: { offset: "offsetX", scroll: "scrollLeft", dir: "right", dist: "x" } }, kd = { prevent: true, mouse: true, mouseAllDir: true }, qd = (e) => e >= 250 ? 50 : Math.ceil(e / 5), Td = P({ name: "QScrollArea", props: { ...Se, thumbStyle: Object, verticalThumbStyle: Object, horizontalThumbStyle: Object, barStyle: [Array, String, Object], verticalBarStyle: [Array, String, Object], horizontalBarStyle: [Array, String, Object], verticalOffset: { type: Array, default: [0, 0] }, horizontalOffset: { type: Array, default: [0, 0] }, contentStyle: [Array, String, Object], contentActiveStyle: [Array, String, Object], delay: { type: [String, Number], default: 1e3 }, visible: { type: Boolean, default: null }, tabindex: [String, Number], onScroll: Function }, setup(e, { slots: t, emit: o }) {
+  var wd = ["vertical", "horizontal"], mu = { vertical: { offset: "offsetY", scroll: "scrollTop", dir: "down", dist: "y" }, horizontal: { offset: "offsetX", scroll: "scrollLeft", dir: "right", dist: "x" } }, kd = { prevent: true, mouse: true, mouseAllDir: true }, qd = (e) => e >= 250 ? 50 : Math.ceil(e / 5), Td = P({ name: "QScrollArea", props: __spreadProps(__spreadValues({}, Se), { thumbStyle: Object, verticalThumbStyle: Object, horizontalThumbStyle: Object, barStyle: [Array, String, Object], verticalBarStyle: [Array, String, Object], horizontalBarStyle: [Array, String, Object], verticalOffset: { type: Array, default: [0, 0] }, horizontalOffset: { type: Array, default: [0, 0] }, contentStyle: [Array, String, Object], contentActiveStyle: [Array, String, Object], delay: { type: [String, Number], default: 1e3 }, visible: { type: Boolean, default: null }, tabindex: [String, Number], onScroll: Function }), setup(e, { slots: t, emit: o }) {
     let r = T(false), n = T(false), a = T(false), l = { vertical: T(0), horizontal: T(0) }, u = { vertical: { ref: T(null), position: T(0), size: T(0) }, horizontal: { ref: T(null), position: T(0), size: T(0) } }, { proxy: c } = K(), f = xe(e, c.$q), d = null, p, g = T(null), m = s(() => "q-scrollarea" + (f.value === true ? " q-scrollarea--dark" : ""));
     Object.assign(l, { verticalInner: s(() => l.vertical.value - e.verticalOffset[0] - e.verticalOffset[1]), horizontalInner: s(() => l.horizontal.value - e.horizontalOffset[0] - e.horizontalOffset[1]) }), u.vertical.percentage = s(() => {
       let C = u.vertical.size.value - l.vertical.value;
       if (C <= 0) return 0;
       let A = tt(u.vertical.position.value / C, 0, 1);
       return Math.round(A * 1e4) / 1e4;
-    }), u.vertical.thumbHidden = s(() => (e.visible === null ? a.value : e.visible) !== true && r.value === false && n.value === false || u.vertical.size.value <= l.vertical.value + 1), u.vertical.thumbStart = s(() => e.verticalOffset[0] + u.vertical.percentage.value * (l.verticalInner.value - u.vertical.thumbSize.value)), u.vertical.thumbSize = s(() => Math.round(tt(l.verticalInner.value * l.verticalInner.value / u.vertical.size.value, qd(l.verticalInner.value), l.verticalInner.value))), u.vertical.style = s(() => ({ ...e.thumbStyle, ...e.verticalThumbStyle, top: "".concat(u.vertical.thumbStart.value, "px"), height: "".concat(u.vertical.thumbSize.value, "px"), right: "".concat(e.horizontalOffset[1], "px") })), u.vertical.thumbClass = s(() => "q-scrollarea__thumb q-scrollarea__thumb--v absolute-right" + (u.vertical.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")), u.vertical.barClass = s(() => "q-scrollarea__bar q-scrollarea__bar--v absolute-right" + (u.vertical.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : "")), u.horizontal.percentage = s(() => {
+    }), u.vertical.thumbHidden = s(() => (e.visible === null ? a.value : e.visible) !== true && r.value === false && n.value === false || u.vertical.size.value <= l.vertical.value + 1), u.vertical.thumbStart = s(() => e.verticalOffset[0] + u.vertical.percentage.value * (l.verticalInner.value - u.vertical.thumbSize.value)), u.vertical.thumbSize = s(() => Math.round(tt(l.verticalInner.value * l.verticalInner.value / u.vertical.size.value, qd(l.verticalInner.value), l.verticalInner.value))), u.vertical.style = s(() => __spreadProps(__spreadValues(__spreadValues({}, e.thumbStyle), e.verticalThumbStyle), { top: `${u.vertical.thumbStart.value}px`, height: `${u.vertical.thumbSize.value}px`, right: `${e.horizontalOffset[1]}px` })), u.vertical.thumbClass = s(() => "q-scrollarea__thumb q-scrollarea__thumb--v absolute-right" + (u.vertical.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")), u.vertical.barClass = s(() => "q-scrollarea__bar q-scrollarea__bar--v absolute-right" + (u.vertical.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : "")), u.horizontal.percentage = s(() => {
       let C = u.horizontal.size.value - l.horizontal.value;
       if (C <= 0) return 0;
       let A = tt(Math.abs(u.horizontal.position.value) / C, 0, 1);
       return Math.round(A * 1e4) / 1e4;
-    }), u.horizontal.thumbHidden = s(() => (e.visible === null ? a.value : e.visible) !== true && r.value === false && n.value === false || u.horizontal.size.value <= l.horizontal.value + 1), u.horizontal.thumbStart = s(() => e.horizontalOffset[0] + u.horizontal.percentage.value * (l.horizontalInner.value - u.horizontal.thumbSize.value)), u.horizontal.thumbSize = s(() => Math.round(tt(l.horizontalInner.value * l.horizontalInner.value / u.horizontal.size.value, qd(l.horizontalInner.value), l.horizontalInner.value))), u.horizontal.style = s(() => ({ ...e.thumbStyle, ...e.horizontalThumbStyle, [c.$q.lang.rtl === true ? "right" : "left"]: "".concat(u.horizontal.thumbStart.value, "px"), width: "".concat(u.horizontal.thumbSize.value, "px"), bottom: "".concat(e.verticalOffset[1], "px") })), u.horizontal.thumbClass = s(() => "q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom" + (u.horizontal.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")), u.horizontal.barClass = s(() => "q-scrollarea__bar q-scrollarea__bar--h absolute-bottom" + (u.horizontal.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : ""));
+    }), u.horizontal.thumbHidden = s(() => (e.visible === null ? a.value : e.visible) !== true && r.value === false && n.value === false || u.horizontal.size.value <= l.horizontal.value + 1), u.horizontal.thumbStart = s(() => e.horizontalOffset[0] + u.horizontal.percentage.value * (l.horizontalInner.value - u.horizontal.thumbSize.value)), u.horizontal.thumbSize = s(() => Math.round(tt(l.horizontalInner.value * l.horizontalInner.value / u.horizontal.size.value, qd(l.horizontalInner.value), l.horizontalInner.value))), u.horizontal.style = s(() => __spreadProps(__spreadValues(__spreadValues({}, e.thumbStyle), e.horizontalThumbStyle), { [c.$q.lang.rtl === true ? "right" : "left"]: `${u.horizontal.thumbStart.value}px`, width: `${u.horizontal.thumbSize.value}px`, bottom: `${e.verticalOffset[1]}px` })), u.horizontal.thumbClass = s(() => "q-scrollarea__thumb q-scrollarea__thumb--h absolute-bottom" + (u.horizontal.thumbHidden.value === true ? " q-scrollarea__thumb--invisible" : "")), u.horizontal.barClass = s(() => "q-scrollarea__bar q-scrollarea__bar--h absolute-bottom" + (u.horizontal.thumbHidden.value === true ? " q-scrollarea__bar--invisible" : ""));
     let v = s(() => u.vertical.thumbHidden.value === true && u.horizontal.thumbHidden.value === true ? e.contentStyle : e.contentActiveStyle);
     function x() {
       let C = {};
@@ -6261,9 +6303,9 @@
     } });
     let q = { scroll: u, thumbVertDir: [[Pt, (C) => {
       _(C, "vertical");
-    }, void 0, { vertical: true, ...kd }]], thumbHorizDir: [[Pt, (C) => {
+    }, void 0, __spreadValues({ vertical: true }, kd)]], thumbHorizDir: [[Pt, (C) => {
       _(C, "horizontal");
-    }, void 0, { horizontal: true, ...kd }]], onVerticalMousedown(C) {
+    }, void 0, __spreadValues({ horizontal: true }, kd)]], onVerticalMousedown(C) {
       E(C, "vertical");
     }, onHorizontalMousedown(C) {
       E(C, "horizontal");
@@ -6303,7 +6345,7 @@
     let n = t.length, a = Math.floor(o / wo), l = Math.floor((r - 1) / wo) + 1, u = e.slice(a, l).reduce(Hr, 0);
     return o % wo !== 0 && (u -= t.slice(a * wo, o).reduce(Hr, 0)), r % wo !== 0 && r !== n && (u -= t.slice(r, l * wo).reduce(Hr, 0)), u;
   }
-  var Pd = { virtualScrollSliceSize: { type: [Number, String], default: 10 }, virtualScrollSliceRatioBefore: { type: [Number, String], default: 1 }, virtualScrollSliceRatioAfter: { type: [Number, String], default: 1 }, virtualScrollItemSize: { type: [Number, String], default: 24 }, virtualScrollStickySizeStart: { type: [Number, String], default: 0 }, virtualScrollStickySizeEnd: { type: [Number, String], default: 0 }, tableColspan: [Number, String] }, gu = Object.keys(Pd), ga = { virtualScrollHorizontal: Boolean, onVirtualScroll: Function, ...Pd };
+  var Pd = { virtualScrollSliceSize: { type: [Number, String], default: 10 }, virtualScrollSliceRatioBefore: { type: [Number, String], default: 1 }, virtualScrollSliceRatioAfter: { type: [Number, String], default: 1 }, virtualScrollItemSize: { type: [Number, String], default: 24 }, virtualScrollStickySizeStart: { type: [Number, String], default: 0 }, virtualScrollStickySizeEnd: { type: [Number, String], default: 0 }, tableColspan: [Number, String] }, gu = Object.keys(Pd), ga = __spreadValues({ virtualScrollHorizontal: Boolean, onVirtualScroll: Function }, Pd);
   function Wi({ virtualScrollLength: e, getVirtualScrollTarget: t, getVirtualScrollEl: o, virtualScrollItemSizeComputed: r }) {
     let n = K(), { props: a, emit: l, proxy: u } = n, { $q: c } = u, f, d, p, g = [], m, v = T(0), x = T(0), y = T({}), k = T(null), S = T(null), b = T(null), h = T({ from: 0, to: 0 }), _ = s(() => a.tableColspan !== void 0 ? a.tableColspan : 100);
     r === void 0 && (r = s(() => a.virtualScrollItemSize));
@@ -6416,7 +6458,7 @@
     }
     function H(O, w) {
       let W = a.virtualScrollHorizontal === true ? "width" : "height", U = { ["--q-virtual-scroll-item-" + W]: r.value + "px" };
-      return [O === "tbody" ? i(O, { class: "q-virtual-scroll__padding", key: "before", ref: k }, [i("tr", [i("td", { style: { [W]: "".concat(v.value, "px"), ...U }, colspan: _.value })])]) : i(O, { class: "q-virtual-scroll__padding", key: "before", ref: k, style: { [W]: "".concat(v.value, "px"), ...U } }), i(O, { class: "q-virtual-scroll__content", key: "content", ref: b, tabindex: -1 }, w.flat()), O === "tbody" ? i(O, { class: "q-virtual-scroll__padding", key: "after", ref: S }, [i("tr", [i("td", { style: { [W]: "".concat(x.value, "px"), ...U }, colspan: _.value })])]) : i(O, { class: "q-virtual-scroll__padding", key: "after", ref: S, style: { [W]: "".concat(x.value, "px"), ...U } })];
+      return [O === "tbody" ? i(O, { class: "q-virtual-scroll__padding", key: "before", ref: k }, [i("tr", [i("td", { style: __spreadValues({ [W]: `${v.value}px` }, U), colspan: _.value })])]) : i(O, { class: "q-virtual-scroll__padding", key: "before", ref: k, style: __spreadValues({ [W]: `${v.value}px` }, U) }), i(O, { class: "q-virtual-scroll__content", key: "content", ref: b, tabindex: -1 }, w.flat()), O === "tbody" ? i(O, { class: "q-virtual-scroll__padding", key: "after", ref: S }, [i("tr", [i("td", { style: __spreadValues({ [W]: `${x.value}px` }, U), colspan: _.value })])]) : i(O, { class: "q-virtual-scroll__padding", key: "after", ref: S, style: __spreadValues({ [W]: `${x.value}px` }, U) })];
     }
     function Q(O) {
       d !== O && (a.onVirtualScroll !== void 0 && l("virtualScroll", { index: O, from: h.value.from, to: h.value.to - 1, direction: O < d ? "decrease" : "increase", ref: u }), d = O);
@@ -6443,7 +6485,7 @@
     let o = e !== void 0 ? e : t;
     return (r) => r !== null && typeof r == "object" && o in r ? r[o] : r;
   }
-  var Yi = P({ name: "QSelect", inheritAttrs: false, props: { ...ga, ...kt, ...On, modelValue: { required: true }, multiple: Boolean, displayValue: [String, Number], displayValueHtml: Boolean, dropdownIcon: String, options: { type: Array, default: () => [] }, optionValue: [Function, String], optionLabel: [Function, String], optionDisable: [Function, String], hideSelected: Boolean, hideDropdownIcon: Boolean, fillInput: Boolean, maxValues: [Number, String], optionsDense: Boolean, optionsDark: { type: Boolean, default: null }, optionsSelectedClass: String, optionsHtml: Boolean, optionsCover: Boolean, menuShrink: Boolean, menuAnchor: String, menuSelf: String, menuOffset: Array, popupContentClass: String, popupContentStyle: [String, Array, Object], popupNoRouteDismiss: Boolean, useInput: Boolean, useChips: Boolean, newValueMode: { type: String, validator: Ad }, mapOptions: Boolean, emitValue: Boolean, disableTabSelection: Boolean, inputDebounce: { type: [Number, String], default: 500 }, inputClass: [Array, String, Object], inputStyle: [Array, String, Object], tabindex: { type: [String, Number], default: 0 }, autocomplete: String, transitionShow: {}, transitionHide: {}, transitionDuration: {}, behavior: { type: String, validator: (e) => ["default", "menu", "dialog"].includes(e), default: "default" }, virtualScrollItemSize: ga.virtualScrollItemSize.type, onNewValue: Function, onFilter: Function }, emits: [...bn, "add", "remove", "inputValue", "keyup", "keypress", "keydown", "popupShow", "popupHide", "filterAbort"], setup(e, { slots: t, emit: o }) {
+  var Yi = P({ name: "QSelect", inheritAttrs: false, props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, ga), kt), On), { modelValue: { required: true }, multiple: Boolean, displayValue: [String, Number], displayValueHtml: Boolean, dropdownIcon: String, options: { type: Array, default: () => [] }, optionValue: [Function, String], optionLabel: [Function, String], optionDisable: [Function, String], hideSelected: Boolean, hideDropdownIcon: Boolean, fillInput: Boolean, maxValues: [Number, String], optionsDense: Boolean, optionsDark: { type: Boolean, default: null }, optionsSelectedClass: String, optionsHtml: Boolean, optionsCover: Boolean, menuShrink: Boolean, menuAnchor: String, menuSelf: String, menuOffset: Array, popupContentClass: String, popupContentStyle: [String, Array, Object], popupNoRouteDismiss: Boolean, useInput: Boolean, useChips: Boolean, newValueMode: { type: String, validator: Ad }, mapOptions: Boolean, emitValue: Boolean, disableTabSelection: Boolean, inputDebounce: { type: [Number, String], default: 500 }, inputClass: [Array, String, Object], inputStyle: [Array, String, Object], tabindex: { type: [String, Number], default: 0 }, autocomplete: String, transitionShow: {}, transitionHide: {}, transitionDuration: {}, behavior: { type: String, validator: (e) => ["default", "menu", "dialog"].includes(e), default: "default" }, virtualScrollItemSize: ga.virtualScrollItemSize.type, onNewValue: Function, onFilter: Function }), emits: [...bn, "add", "remove", "inputValue", "keyup", "keypress", "keydown", "popupShow", "popupHide", "filterAbort"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = T(false), l = T(false), u = T(-1), c = T(""), f = T(false), d = T(false), p = null, g = null, m, v, x, y = null, k, S, b, h, _ = T(null), E = T(null), L = T(null), D = T(null), Z = T(null), B = gr(e), F = Di(oe), $ = s(() => Array.isArray(e.options) ? e.options.length : 0), q = s(() => e.virtualScrollItemSize === void 0 ? e.optionsDense === true ? 24 : 48 : e.virtualScrollItemSize), { virtualScrollSliceRange: C, virtualScrollSliceSizeComputed: A, localResetVirtualScroll: z, padVirtualScroll: H, onVirtualScrollEvt: Q, scrollTo: ee, setVirtualScrollSize: ve } = Wi({ virtualScrollLength: $, getVirtualScrollTarget: jt, getVirtualScrollEl: qt, virtualScrollItemSizeComputed: q }), O = yn(), w = s(() => {
       let N = e.mapOptions === true && e.multiple !== true, qe = e.modelValue !== void 0 && (e.modelValue !== null || N === true) ? e.multiple === true && Array.isArray(e.modelValue) ? e.modelValue : [e.modelValue] : [];
       if (e.mapOptions === true && Array.isArray(e.options) === true) {
@@ -6461,20 +6503,20 @@
       let N = "q-field__input q-placeholder col";
       return e.hideSelected === true || w.value.length === 0 ? [N, e.inputClass] : (N += " q-field__input--padding", e.inputClass === void 0 ? N : [N, e.inputClass]);
     }), V = s(() => (e.virtualScrollHorizontal === true ? "q-virtual-scroll--horizontal" : "") + (e.popupContentClass ? " " + e.popupContentClass : "")), ae = s(() => $.value === 0), j = s(() => w.value.map((N) => ie.value(N)).join(", ")), fe = s(() => e.displayValue !== void 0 ? e.displayValue : j.value), ke = s(() => e.optionsHtml === true ? () => true : (N) => (N == null ? void 0 : N.html) === true), X = s(() => e.displayValueHtml === true || e.displayValue === void 0 && (e.optionsHtml === true || w.value.some(ke.value))), ce = s(() => O.focused.value === true ? e.tabindex : -1), ge = s(() => {
-      let N = { tabindex: e.tabindex, role: "combobox", "aria-label": e.label, "aria-readonly": e.readonly === true ? "true" : "false", "aria-autocomplete": e.useInput === true ? "list" : "none", "aria-expanded": a.value === true ? "true" : "false", "aria-controls": "".concat(O.targetUid.value, "_lb") };
-      return u.value >= 0 && (N["aria-activedescendant"] = "".concat(O.targetUid.value, "_").concat(u.value)), N;
-    }), Ce = s(() => ({ id: "".concat(O.targetUid.value, "_lb"), role: "listbox", "aria-multiselectable": e.multiple === true ? "true" : "false" })), Fe = s(() => w.value.map((N, qe) => ({ index: qe, opt: N, html: ke.value(N), selected: true, removeAtIndex: He, toggleOption: lt, tabindex: ce.value }))), de = s(() => {
+      let N = { tabindex: e.tabindex, role: "combobox", "aria-label": e.label, "aria-readonly": e.readonly === true ? "true" : "false", "aria-autocomplete": e.useInput === true ? "list" : "none", "aria-expanded": a.value === true ? "true" : "false", "aria-controls": `${O.targetUid.value}_lb` };
+      return u.value >= 0 && (N["aria-activedescendant"] = `${O.targetUid.value}_${u.value}`), N;
+    }), Ce = s(() => ({ id: `${O.targetUid.value}_lb`, role: "listbox", "aria-multiselectable": e.multiple === true ? "true" : "false" })), Fe = s(() => w.value.map((N, qe) => ({ index: qe, opt: N, html: ke.value(N), selected: true, removeAtIndex: He, toggleOption: lt, tabindex: ce.value }))), de = s(() => {
       if ($.value === 0) return [];
       let { from: N, to: qe } = C.value;
       return e.options.slice(N, qe).map((Te, at) => {
-        let yt = G.value(Te) === true, ht = ue(Te) === true, It = N + at, Et = { clickable: true, active: ht, activeClass: Ie.value, manualFocus: true, focused: false, disable: yt, tabindex: -1, dense: e.optionsDense, dark: U.value, role: "option", "aria-selected": ht === true ? "true" : "false", id: "".concat(O.targetUid.value, "_").concat(It), onClick: () => {
+        let yt = G.value(Te) === true, ht = ue(Te) === true, It = N + at, Et = { clickable: true, active: ht, activeClass: Ie.value, manualFocus: true, focused: false, disable: yt, tabindex: -1, dense: e.optionsDense, dark: U.value, role: "option", "aria-selected": ht === true ? "true" : "false", id: `${O.targetUid.value}_${It}`, onClick: () => {
           lt(Te);
         } };
         return yt !== true && (u.value === It && (Et.focused = true), n.platform.is.desktop === true && (Et.onMousemove = () => {
           a.value === true && te(It);
         })), { index: It, opt: Te, html: ke.value(Te), label: ie.value(Te), selected: Et.active, focused: Et.focused, toggleOption: lt, setOptionIndex: te, itemProps: Et };
       });
-    }), Le = s(() => e.dropdownIcon !== void 0 ? e.dropdownIcon : n.iconSet.arrow.dropdown), ze = s(() => e.optionsCover === false && e.outlined !== true && e.standout !== true && e.borderless !== true && e.rounded !== true), Ie = s(() => e.optionsSelectedClass !== void 0 ? e.optionsSelectedClass : e.color !== void 0 ? "text-".concat(e.color) : ""), nt = s(() => hu(e.optionValue, "value")), ie = s(() => hu(e.optionLabel, "label")), G = s(() => hu(e.optionDisable, "disable")), me = s(() => w.value.map(nt.value)), De = s(() => {
+    }), Le = s(() => e.dropdownIcon !== void 0 ? e.dropdownIcon : n.iconSet.arrow.dropdown), ze = s(() => e.optionsCover === false && e.outlined !== true && e.standout !== true && e.borderless !== true && e.rounded !== true), Ie = s(() => e.optionsSelectedClass !== void 0 ? e.optionsSelectedClass : e.color !== void 0 ? `text-${e.color}` : ""), nt = s(() => hu(e.optionValue, "value")), ie = s(() => hu(e.optionLabel, "label")), G = s(() => hu(e.optionDisable, "disable")), me = s(() => w.value.map(nt.value)), De = s(() => {
       let N = { onInput: oe, onChange: F, onKeydown: mt, onKeyup: Pe, onKeypress: Je, onFocus: we, onClick(qe) {
         v === true && it(qe);
       } };
@@ -6645,11 +6687,11 @@
     }
     function ao() {
       if (ae.value === true) return t["no-option"] !== void 0 ? t["no-option"]({ inputValue: c.value }) : void 0;
-      let N = t.option !== void 0 ? t.option : (Te) => i(No, { key: Te.index, ...Te.itemProps }, () => i(ro, () => i(Ln, () => i("span", { [Te.html === true ? "innerHTML" : "textContent"]: Te.label })))), qe = H("div", de.value.map(N));
+      let N = t.option !== void 0 ? t.option : (Te) => i(No, __spreadValues({ key: Te.index }, Te.itemProps), () => i(ro, () => i(Ln, () => i("span", { [Te.html === true ? "innerHTML" : "textContent"]: Te.label })))), qe = H("div", de.value.map(N));
       return t["before-options"] !== void 0 && (qe = t["before-options"]().concat(qe)), Ge(t["after-options"], qe);
     }
     function jo(N, qe) {
-      let Te = qe === true ? { ...ge.value, ...O.splitAttrs.attributes.value } : void 0, at = { ref: qe === true ? E : void 0, key: "i_t", class: M.value, style: e.inputStyle, value: c.value !== void 0 ? c.value : "", type: "search", ...Te, id: qe === true ? O.targetUid.value : void 0, maxlength: e.maxlength, autocomplete: e.autocomplete, "data-autofocus": N === true || e.autofocus === true || void 0, disabled: e.disable === true, readonly: e.readonly === true, ...De.value };
+      let Te = qe === true ? __spreadValues(__spreadValues({}, ge.value), O.splitAttrs.attributes.value) : void 0, at = __spreadValues(__spreadProps(__spreadValues({ ref: qe === true ? E : void 0, key: "i_t", class: M.value, style: e.inputStyle, value: c.value !== void 0 ? c.value : "", type: "search" }, Te), { id: qe === true ? O.targetUid.value : void 0, maxlength: e.maxlength, autocomplete: e.autocomplete, "data-autofocus": N === true || e.autofocus === true || void 0, disabled: e.disable === true, readonly: e.readonly === true }), De.value);
       return N !== true && v === true && (Array.isArray(at.class) === true ? at.class = [...at.class, "no-pointer-events"] : at.class += " no-pointer-events"), i("input", at);
     }
     function oe(N) {
@@ -6684,7 +6726,7 @@
       });
     }
     function Xe() {
-      return i(Fo, { ref: L, class: V.value, style: e.popupContentStyle, modelValue: a.value, fit: e.menuShrink !== true, cover: e.optionsCover === true && ae.value !== true && e.useInput !== true, anchor: e.menuAnchor, self: e.menuSelf, offset: e.menuOffset, dark: U.value, noParentEvent: true, noRefocus: true, noFocus: true, noRouteDismiss: e.popupNoRouteDismiss, square: ze.value, transitionShow: e.transitionShow, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, separateClosePopup: true, ...Ce.value, onScrollPassive: Q, onBeforeShow: Tu, onBeforeHide: St, onShow: bt }, ao);
+      return i(Fo, __spreadProps(__spreadValues({ ref: L, class: V.value, style: e.popupContentStyle, modelValue: a.value, fit: e.menuShrink !== true, cover: e.optionsCover === true && ae.value !== true && e.useInput !== true, anchor: e.menuAnchor, self: e.menuSelf, offset: e.menuOffset, dark: U.value, noParentEvent: true, noRefocus: true, noFocus: true, noRouteDismiss: e.popupNoRouteDismiss, square: ze.value, transitionShow: e.transitionShow, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, separateClosePopup: true }, Ce.value), { onScrollPassive: Q, onBeforeShow: Tu, onBeforeHide: St, onShow: bt }), ao);
     }
     function St(N) {
       Mu(N), Me();
@@ -6702,8 +6744,8 @@
       });
     }
     function ne() {
-      let N = [i(Ai, { class: "col-auto ".concat(O.fieldClass.value), ...W.value, for: O.targetUid.value, dark: U.value, square: true, loading: d.value, itemAligned: false, filled: true, stackLabel: c.value.length !== 0, ...O.splitAttrs.listeners.value, onFocus: R, onBlur: I }, { ...t, rawControl: () => O.getControl(true), before: void 0, after: void 0 })];
-      return a.value === true && N.push(i("div", { ref: Z, class: V.value + " scroll", style: e.popupContentStyle, ...Ce.value, onClick: gt, onScrollPassive: Q }, ao())), i(Ho, { ref: D, modelValue: l.value, position: e.useInput === true ? "top" : void 0, transitionShow: S, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, noRouteDismiss: e.popupNoRouteDismiss, onBeforeShow: Tu, onBeforeHide: pe, onHide: ye, onShow: ot }, () => i("div", { class: "q-select__dialog" + (U.value === true ? " q-select__dialog--dark q-dark" : "") + (f.value === true ? " q-select__dialog--focused" : "") }, N));
+      let N = [i(Ai, __spreadProps(__spreadValues(__spreadProps(__spreadValues({ class: `col-auto ${O.fieldClass.value}` }, W.value), { for: O.targetUid.value, dark: U.value, square: true, loading: d.value, itemAligned: false, filled: true, stackLabel: c.value.length !== 0 }), O.splitAttrs.listeners.value), { onFocus: R, onBlur: I }), __spreadProps(__spreadValues({}, t), { rawControl: () => O.getControl(true), before: void 0, after: void 0 }))];
+      return a.value === true && N.push(i("div", __spreadProps(__spreadValues({ ref: Z, class: V.value + " scroll", style: e.popupContentStyle }, Ce.value), { onClick: gt, onScrollPassive: Q }), ao())), i(Ho, { ref: D, modelValue: l.value, position: e.useInput === true ? "top" : void 0, transitionShow: S, transitionHide: e.transitionHide, transitionDuration: e.transitionDuration, noRouteDismiss: e.popupNoRouteDismiss, onBeforeShow: Tu, onBeforeHide: pe, onHide: ye, onShow: ot }, () => i("div", { class: "q-select__dialog" + (U.value === true ? " q-select__dialog--dark q-dark" : "") + (f.value === true ? " q-select__dialog--focused" : "") }, N));
     }
     function pe(N) {
       Mu(N), D.value !== null && D.value.__updateRefocusTarget(O.rootRef.value.querySelector(".q-field__native > [tabindex]:last-child")), O.focused.value = false;
@@ -6759,7 +6801,7 @@
     }
     return Mo(Ru), Eu(qu), Ru(), be(() => {
       p !== null && clearTimeout(p), g !== null && clearTimeout(g);
-    }), Object.assign(r, { showPopup: Ne, hidePopup: ut, removeAtIndex: Oe, add: dt, toggleOption: lt, getOptionIndex: () => u.value, setOptionIndex: te, moveOptionSelection: se, filter: $e, updateMenuPosition: qu, updateInputValue: Ee, isOptionSelected: ue, getEmittingOptionValue: Ue, isOptionDisabled: (...N) => G.value.apply(null, N) === true, getOptionValue: (...N) => nt.value.apply(null, N), getOptionLabel: (...N) => ie.value.apply(null, N) }), Object.assign(O, { innerValue: w, fieldClass: s(() => "q-select q-field--auto-height q-select--with".concat(e.useInput !== true ? "out" : "", "-input q-select--with").concat(e.useChips !== true ? "out" : "", "-chips q-select--").concat(e.multiple === true ? "multiple" : "single")), inputRef: _, targetRef: E, hasValue: le, showPopup: Ne, floatingLabel: s(() => e.hideSelected !== true && le.value === true || typeof c.value == "number" || c.value.length !== 0 || Qo(e.displayValue)), getControlChild: () => {
+    }), Object.assign(r, { showPopup: Ne, hidePopup: ut, removeAtIndex: Oe, add: dt, toggleOption: lt, getOptionIndex: () => u.value, setOptionIndex: te, moveOptionSelection: se, filter: $e, updateMenuPosition: qu, updateInputValue: Ee, isOptionSelected: ue, getEmittingOptionValue: Ue, isOptionDisabled: (...N) => G.value.apply(null, N) === true, getOptionValue: (...N) => nt.value.apply(null, N), getOptionLabel: (...N) => ie.value.apply(null, N) }), Object.assign(O, { innerValue: w, fieldClass: s(() => `q-select q-field--auto-height q-select--with${e.useInput !== true ? "out" : ""}-input q-select--with${e.useChips !== true ? "out" : ""}-chips q-select--${e.multiple === true ? "multiple" : "single"}`), inputRef: _, targetRef: E, hasValue: le, showPopup: Ne, floatingLabel: s(() => e.hideSelected !== true && le.value === true || typeof c.value == "number" || c.value.length !== 0 || Qo(e.displayValue)), getControlChild: () => {
       if (O.editable.value !== false && (l.value === true || ae.value !== true || t["no-option"] !== void 0)) return v === true ? ne() : Xe();
       O.hasPopupOpen === true && (O.hasPopupOpen = false);
     }, controlEvents: { onFocusin(N) {
@@ -6780,24 +6822,24 @@
       if (e.useInput === true) qe.push(jo(N, Te));
       else if (O.editable.value === true) {
         let yt = Te === true ? ge.value : void 0;
-        qe.push(i("input", { ref: Te === true ? E : void 0, key: "d_t", class: "q-select__focus-target", id: Te === true ? O.targetUid.value : void 0, value: fe.value, readonly: true, "data-autofocus": N === true || e.autofocus === true || void 0, ...yt, onKeydown: mt, onKeyup: Ke, onKeypress: Je })), Te === true && typeof e.autocomplete == "string" && e.autocomplete.length !== 0 && qe.push(i("input", { class: "q-select__autocomplete-input", autocomplete: e.autocomplete, tabindex: -1, onKeyup: Pe }));
+        qe.push(i("input", __spreadProps(__spreadValues({ ref: Te === true ? E : void 0, key: "d_t", class: "q-select__focus-target", id: Te === true ? O.targetUid.value : void 0, value: fe.value, readonly: true, "data-autofocus": N === true || e.autofocus === true || void 0 }, yt), { onKeydown: mt, onKeyup: Ke, onKeypress: Je }))), Te === true && typeof e.autocomplete == "string" && e.autocomplete.length !== 0 && qe.push(i("input", { class: "q-select__autocomplete-input", autocomplete: e.autocomplete, tabindex: -1, onKeyup: Pe }));
       }
       if (B.value !== void 0 && e.disable !== true && me.value.length !== 0) {
         let yt = me.value.map((ht) => i("option", { value: ht, selected: true }));
         qe.push(i("select", { class: "hidden", name: B.value, multiple: e.multiple }, yt));
       }
       let at = e.useInput === true || Te !== true ? void 0 : O.splitAttrs.attributes.value;
-      return i("div", { class: "q-field__native row items-center", ...at, ...O.splitAttrs.listeners.value }, qe);
+      return i("div", __spreadValues(__spreadValues({ class: "q-field__native row items-center" }, at), O.splitAttrs.listeners.value), qe);
     }, getInnerAppend: () => e.loading !== true && d.value !== true && e.hideDropdownIcon !== true ? [i(Re, { class: "q-select__dropdown-icon" + (a.value === true ? " rotate-180" : ""), name: Le.value })] : null }), Sn(O);
   } });
-  var zh = ["text", "rect", "circle", "QBtn", "QBadge", "QChip", "QToolbar", "QCheckbox", "QRadio", "QToggle", "QSlider", "QRange", "QInput", "QAvatar"], Ih = ["wave", "pulse", "pulse-x", "pulse-y", "fade", "blink", "none"], $d = P({ name: "QSkeleton", props: { ...Se, tag: { type: String, default: "div" }, type: { type: String, validator: (e) => zh.includes(e), default: "rect" }, animation: { type: String, validator: (e) => Ih.includes(e), default: "wave" }, animationSpeed: { type: [String, Number], default: 1500 }, square: Boolean, bordered: Boolean, size: String, width: String, height: String }, setup(e, { slots: t }) {
+  var zh = ["text", "rect", "circle", "QBtn", "QBadge", "QChip", "QToolbar", "QCheckbox", "QRadio", "QToggle", "QSlider", "QRange", "QInput", "QAvatar"], Ih = ["wave", "pulse", "pulse-x", "pulse-y", "fade", "blink", "none"], $d = P({ name: "QSkeleton", props: __spreadProps(__spreadValues({}, Se), { tag: { type: String, default: "div" }, type: { type: String, validator: (e) => zh.includes(e), default: "rect" }, animation: { type: String, validator: (e) => Ih.includes(e), default: "wave" }, animationSpeed: { type: [String, Number], default: 1500 }, square: Boolean, bordered: Boolean, size: String, width: String, height: String }), setup(e, { slots: t }) {
     let o = K(), r = xe(e, o.proxy.$q), n = s(() => {
       let l = e.size !== void 0 ? [e.size, e.size] : [e.width, e.height];
-      return { "--q-skeleton-speed": "".concat(e.animationSpeed, "ms"), width: l[0], height: l[1] };
-    }), a = s(() => "q-skeleton q-skeleton--".concat(r.value === true ? "dark" : "light", " q-skeleton--type-").concat(e.type) + (e.animation !== "none" ? " q-skeleton--anim q-skeleton--anim-".concat(e.animation) : "") + (e.square === true ? " q-skeleton--square" : "") + (e.bordered === true ? " q-skeleton--bordered" : ""));
+      return { "--q-skeleton-speed": `${e.animationSpeed}ms`, width: l[0], height: l[1] };
+    }), a = s(() => `q-skeleton q-skeleton--${r.value === true ? "dark" : "light"} q-skeleton--type-${e.type}` + (e.animation !== "none" ? ` q-skeleton--anim q-skeleton--anim-${e.animation}` : "") + (e.square === true ? " q-skeleton--square" : "") + (e.bordered === true ? " q-skeleton--bordered" : ""));
     return () => i(e.tag, { class: a.value, style: n.value }, re(t.default));
   } });
-  var Ed = [["left", "center", "start", "width"], ["right", "center", "end", "width"], ["top", "start", "center", "height"], ["bottom", "end", "center", "height"]], Bd = P({ name: "QSlideItem", props: { ...Se, leftColor: String, rightColor: String, topColor: String, bottomColor: String, onSlide: Function }, emits: ["action", "top", "right", "bottom", "left"], setup(e, { slots: t, emit: o }) {
+  var Ed = [["left", "center", "start", "width"], ["right", "center", "end", "width"], ["top", "start", "center", "height"], ["bottom", "end", "center", "height"]], Bd = P({ name: "QSlideItem", props: __spreadProps(__spreadValues({}, Se), { leftColor: String, rightColor: String, topColor: String, bottomColor: String, onSlide: Function }), emits: ["action", "top", "right", "bottom", "left"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = xe(e, n), { getCache: l } = xo(), u = T(null), c = null, f = {}, d = {}, p = {}, g = s(() => n.lang.rtl === true ? { left: "right", right: "left" } : { left: "left", right: "right" }), m = s(() => "q-slide-item q-item-type overflow-hidden" + (a.value === true ? " q-slide-item--dark q-dark" : ""));
     function v() {
       u.value.style.transform = "translate(0,0)";
@@ -6814,7 +6856,7 @@
         }
       }), f.axis = k.direction === "up" || k.direction === "down" ? "Y" : "X";
       else if (k.isFinal) {
-        S.classList.remove("no-transition"), f.scale === 1 ? (S.style.transform = "translate".concat(f.axis, "(").concat(f.dir * 100, "%)"), c !== null && clearTimeout(c), c = setTimeout(() => {
+        S.classList.remove("no-transition"), f.scale === 1 ? (S.style.transform = `translate${f.axis}(${f.dir * 100}%)`, c !== null && clearTimeout(c), c = setTimeout(() => {
           c = null, o(f.showing, { reset: v }), o("action", { side: f.showing, reset: v });
         }, 230)) : (S.style.transform = "translate(0,0)", x(f.showing, 0, true));
         return;
@@ -6826,7 +6868,7 @@
       let b, h, _;
       f.axis === "X" ? (h = k.direction === "left" ? -1 : 1, b = h === 1 ? g.value.left : g.value.right, _ = k.distance.x) : (h = k.direction === "up" ? -2 : 2, b = h === 2 ? "top" : "bottom", _ = k.distance.y), !(f.dir !== null && Math.abs(h) !== Math.abs(f.dir)) && (f.dir !== h && (["left", "right", "top", "bottom"].forEach((E) => {
         d[E] && (d[E].style.visibility = b === E ? "visible" : "hidden");
-      }), f.showing = b, f.dir = h), f.scale = Math.max(0, Math.min(1, (_ - 40) / f.size[b])), S.style.transform = "translate".concat(f.axis, "(").concat(_ * h / Math.abs(h), "px)"), p[b].style.transform = "scale(".concat(f.scale, ")"), x(b, f.scale, false));
+      }), f.showing = b, f.dir = h), f.scale = Math.max(0, Math.min(1, (_ - 40) / f.size[b])), S.style.transform = `translate${f.axis}(${_ * h / Math.abs(h)}px)`, p[b].style.transform = `scale(${f.scale})`, x(b, f.scale, false));
     }
     return Mo(() => {
       d = {}, p = {};
@@ -6838,11 +6880,11 @@
         let E = _[0];
         t[E] !== void 0 && k.push(i("div", { key: E, ref: (L) => {
           d[E] = L;
-        }, class: "q-slide-item__".concat(E, " absolute-full row no-wrap items-").concat(_[1], " justify-").concat(_[2]) + (e[E + "Color"] !== void 0 ? " bg-".concat(e[E + "Color"]) : "") }, [i("div", { ref: (L) => {
+        }, class: `q-slide-item__${E} absolute-full row no-wrap items-${_[1]} justify-${_[2]}` + (e[E + "Color"] !== void 0 ? ` bg-${e[E + "Color"]}` : "") }, [i("div", { ref: (L) => {
           p[E] = L;
         } }, t[E]())]));
       });
-      let h = i("div", { key: "".concat(b.length === 0 ? "only-" : "", " content"), ref: u, class: "q-slide-item__content" }, re(t.default));
+      let h = i("div", { key: `${b.length === 0 ? "only-" : ""} content`, ref: u, class: "q-slide-item__content" }, re(t.default));
       return b.length === 0 ? k.push(h) : k.push(Bt(h, l("dir#" + b.join(""), () => {
         let _ = { prevent: true, stop: true, mouse: true };
         return b.forEach((E) => {
@@ -6943,8 +6985,8 @@
     let { cSize: t, classes: o } = je(e);
     return () => i("svg", { class: o.value, width: t.value, height: t.value, viewBox: "0 0 38 38", xmlns: "http://www.w3.org/2000/svg", innerHTML: sp });
   } });
-  var rf = P({ name: "QSplitter", props: { ...Se, modelValue: { type: Number, required: true }, reverse: Boolean, unit: { type: String, default: "%", validator: (e) => ["%", "px"].includes(e) }, limits: { type: Array, validator: (e) => e.length !== 2 || typeof e[0] != "number" || typeof e[1] != "number" ? false : e[0] >= 0 && e[0] <= e[1] }, emitImmediately: Boolean, horizontal: Boolean, disable: Boolean, beforeClass: [Array, String, Object], afterClass: [Array, String, Object], separatorClass: [Array, String, Object], separatorStyle: [Array, String, Object] }, emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
-    let { proxy: { $q: r } } = K(), n = xe(e, r), a = T(null), l = { before: T(null), after: T(null) }, u = s(() => "q-splitter no-wrap ".concat(e.horizontal === true ? "q-splitter--horizontal column" : "q-splitter--vertical row", " q-splitter--").concat(e.disable === true ? "disabled" : "workable") + (n.value === true ? " q-splitter--dark" : "")), c = s(() => e.horizontal === true ? "height" : "width"), f = s(() => e.reverse !== true ? "before" : "after"), d = s(() => e.limits !== void 0 ? e.limits : e.unit === "%" ? [10, 90] : [50, 1 / 0]);
+  var rf = P({ name: "QSplitter", props: __spreadProps(__spreadValues({}, Se), { modelValue: { type: Number, required: true }, reverse: Boolean, unit: { type: String, default: "%", validator: (e) => ["%", "px"].includes(e) }, limits: { type: Array, validator: (e) => e.length !== 2 || typeof e[0] != "number" || typeof e[1] != "number" ? false : e[0] >= 0 && e[0] <= e[1] }, emitImmediately: Boolean, horizontal: Boolean, disable: Boolean, beforeClass: [Array, String, Object], afterClass: [Array, String, Object], separatorClass: [Array, String, Object], separatorStyle: [Array, String, Object] }), emits: ["update:modelValue"], setup(e, { slots: t, emit: o }) {
+    let { proxy: { $q: r } } = K(), n = xe(e, r), a = T(null), l = { before: T(null), after: T(null) }, u = s(() => `q-splitter no-wrap ${e.horizontal === true ? "q-splitter--horizontal column" : "q-splitter--vertical row"} q-splitter--${e.disable === true ? "disabled" : "workable"}` + (n.value === true ? " q-splitter--dark" : "")), c = s(() => e.horizontal === true ? "height" : "width"), f = s(() => e.reverse !== true ? "before" : "after"), d = s(() => e.limits !== void 0 ? e.limits : e.unit === "%" ? [10, 90] : [50, 1 / 0]);
     function p(_) {
       return (e.unit === "%" ? _ : Math.round(_)) + e.unit;
     }
@@ -7012,7 +7054,7 @@
         return k !== void 0 ? k : y;
       }
       return y !== void 0 ? y : a.value === false && u.value === true ? e.step.doneColor || e.stepper.doneColor || e.step.color || e.stepper.inactiveColor : e.step.color || e.stepper.inactiveColor;
-    }), g = s(() => "q-stepper__tab col-grow flex items-center no-wrap relative-position" + (p.value !== void 0 ? " text-".concat(p.value) : "") + (l.value === true ? " q-stepper__tab--error q-stepper__tab--error-with-" + (f.value === true ? "prefix" : "icon") : "") + (n.value === true ? " q-stepper__tab--active" : "") + (u.value === true ? " q-stepper__tab--done" : "") + (c.value === true ? " q-stepper__tab--navigation q-focusable q-hoverable" : "") + (a.value === true ? " q-stepper__tab--disabled" : "")), m = s(() => e.stepper.headerNav !== true ? false : c.value);
+    }), g = s(() => "q-stepper__tab col-grow flex items-center no-wrap relative-position" + (p.value !== void 0 ? ` text-${p.value}` : "") + (l.value === true ? " q-stepper__tab--error q-stepper__tab--error-with-" + (f.value === true ? "prefix" : "icon") : "") + (n.value === true ? " q-stepper__tab--active" : "") + (u.value === true ? " q-stepper__tab--done" : "") + (c.value === true ? " q-stepper__tab--navigation q-focusable q-hoverable" : "") + (a.value === true ? " q-stepper__tab--disabled" : "")), m = s(() => e.stepper.headerNav !== true ? false : c.value);
     function v() {
       var _a2;
       (_a2 = r.value) == null ? void 0 : _a2.focus(), n.value === false && e.goToPanel(e.step.name);
@@ -7036,7 +7078,7 @@
   }
   var af = { setup(e, { slots: t }) {
     return () => lf(t);
-  } }, uf = P({ name: "QStep", props: { ...yr, icon: String, color: String, title: { type: String, required: true }, caption: String, prefix: [String, Number], doneIcon: String, doneColor: String, activeIcon: String, activeColor: String, errorIcon: String, errorColor: String, headerNav: { type: Boolean, default: true }, done: Boolean, error: Boolean, onScroll: [Function, Array] }, setup(e, { slots: t, emit: o }) {
+  } }, uf = P({ name: "QStep", props: __spreadProps(__spreadValues({}, yr), { icon: String, color: String, title: { type: String, required: true }, caption: String, prefix: [String, Number], doneIcon: String, doneColor: String, activeIcon: String, activeColor: String, errorIcon: String, errorColor: String, headerNav: { type: Boolean, default: true }, done: Boolean, error: Boolean, onScroll: [Function, Array] }), setup(e, { slots: t, emit: o }) {
     let { proxy: { $q: r } } = K(), n = pt(Aa, Ze);
     if (n === Ze) return console.error("QStep needs to be a child of QStepper"), Ze;
     let { getCache: a } = xo(), l = T(null), u = s(() => n.value.modelValue === e.name), c = s(() => r.platform.is.ios !== true && r.platform.is.chrome === true || u.value !== true || n.value.vertical !== true ? {} : { onScroll(p) {
@@ -7045,9 +7087,9 @@
     } }), f = s(() => typeof e.name == "string" || typeof e.name == "number" ? e.name : String(e.name));
     function d() {
       let p = n.value.vertical;
-      return p === true && n.value.keepAlive === true ? i(wa, n.value.keepAliveProps.value, u.value === true ? [i(n.value.needsUniqueKeepAliveWrapper.value === true ? a(f.value, () => ({ ...af, name: f.value })) : af, { key: f.value }, t.default)] : void 0) : p !== true || u.value === true ? lf(t) : void 0;
+      return p === true && n.value.keepAlive === true ? i(wa, n.value.keepAliveProps.value, u.value === true ? [i(n.value.needsUniqueKeepAliveWrapper.value === true ? a(f.value, () => __spreadProps(__spreadValues({}, af), { name: f.value })) : af, { key: f.value }, t.default)] : void 0) : p !== true || u.value === true ? lf(t) : void 0;
     }
-    return () => i("div", { ref: l, class: "q-stepper__step", role: "tabpanel", ...c.value }, n.value.vertical === true ? [i(Xi, { stepper: n.value, step: e, goToPanel: n.value.goToPanel }), n.value.animated === true ? i(pn, d) : d()] : [d()]);
+    return () => i("div", __spreadValues({ ref: l, class: "q-stepper__step", role: "tabpanel" }, c.value), n.value.vertical === true ? [i(Xi, { stepper: n.value, step: e, goToPanel: n.value.goToPanel }), n.value.animated === true ? i(pn, d) : d()] : [d()]);
   } });
   var cp = /(-\w)/g;
   function dp(e) {
@@ -7058,10 +7100,10 @@
     }
     return t;
   }
-  var sf = P({ name: "QStepper", props: { ...Se, ...Sr, flat: Boolean, bordered: Boolean, alternativeLabels: Boolean, headerNav: Boolean, contracted: Boolean, headerClass: String, inactiveColor: String, inactiveIcon: String, doneIcon: String, doneColor: String, activeIcon: String, activeColor: String, errorIcon: String, errorColor: String }, emits: xr, setup(e, { slots: t }) {
+  var sf = P({ name: "QStepper", props: __spreadProps(__spreadValues(__spreadValues({}, Se), Sr), { flat: Boolean, bordered: Boolean, alternativeLabels: Boolean, headerNav: Boolean, contracted: Boolean, headerClass: String, inactiveColor: String, inactiveIcon: String, doneIcon: String, doneColor: String, activeIcon: String, activeColor: String, errorIcon: String, errorColor: String }), emits: xr, setup(e, { slots: t }) {
     let o = K(), r = xe(e, o.proxy.$q), { updatePanelsList: n, isValidPanelName: a, updatePanelIndex: l, getPanelContent: u, getPanels: c, panelDirectives: f, goToPanel: d, keepAliveProps: p, needsUniqueKeepAliveWrapper: g } = _r();
-    Kt(Aa, s(() => ({ goToPanel: d, keepAliveProps: p, needsUniqueKeepAliveWrapper: g, ...e })));
-    let m = s(() => "q-stepper q-stepper--".concat(e.vertical === true ? "vertical" : "horizontal") + (e.flat === true ? " q-stepper--flat" : "") + (e.bordered === true ? " q-stepper--bordered" : "") + (r.value === true ? " q-stepper--dark q-dark" : "")), v = s(() => "q-stepper__header row items-stretch justify-between q-stepper__header--".concat(e.alternativeLabels === true ? "alternative" : "standard", "-labels") + (e.flat === false || e.bordered === true ? " q-stepper__header--border" : "") + (e.contracted === true ? " q-stepper__header--contracted" : "") + (e.headerClass !== void 0 ? " ".concat(e.headerClass) : ""));
+    Kt(Aa, s(() => __spreadValues({ goToPanel: d, keepAliveProps: p, needsUniqueKeepAliveWrapper: g }, e)));
+    let m = s(() => `q-stepper q-stepper--${e.vertical === true ? "vertical" : "horizontal"}` + (e.flat === true ? " q-stepper--flat" : "") + (e.bordered === true ? " q-stepper--bordered" : "") + (r.value === true ? " q-stepper--dark q-dark" : "")), v = s(() => `q-stepper__header row items-stretch justify-between q-stepper__header--${e.alternativeLabels === true ? "alternative" : "standard"}-labels` + (e.flat === false || e.bordered === true ? " q-stepper__header--border" : "") + (e.contracted === true ? " q-stepper__header--contracted" : "") + (e.headerClass !== void 0 ? ` ${e.headerClass}` : ""));
     function x() {
       let y = re(t.message, []);
       if (e.vertical === true) {
@@ -7102,7 +7144,7 @@
   function Zi(e, t) {
     return i("div", e, [i("table", { class: "q-table" }, t)]);
   }
-  var fp = { list: Vi, table: zi }, mp = ["list", "table", "__qtable"], Ji = P({ name: "QVirtualScroll", props: { ...ga, type: { type: String, default: "list", validator: (e) => mp.includes(e) }, items: { type: Array, default: () => [] }, itemsFn: Function, itemsSize: Number, scrollTarget: to }, setup(e, { slots: t, attrs: o }) {
+  var fp = { list: Vi, table: zi }, mp = ["list", "table", "__qtable"], Ji = P({ name: "QVirtualScroll", props: __spreadProps(__spreadValues({}, ga), { type: { type: String, default: "list", validator: (e) => mp.includes(e) }, items: { type: Array, default: () => [] }, itemsFn: Function, itemsSize: Number, scrollTarget: to }), setup(e, { slots: t, attrs: o }) {
     let r, n = T(null), a = s(() => e.itemsSize >= 0 && e.itemsFn !== void 0 ? parseInt(e.itemsSize, 10) : Array.isArray(e.items) ? e.items.length : 0), { virtualScrollSliceRange: l, localResetVirtualScroll: u, padVirtualScroll: c, onVirtualScrollEvt: f } = Wi({ virtualScrollLength: a, getVirtualScrollTarget: v, getVirtualScrollEl: m }), d = s(() => {
       if (a.value === 0) return [];
       let S = (b, h) => ({ index: l.value.from + h, item: b });
@@ -7144,7 +7186,7 @@
         console.error("QVirtualScroll: default scoped slot is required for rendering");
         return;
       }
-      return e.type === "__qtable" ? Zi({ ref: n, class: "q-table__middle " + p.value }, k()) : i(fp[e.type], { ...o, ref: n, class: [o.class, p.value], ...g.value }, k);
+      return e.type === "__qtable" ? Zi({ ref: n, class: "q-table__middle " + p.value }, k()) : i(fp[e.type], __spreadValues(__spreadProps(__spreadValues({}, o), { ref: n, class: [o.class, p.value] }), g.value), k);
     };
   } });
   function df(e, t) {
@@ -7201,7 +7243,7 @@
   var pf = { pagination: Object, rowsPerPageOptions: { type: Array, default: () => [5, 7, 10, 15, 20, 25, 50, 0] }, "onUpdate:pagination": [Function, Array] };
   function bf(e, t) {
     let { props: o, emit: r } = e, n = T(Object.assign({ sortBy: null, descending: false, page: 1, rowsPerPage: o.rowsPerPageOptions.length !== 0 ? o.rowsPerPageOptions[0] : 5 }, o.pagination)), a = s(() => {
-      let d = o["onUpdate:pagination"] !== void 0 ? { ...n.value, ...o.pagination } : n.value;
+      let d = o["onUpdate:pagination"] !== void 0 ? __spreadValues(__spreadValues({}, n.value), o.pagination) : n.value;
       return hf(d);
     }), l = s(() => a.value.rowsNumber !== void 0);
     function u(d) {
@@ -7213,7 +7255,7 @@
       });
     }
     function f(d, p) {
-      let g = hf({ ...a.value, ...d });
+      let g = hf(__spreadValues(__spreadValues({}, a.value), d));
       if (vp(a.value, g) === true) {
         l.value === true && p === true && u(g);
         return;
@@ -7253,7 +7295,7 @@
     function b() {
       n({ page: m.value });
     }
-    return l["onUpdate:pagination"] !== void 0 && u("update:pagination", { ...o.value }), { firstRowIndex: d, lastRowIndex: p, isFirstPage: g, isLastPage: v, pagesNumber: m, computedRowsPerPageOptions: x, computedRowsNumber: f, firstPage: y, prevPage: k, nextPage: S, lastPage: b };
+    return l["onUpdate:pagination"] !== void 0 && u("update:pagination", __spreadValues({}, o.value)), { firstRowIndex: d, lastRowIndex: p, isFirstPage: g, isLastPage: v, pagesNumber: m, computedRowsPerPageOptions: x, computedRowsNumber: f, firstPage: y, prevPage: k, nextPage: S, lastPage: b };
   }
   var Sf = { selection: { type: String, default: "none", validator: (e) => ["single", "multiple", "none"].includes(e) }, selected: { type: Array, default: () => [] } }, xf = ["update:selected", "selection"];
   function _f(e, t, o, r) {
@@ -7306,8 +7348,8 @@
     }), n = s(() => {
       let { sortBy: u, descending: c } = t.value;
       return (e.visibleColumns !== void 0 ? r.value.filter((d) => d.required === true || e.visibleColumns.includes(d.name) === true) : r.value).map((d) => {
-        let p = d.align || "right", g = "text-".concat(p);
-        return { ...d, align: p, __iconClass: "q-table__sort-icon q-table__sort-icon--".concat(p), __thClass: g + (d.headerClasses !== void 0 ? " " + d.headerClasses : "") + (d.sortable === true ? " sortable" : "") + (d.name === u ? " sorted ".concat(c === true ? "sort-desc" : "") : ""), __tdStyle: d.style !== void 0 ? typeof d.style != "function" ? () => d.style : d.style : () => null, __tdClass: d.classes !== void 0 ? typeof d.classes != "function" ? () => g + " " + d.classes : (m) => g + " " + d.classes(m) : () => g };
+        let p = d.align || "right", g = `text-${p}`;
+        return __spreadProps(__spreadValues({}, d), { align: p, __iconClass: `q-table__sort-icon q-table__sort-icon--${p}`, __thClass: g + (d.headerClasses !== void 0 ? " " + d.headerClasses : "") + (d.sortable === true ? " sortable" : "") + (d.name === u ? ` sorted ${c === true ? "sort-desc" : ""}` : ""), __tdStyle: d.style !== void 0 ? typeof d.style != "function" ? () => d.style : d.style : () => null, __tdClass: d.classes !== void 0 ? typeof d.classes != "function" ? () => g + " " + d.classes : (m) => g + " " + d.classes(m) : () => g });
       });
     }), a = s(() => {
       let u = {};
@@ -7321,8 +7363,8 @@
   gu.forEach((e) => {
     Rf[e] = {};
   });
-  var Pf = P({ name: "QTable", props: { rows: { type: Array, required: true }, rowKey: { type: [String, Function], default: "id" }, columns: Array, loading: Boolean, iconFirstPage: String, iconPrevPage: String, iconNextPage: String, iconLastPage: String, title: String, hideHeader: Boolean, grid: Boolean, gridHeader: Boolean, dense: Boolean, flat: Boolean, bordered: Boolean, square: Boolean, separator: { type: String, default: "horizontal", validator: (e) => ["horizontal", "vertical", "cell", "none"].includes(e) }, wrapCells: Boolean, virtualScroll: Boolean, virtualScrollTarget: {}, ...Rf, noDataLabel: String, noResultsLabel: String, loadingLabel: String, selectedRowsLabel: Function, rowsPerPageLabel: String, paginationLabel: Function, color: { type: String, default: "grey-8" }, titleClass: [String, Array, Object], tableStyle: [String, Array, Object], tableClass: [String, Array, Object], tableHeaderStyle: [String, Array, Object], tableHeaderClass: [String, Array, Object], tableRowStyleFn: Function, tableRowClassFn: Function, cardContainerClass: [String, Array, Object], cardContainerStyle: [String, Array, Object], cardStyle: [String, Array, Object], cardClass: [String, Array, Object], cardStyleFn: Function, cardClassFn: Function, hideBottom: Boolean, hideSelectedBanner: Boolean, hideNoData: Boolean, hidePagination: Boolean, onRowClick: Function, onRowDblclick: Function, onRowContextmenu: Function, ...Se, ...Cr, ...Tf, ...vf, ...pf, ...wf, ...Sf, ...ff }, emits: ["request", "virtualScroll", ...wr, ...kf, ...xf], setup(e, { slots: t, emit: o }) {
-    let r = K(), { proxy: { $q: n } } = r, a = xe(e, n), { inFullscreen: l, toggleFullscreen: u } = kr(), c = s(() => typeof e.rowKey == "function" ? e.rowKey : (oe) => oe[e.rowKey]), f = T(null), d = T(null), p = s(() => e.grid !== true && e.virtualScroll === true), g = s(() => " q-table__card" + (a.value === true ? " q-table__card--dark q-dark" : "") + (e.square === true ? " q-table--square" : "") + (e.flat === true ? " q-table--flat" : "") + (e.bordered === true ? " q-table--bordered" : "")), m = s(() => "q-table__container q-table--".concat(e.separator, "-separator column no-wrap") + (e.grid === true ? " q-table--grid" : g.value) + (a.value === true ? " q-table--dark" : "") + (e.dense === true ? " q-table--dense" : "") + (e.wrapCells === false ? " q-table--no-wrap" : "") + (l.value === true ? " fullscreen scroll" : "")), v = s(() => m.value + (e.loading === true ? " q-table--loading" : ""));
+  var Pf = P({ name: "QTable", props: __spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadProps(__spreadValues({ rows: { type: Array, required: true }, rowKey: { type: [String, Function], default: "id" }, columns: Array, loading: Boolean, iconFirstPage: String, iconPrevPage: String, iconNextPage: String, iconLastPage: String, title: String, hideHeader: Boolean, grid: Boolean, gridHeader: Boolean, dense: Boolean, flat: Boolean, bordered: Boolean, square: Boolean, separator: { type: String, default: "horizontal", validator: (e) => ["horizontal", "vertical", "cell", "none"].includes(e) }, wrapCells: Boolean, virtualScroll: Boolean, virtualScrollTarget: {} }, Rf), { noDataLabel: String, noResultsLabel: String, loadingLabel: String, selectedRowsLabel: Function, rowsPerPageLabel: String, paginationLabel: Function, color: { type: String, default: "grey-8" }, titleClass: [String, Array, Object], tableStyle: [String, Array, Object], tableClass: [String, Array, Object], tableHeaderStyle: [String, Array, Object], tableHeaderClass: [String, Array, Object], tableRowStyleFn: Function, tableRowClassFn: Function, cardContainerClass: [String, Array, Object], cardContainerStyle: [String, Array, Object], cardStyle: [String, Array, Object], cardClass: [String, Array, Object], cardStyleFn: Function, cardClassFn: Function, hideBottom: Boolean, hideSelectedBanner: Boolean, hideNoData: Boolean, hidePagination: Boolean, onRowClick: Function, onRowDblclick: Function, onRowContextmenu: Function }), Se), Cr), Tf), vf), pf), wf), Sf), ff), emits: ["request", "virtualScroll", ...wr, ...kf, ...xf], setup(e, { slots: t, emit: o }) {
+    let r = K(), { proxy: { $q: n } } = r, a = xe(e, n), { inFullscreen: l, toggleFullscreen: u } = kr(), c = s(() => typeof e.rowKey == "function" ? e.rowKey : (oe) => oe[e.rowKey]), f = T(null), d = T(null), p = s(() => e.grid !== true && e.virtualScroll === true), g = s(() => " q-table__card" + (a.value === true ? " q-table__card--dark q-dark" : "") + (e.square === true ? " q-table--square" : "") + (e.flat === true ? " q-table--flat" : "") + (e.bordered === true ? " q-table--bordered" : "")), m = s(() => `q-table__container q-table--${e.separator}-separator column no-wrap` + (e.grid === true ? " q-table--grid" : g.value) + (a.value === true ? " q-table--dark" : "") + (e.dense === true ? " q-table--dense" : "") + (e.wrapCells === false ? " q-table--no-wrap" : "") + (l.value === true ? " fullscreen scroll" : "")), v = s(() => m.value + (e.loading === true ? " q-table--loading" : ""));
     Y(() => e.tableStyle + e.tableClass + e.tableHeaderStyle + e.tableHeaderClass + m.value, () => {
       var _a2;
       p.value === true && ((_a2 = d.value) == null ? void 0 : _a2.reset());
@@ -7355,7 +7397,7 @@
           let St = i("tbody", Ee({ cols: O.value }));
           Xe.before = oe === null ? () => St : () => [oe()].concat(St);
         } else oe !== null && (Xe.before = oe);
-        return $e !== void 0 && (Xe.after = () => i("tbody", $e({ cols: O.value }))), i(Ji, { ref: d, class: e.tableClass, style: e.tableStyle, ...ze.value, scrollTarget: e.virtualScrollTarget, items: B.value, type: "__qtable", tableColspan: W.value, onVirtualScroll: G }, Xe);
+        return $e !== void 0 && (Xe.after = () => i("tbody", $e({ cols: O.value }))), i(Ji, __spreadProps(__spreadValues({ ref: d, class: e.tableClass, style: e.tableStyle }, ze.value), { scrollTarget: e.virtualScrollTarget, items: B.value, type: "__qtable", tableColspan: W.value, onVirtualScroll: G }), Xe);
       }
       let he = [Ue()];
       return oe !== null && he.unshift(oe()), Zi({ class: ["q-table__middle scroll", e.tableClass], style: e.tableStyle }, he);
@@ -7366,7 +7408,7 @@
         return;
       }
       oe = parseInt(oe, 10);
-      let Ee = f.value.querySelector("tbody tr:nth-of-type(".concat(oe + 1, ")"));
+      let Ee = f.value.querySelector(`tbody tr:nth-of-type(${oe + 1})`);
       if (Ee !== null) {
         let $e = f.value.querySelector(".q-table__middle.scroll"), Xe = Ee.offsetTop - e.virtualScrollStickySizeStart, St = Xe < $e.scrollTop ? "decrease" : "increase";
         $e.scrollTop = Xe, o("virtualScroll", { index: oe, from: 0, to: x.value.rowsPerPage - 1, direction: St });
@@ -7384,12 +7426,12 @@
         let I = { key: $e, row: oe, pageIndex: Ee, __trClass: Xe ? "selected" : "" };
         if (e.tableRowStyleFn !== void 0 && (I.__trStyle = e.tableRowStyleFn(oe)), e.tableRowClassFn !== void 0) {
           let ne = e.tableRowClassFn(oe);
-          ne && (I.__trClass = "".concat(ne, " ").concat(I.__trClass));
+          ne && (I.__trClass = `${ne} ${I.__trClass}`);
         }
         return he(Oe(I));
       }
       let St = t["body-cell"], bt = O.value.map((I) => {
-        let ne = t["body-cell-".concat(I.name)], pe = ne !== void 0 ? ne : St;
+        let ne = t[`body-cell-${I.name}`], pe = ne !== void 0 ? ne : St;
         return pe !== void 0 ? pe(He({ key: $e, row: oe, pageIndex: Ee, col: I })) : i("td", { class: I.__tdClass(oe), style: I.__tdStyle(oe) }, te(I, oe));
       });
       if (F.value === true) {
@@ -7416,7 +7458,7 @@
       return he !== void 0 && ($e = he({ cols: O.value }).concat($e)), Ee !== void 0 && ($e = $e.concat(Ee({ cols: O.value }))), i("tbody", $e);
     }
     function Oe(oe) {
-      return lt(oe), oe.cols = oe.cols.map((he) => ft({ ...he }, "value", () => te(he, oe.row))), oe;
+      return lt(oe), oe.cols = oe.cols.map((he) => ft(__spreadValues({}, he), "value", () => te(he, oe.row))), oe;
     }
     function He(oe) {
       return lt(oe), ft(oe, "value", () => te(oe.col, oe.row)), oe;
@@ -7451,7 +7493,7 @@
       let oe = t.header, he = t["header-cell"];
       if (oe !== void 0) return oe(Pe({ header: true })).slice();
       let Ee = O.value.map(($e) => {
-        let Xe = t["header-cell-".concat($e.name)], St = Xe !== void 0 ? Xe : he, bt = Pe({ col: $e });
+        let Xe = t[`header-cell-${$e.name}`], St = Xe !== void 0 ? Xe : he, bt = Pe({ col: $e });
         return St !== void 0 ? St(bt) : i(Gi, { key: $e.name, props: bt }, () => $e.label);
       });
       if ($.value === true && e.grid !== true) Ee.unshift(i("th", { class: "q-table--col-auto-width" }, " "));
@@ -7492,7 +7534,7 @@
       if (oe.push(i("div", { class: "q-table__separator col" })), St === true && oe.push(i("div", { class: "q-table__control" }, [i("span", { class: "q-table__bottom-item" }, [e.rowsPerPageLabel || n.lang.table.recordsPerPage]), i(Yi, { class: "q-table__select inline q-table__bottom-item", color: e.color, modelValue: Ee, options: X.value, displayValue: Ee === 0 ? n.lang.table.allRows : Ee, dark: a.value, borderless: true, dense: true, optionsDense: true, optionsCover: true, "onUpdate:modelValue": jt })])), Xe !== void 0) he = Xe(se.value);
       else if (he = [i("span", Ee !== 0 ? { class: "q-table__bottom-item" } : {}, [Ee ? $e(V.value + 1, Math.min(ae.value, ce.value), ce.value) : $e(1, Z.value, ce.value)])], Ee !== 0 && ke.value > 1) {
         let bt = { color: e.color, round: true, dense: true, flat: true };
-        e.dense === true && (bt.size = "sm"), ke.value > 2 && he.push(i(Ve, { key: "pgFirst", ...bt, icon: mt.value[0], disable: j.value, "aria-label": n.lang.pagination.first, onClick: ge })), he.push(i(Ve, { key: "pgPrev", ...bt, icon: mt.value[1], disable: j.value, "aria-label": n.lang.pagination.prev, onClick: Ce }), i(Ve, { key: "pgNext", ...bt, icon: mt.value[2], disable: fe.value, "aria-label": n.lang.pagination.next, onClick: Fe })), ke.value > 2 && he.push(i(Ve, { key: "pgLast", ...bt, icon: mt.value[3], disable: fe.value, "aria-label": n.lang.pagination.last, onClick: de }));
+        e.dense === true && (bt.size = "sm"), ke.value > 2 && he.push(i(Ve, __spreadProps(__spreadValues({ key: "pgFirst" }, bt), { icon: mt.value[0], disable: j.value, "aria-label": n.lang.pagination.first, onClick: ge }))), he.push(i(Ve, __spreadProps(__spreadValues({ key: "pgPrev" }, bt), { icon: mt.value[1], disable: j.value, "aria-label": n.lang.pagination.prev, onClick: Ce })), i(Ve, __spreadProps(__spreadValues({ key: "pgNext" }, bt), { icon: mt.value[2], disable: fe.value, "aria-label": n.lang.pagination.next, onClick: Fe }))), ke.value > 2 && he.push(i(Ve, __spreadProps(__spreadValues({ key: "pgLast" }, bt), { icon: mt.value[3], disable: fe.value, "aria-label": n.lang.pagination.last, onClick: de })));
       }
       return oe.push(i("div", { class: "q-table__control" }, he)), oe;
     }
@@ -7512,7 +7554,7 @@
         let $e = { class: ["q-table__grid-item-card" + g.value, e.cardClass], style: e.cardStyle };
         if (e.cardStyleFn !== void 0 && ($e.style = [$e.style, e.cardStyleFn(he.row)]), e.cardClassFn !== void 0) {
           let Xe = e.cardClassFn(he.row);
-          Xe && ($e.class[0] += " ".concat(Xe));
+          Xe && ($e.class[0] += ` ${Xe}`);
         }
         return (e.onRowClick !== void 0 || e.onRowDblclick !== void 0 || e.onRowContextmenu !== void 0) && ($e.class[0] += " cursor-pointer", e.onRowClick !== void 0 && ($e.onClick = (Xe) => {
           o("RowClick", Xe, he.row, he.pageIndex);
@@ -7546,9 +7588,9 @@
       return i("td", { class: r.value + a.__tdClass(l), style: a.__tdStyle(l) }, re(t.default));
     };
   } });
-  var Ef = P({ name: "QRouteTab", props: { ...Zo, ...di }, emits: ci, setup(e, { slots: t, emit: o }) {
-    let r = ln({ useDisableForRouterLinkProps: false }), { renderTab: n, $tabs: a } = fi(e, t, o, { exact: s(() => e.exact), ...r });
-    return Y(() => "".concat(e.name, " | ").concat(e.exact, " | ").concat((r.resolvedLink.value || {}).href), a.verifyRouteModel), () => n(r.linkTag.value, r.linkAttrs.value);
+  var Ef = P({ name: "QRouteTab", props: __spreadValues(__spreadValues({}, Zo), di), emits: ci, setup(e, { slots: t, emit: o }) {
+    let r = ln({ useDisableForRouterLinkProps: false }), { renderTab: n, $tabs: a } = fi(e, t, o, __spreadValues({ exact: s(() => e.exact) }, r));
+    return Y(() => `${e.name} | ${e.exact} | ${(r.resolvedLink.value || {}).href}`, a.verifyRouteModel), () => n(r.linkTag.value, r.linkAttrs.value);
   } });
   function gp(e, t) {
     if (e.hour !== null) {
@@ -7561,12 +7603,12 @@
     let e = /* @__PURE__ */ new Date();
     return { hour: e.getHours(), minute: e.getMinutes(), second: e.getSeconds(), millisecond: e.getMilliseconds() };
   }
-  var Bf = P({ name: "QTime", props: { ...Se, ...kt, ...Ar, modelValue: { required: true, validator: (e) => typeof e == "string" || e === null }, mask: { ...Ar.mask, default: null }, format24h: { type: Boolean, default: null }, defaultDate: { type: String, validator: (e) => /^-?[\d]+\/[0-1]\d\/[0-3]\d$/.test(e) }, options: Function, hourOptions: Array, minuteOptions: Array, secondOptions: Array, withSeconds: Boolean, nowBtn: Boolean }, emits: bi, setup(e, { slots: t, emit: o }) {
-    let r = K(), { $q: n } = r.proxy, a = xe(e, n), { tabindex: l, headerClass: u, getLocale: c, getCurrentDate: f } = yi(e, n), d = Oo(e), p = Zt(d), g, m, v = T(null), x = s(() => le()), y = s(() => c()), k = s(() => M()), S = vn(e.modelValue, x.value, y.value, e.calendar, k.value), b = T(gp(S)), h = T(S), _ = T(S.hour === null || S.hour < 12), E = s(() => "q-time q-time--".concat(e.landscape === true ? "landscape" : "portrait") + (a.value === true ? " q-time--dark q-dark" : "") + (e.disable === true ? " disabled" : e.readonly === true ? " q-time--readonly" : "") + (e.bordered === true ? " q-time--bordered" : "") + (e.square === true ? " q-time--square no-border-radius" : "") + (e.flat === true ? " q-time--flat no-shadow" : "")), L = s(() => {
+  var Bf = P({ name: "QTime", props: __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, Se), kt), Ar), { modelValue: { required: true, validator: (e) => typeof e == "string" || e === null }, mask: __spreadProps(__spreadValues({}, Ar.mask), { default: null }), format24h: { type: Boolean, default: null }, defaultDate: { type: String, validator: (e) => /^-?[\d]+\/[0-1]\d\/[0-3]\d$/.test(e) }, options: Function, hourOptions: Array, minuteOptions: Array, secondOptions: Array, withSeconds: Boolean, nowBtn: Boolean }), emits: bi, setup(e, { slots: t, emit: o }) {
+    let r = K(), { $q: n } = r.proxy, a = xe(e, n), { tabindex: l, headerClass: u, getLocale: c, getCurrentDate: f } = yi(e, n), d = Oo(e), p = Zt(d), g, m, v = T(null), x = s(() => le()), y = s(() => c()), k = s(() => M()), S = vn(e.modelValue, x.value, y.value, e.calendar, k.value), b = T(gp(S)), h = T(S), _ = T(S.hour === null || S.hour < 12), E = s(() => `q-time q-time--${e.landscape === true ? "landscape" : "portrait"}` + (a.value === true ? " q-time--dark q-dark" : "") + (e.disable === true ? " disabled" : e.readonly === true ? " q-time--readonly" : "") + (e.bordered === true ? " q-time--bordered" : "") + (e.square === true ? " q-time--square no-border-radius" : "") + (e.flat === true ? " q-time--flat no-shadow" : "")), L = s(() => {
       let te = h.value;
       return { hour: te.hour === null ? "--" : D.value === true ? rt(te.hour) : String(_.value === true ? te.hour === 0 ? 12 : te.hour : te.hour > 12 ? te.hour - 12 : te.hour), minute: te.minute === null ? "--" : rt(te.minute), second: te.second === null ? "--" : rt(te.second) };
     }), D = s(() => e.format24h !== null ? e.format24h : n.lang.date.format24h), Z = s(() => {
-      let te = b.value === "hour", se = te === true ? 12 : 60, J = h.value[b.value], we = "rotate(".concat(Math.round(J * (360 / se)) - 180, "deg) translateX(-50%)");
+      let te = b.value === "hour", se = te === true ? 12 : 60, J = h.value[b.value], we = `rotate(${Math.round(J * (360 / se)) - 180}deg) translateX(-50%)`;
       return te === true && D.value === true && h.value.hour >= 12 && (we += " scale(.7)"), { transform: we };
     }), B = s(() => h.value.hour !== null), F = s(() => B.value === true && h.value.minute !== null), $ = s(() => e.hourOptions !== void 0 ? (te) => e.hourOptions.includes(te) : e.options !== void 0 ? (te) => e.options(te, null, null) : null), q = s(() => e.minuteOptions !== void 0 ? (te) => e.minuteOptions.includes(te) : e.options !== void 0 ? (te) => e.options(h.value.hour, te, null) : null), C = s(() => e.secondOptions !== void 0 ? (te) => e.secondOptions.includes(te) : e.options !== void 0 ? (te) => e.options(h.value.hour, h.value.minute, te) : null), A = s(() => {
       if ($.value === null) return null;
@@ -7600,7 +7642,7 @@
       });
     });
     function O() {
-      let te = { ...f(), ...hp() };
+      let te = __spreadValues(__spreadValues({}, f()), hp());
       He(te), Object.assign(h.value, te), b.value = "hour";
     }
     function w(te, se, J) {
@@ -7621,7 +7663,7 @@
       return te - Pe <= Je - te ? Pe : Je;
     }
     function le() {
-      return e.calendar !== "persian" && e.mask !== null ? e.mask : "HH:mm".concat(e.withSeconds === true ? ":ss" : "");
+      return e.calendar !== "persian" && e.mask !== null ? e.mask : `HH:mm${e.withSeconds === true ? ":ss" : ""}`;
     }
     function M() {
       if (typeof e.defaultDate != "string") {
@@ -7769,7 +7811,7 @@
       h.value.hour === null || h.value.minute === null || e.withSeconds === true && h.value.second === null || He();
     }
     function He(te) {
-      let se = Object.assign({ ...h.value }, te), J = e.calendar === "persian" ? rt(se.hour) + ":" + rt(se.minute) + (e.withSeconds === true ? ":" + rt(se.second) : "") : la(new Date(se.year, se.month === null ? null : se.month - 1, se.day, se.hour, se.minute, se.second, se.millisecond), x.value, y.value, se.year, se.timezoneOffset);
+      let se = Object.assign(__spreadValues({}, h.value), te), J = e.calendar === "persian" ? rt(se.hour) + ":" + rt(se.minute) + (e.withSeconds === true ? ":" + rt(se.second) : "") : la(new Date(se.year, se.month === null ? null : se.month - 1, se.day, se.hour, se.minute, se.second, se.millisecond), x.value, y.value, se.year, se.timezoneOffset);
       se.changed = J !== e.modelValue, o("update:modelValue", J, se);
     }
     function dt() {
@@ -7780,23 +7822,23 @@
     }
     function lt() {
       let te = h.value[b.value];
-      return i("div", { class: "q-time__content col relative-position" }, [i(st, { name: "q-transition--scale" }, () => i("div", { key: "clock" + b.value, class: "q-time__container-parent absolute-full" }, [i("div", { ref: v, class: "q-time__container-child fit overflow-hidden" }, [Bt(i("div", { class: "q-time__clock cursor-pointer non-selectable", onClick: Ce, onMousedown: Fe }, [i("div", { class: "q-time__clock-circle fit" }, [i("div", { class: "q-time__clock-pointer" + (h.value[b.value] === null ? " hidden" : e.color !== void 0 ? " text-".concat(e.color) : ""), style: Z.value }), ee.value.map((se) => i("div", { class: "q-time__clock-position row flex-center q-time__clock-pos-".concat(se.index) + (se.val === te ? " q-time__clock-position--active " + u.value : se.disable === true ? " q-time__clock-position--disable" : "") }, [i("span", se.label)]))])]), ve.value)])])), e.nowBtn === true ? i(Ve, { class: "q-time__now-button absolute", icon: n.iconSet.datetime.now, unelevated: true, size: "sm", round: true, color: e.color, textColor: e.textColor, tabindex: l.value, onClick: O }) : null]);
+      return i("div", { class: "q-time__content col relative-position" }, [i(st, { name: "q-transition--scale" }, () => i("div", { key: "clock" + b.value, class: "q-time__container-parent absolute-full" }, [i("div", { ref: v, class: "q-time__container-child fit overflow-hidden" }, [Bt(i("div", { class: "q-time__clock cursor-pointer non-selectable", onClick: Ce, onMousedown: Fe }, [i("div", { class: "q-time__clock-circle fit" }, [i("div", { class: "q-time__clock-pointer" + (h.value[b.value] === null ? " hidden" : e.color !== void 0 ? ` text-${e.color}` : ""), style: Z.value }), ee.value.map((se) => i("div", { class: `q-time__clock-position row flex-center q-time__clock-pos-${se.index}` + (se.val === te ? " q-time__clock-position--active " + u.value : se.disable === true ? " q-time__clock-position--disable" : "") }, [i("span", se.label)]))])]), ve.value)])])), e.nowBtn === true ? i(Ve, { class: "q-time__now-button absolute", icon: n.iconSet.datetime.now, unelevated: true, size: "sm", round: true, color: e.color, textColor: e.textColor, tabindex: l.value, onClick: O }) : null]);
     }
     return r.proxy.setNow = O, () => {
       let te = [lt()], se = re(t.default);
       return se !== void 0 && te.push(i("div", { class: "q-time__actions" }, se)), e.name !== void 0 && e.disable !== true && p(te, "push"), i("div", { class: E.value, tabindex: -1 }, [dt(), i("div", { class: "q-time__main col overflow-auto" }, te)]);
     };
   } });
-  var Ff = P({ name: "QTimeline", props: { ...Se, color: { type: String, default: "primary" }, side: { type: String, default: "right", validator: (e) => ["left", "right"].includes(e) }, layout: { type: String, default: "dense", validator: (e) => ["dense", "comfortable", "loose"].includes(e) } }, setup(e, { slots: t }) {
+  var Ff = P({ name: "QTimeline", props: __spreadProps(__spreadValues({}, Se), { color: { type: String, default: "primary" }, side: { type: String, default: "right", validator: (e) => ["left", "right"].includes(e) }, layout: { type: String, default: "dense", validator: (e) => ["dense", "comfortable", "loose"].includes(e) } }), setup(e, { slots: t }) {
     let o = K(), r = xe(e, o.proxy.$q);
     Kt(Pa, e);
-    let n = s(() => "q-timeline q-timeline--".concat(e.layout, " q-timeline--").concat(e.layout, "--").concat(e.side) + (r.value === true ? " q-timeline--dark" : ""));
+    let n = s(() => `q-timeline q-timeline--${e.layout} q-timeline--${e.layout}--${e.side}` + (r.value === true ? " q-timeline--dark" : ""));
     return () => i("ul", { class: n.value }, re(t.default));
   } });
   var Lf = P({ name: "QTimelineEntry", props: { heading: Boolean, tag: { type: String, default: "h3" }, side: { type: String, default: "right", validator: (e) => ["left", "right"].includes(e) }, icon: String, avatar: String, color: String, title: String, subtitle: String, body: String }, setup(e, { slots: t }) {
     let o = pt(Pa, Ze);
     if (o === Ze) return console.error("QTimelineEntry needs to be child of QTimeline"), Ze;
-    let r = s(() => "q-timeline__entry q-timeline__entry--".concat(e.side) + (e.icon !== void 0 || e.avatar !== void 0 ? " q-timeline__entry--icon" : "")), n = s(() => "q-timeline__dot text-".concat(e.color || o.color)), a = s(() => o.layout === "comfortable" && o.side === "left");
+    let r = s(() => `q-timeline__entry q-timeline__entry--${e.side}` + (e.icon !== void 0 || e.avatar !== void 0 ? " q-timeline__entry--icon" : "")), n = s(() => `q-timeline__dot text-${e.color || o.color}`), a = s(() => o.layout === "comfortable" && o.side === "left");
     return () => {
       let l = Po(t.default, []);
       if (e.body !== void 0 && l.unshift(e.body), e.heading === true) {
@@ -7817,14 +7859,14 @@
     let o = s(() => "q-toolbar__title ellipsis" + (e.shrink === true ? " col-shrink" : ""));
     return () => i("div", { class: o.value }, re(t.default));
   } });
-  var pp = ["none", "strict", "leaf", "leaf-filtered"], Vf = P({ name: "QTree", props: { ...Se, nodes: { type: Array, required: true }, nodeKey: { type: String, required: true }, labelKey: { type: String, default: "label" }, childrenKey: { type: String, default: "children" }, dense: Boolean, color: String, controlColor: String, textColor: String, selectedColor: String, icon: String, tickStrategy: { type: String, default: "none", validator: (e) => pp.includes(e) }, ticked: Array, expanded: Array, selected: {}, noSelectionUnset: Boolean, defaultExpandAll: Boolean, accordion: Boolean, filter: String, filterMethod: Function, duration: {}, noConnectors: Boolean, noTransition: Boolean, noNodesLabel: String, noResultsLabel: String }, emits: ["update:expanded", "update:ticked", "update:selected", "lazyLoad", "afterShow", "afterHide"], setup(e, { slots: t, emit: o }) {
+  var pp = ["none", "strict", "leaf", "leaf-filtered"], Vf = P({ name: "QTree", props: __spreadProps(__spreadValues({}, Se), { nodes: { type: Array, required: true }, nodeKey: { type: String, required: true }, labelKey: { type: String, default: "label" }, childrenKey: { type: String, default: "children" }, dense: Boolean, color: String, controlColor: String, textColor: String, selectedColor: String, icon: String, tickStrategy: { type: String, default: "none", validator: (e) => pp.includes(e) }, ticked: Array, expanded: Array, selected: {}, noSelectionUnset: Boolean, defaultExpandAll: Boolean, accordion: Boolean, filter: String, filterMethod: Function, duration: {}, noConnectors: Boolean, noTransition: Boolean, noNodesLabel: String, noResultsLabel: String }), emits: ["update:expanded", "update:ticked", "update:selected", "lazyLoad", "afterShow", "afterHide"], setup(e, { slots: t, emit: o }) {
     let { proxy: r } = K(), { $q: n } = r, a = xe(e, n), l = T({}), u = T(e.ticked || []), c = T(e.expanded || []), f = {};
     Mo(() => {
       f = {};
     });
-    let d = s(() => "q-tree q-tree--".concat(e.dense === true ? "dense" : "standard") + (e.noConnectors === true ? " q-tree--no-connectors" : "") + (a.value === true ? " q-tree--dark" : "") + (e.color !== void 0 ? " text-".concat(e.color) : "")), p = s(() => e.selected !== void 0), g = s(() => e.icon || n.iconSet.tree.icon), m = s(() => e.controlColor || e.color), v = s(() => e.textColor !== void 0 ? " text-".concat(e.textColor) : ""), x = s(() => {
+    let d = s(() => `q-tree q-tree--${e.dense === true ? "dense" : "standard"}` + (e.noConnectors === true ? " q-tree--no-connectors" : "") + (a.value === true ? " q-tree--dark" : "") + (e.color !== void 0 ? ` text-${e.color}` : "")), p = s(() => e.selected !== void 0), g = s(() => e.icon || n.iconSet.tree.icon), m = s(() => e.controlColor || e.color), v = s(() => e.textColor !== void 0 ? ` text-${e.textColor}` : ""), x = s(() => {
       let w = e.selectedColor || e.color;
-      return w ? " text-".concat(w) : "";
+      return w ? ` text-${w}` : "";
     }), y = s(() => e.filterMethod !== void 0 ? e.filterMethod : (w, W) => {
       let U = W.toLowerCase();
       return w[e.labelKey] && w[e.labelKey].toLowerCase().indexOf(U) !== -1;
@@ -7928,7 +7970,7 @@
     function C(w) {
       if (w.icon !== void 0) return i(Re, { class: "q-tree__icon q-mr-sm", name: w.icon, color: w.iconColor });
       let W = w.img || w.avatar;
-      if (W) return i("img", { class: "q-tree__".concat(w.img ? "img" : "avatar", " q-mr-sm"), src: W });
+      if (W) return i("img", { class: `q-tree__${w.img ? "img" : "avatar"} q-mr-sm`, src: W });
     }
     function A() {
       o("afterShow");
@@ -7937,8 +7979,8 @@
       o("afterHide");
     }
     function H(w) {
-      let W = w[e.nodeKey], U = k.value[W], le = w.header && t["header-".concat(w.header)] || t["default-header"], M = U.isParent === true ? q(w[e.childrenKey]) : [], V = M.length !== 0 || U.lazy && U.lazy !== "loaded", ae = w.body && t["body-".concat(w.body)] || t["default-body"], j = le !== void 0 || ae !== void 0 ? $(w, U, W) : null;
-      return ae !== void 0 && (ae = i("div", { class: "q-tree__node-body relative-position" }, [i("div", { class: v.value }, [ae(j)])])), i("div", { key: W, class: "q-tree__node relative-position q-tree__node--".concat(V === true ? "parent" : "child") }, [i("div", { class: "q-tree__node-header relative-position row no-wrap items-center" + (U.link === true ? " q-tree__node--link q-hoverable q-focusable" : "") + (U.selected === true ? " q-tree__node--selected" : "") + (U.disabled === true ? " q-tree__node--disabled" : ""), tabindex: U.link === true ? 0 : -1, ariaExpanded: M.length > 0 ? U.expanded : null, role: "treeitem", onClick: (fe) => {
+      let W = w[e.nodeKey], U = k.value[W], le = w.header && t[`header-${w.header}`] || t["default-header"], M = U.isParent === true ? q(w[e.childrenKey]) : [], V = M.length !== 0 || U.lazy && U.lazy !== "loaded", ae = w.body && t[`body-${w.body}`] || t["default-body"], j = le !== void 0 || ae !== void 0 ? $(w, U, W) : null;
+      return ae !== void 0 && (ae = i("div", { class: "q-tree__node-body relative-position" }, [i("div", { class: v.value }, [ae(j)])])), i("div", { key: W, class: `q-tree__node relative-position q-tree__node--${V === true ? "parent" : "child"}` }, [i("div", { class: "q-tree__node-header relative-position row no-wrap items-center" + (U.link === true ? " q-tree__node--link q-hoverable q-focusable" : "") + (U.selected === true ? " q-tree__node--selected" : "") + (U.disabled === true ? " q-tree__node--disabled" : ""), tabindex: U.link === true ? 0 : -1, ariaExpanded: M.length > 0 ? U.expanded : null, role: "treeitem", onClick: (fe) => {
         ee(w, U, fe);
       }, onKeypress(fe) {
         io(fe) !== true && (fe.keyCode === 13 ? ee(w, U, fe, true) : fe.keyCode === 32 && ve(w, U, fe, true));
@@ -7948,7 +7990,7 @@
         ve(w, U, fe);
       } }) : null, U.hasTicking === true && U.noTick !== true ? i(Vo, { class: "q-tree__tickbox", modelValue: U.indeterminate === true ? null : U.ticked, color: m.value, dark: a.value, dense: true, keepColor: true, disable: U.tickable !== true, onKeydown: _e, "onUpdate:modelValue": (fe) => {
         O(U, fe);
-      } }) : null, i("div", { class: "q-tree__node-header-content col row no-wrap items-center" + (U.selected === true ? x.value : v.value) }, [le ? le(j) : [C(w), i("div", w[e.labelKey])]])]), V === true ? e.noTransition === true ? U.expanded === true ? i("div", { class: "q-tree__node-collapsible" + v.value, key: "".concat(W, "__q") }, [ae, i("div", { class: "q-tree__children" + (U.disabled === true ? " q-tree__node--disabled" : ""), role: "group" }, M)]) : null : i(pn, { duration: e.duration, onShow: A, onHide: z }, () => Bt(i("div", { class: "q-tree__node-collapsible" + v.value, key: "".concat(W, "__q") }, [ae, i("div", { class: "q-tree__children" + (U.disabled === true ? " q-tree__node--disabled" : ""), role: "group" }, M)]), [[ka, U.expanded]])) : ae]);
+      } }) : null, i("div", { class: "q-tree__node-header-content col row no-wrap items-center" + (U.selected === true ? x.value : v.value) }, [le ? le(j) : [C(w), i("div", w[e.labelKey])]])]), V === true ? e.noTransition === true ? U.expanded === true ? i("div", { class: "q-tree__node-collapsible" + v.value, key: `${W}__q` }, [ae, i("div", { class: "q-tree__children" + (U.disabled === true ? " q-tree__node--disabled" : ""), role: "group" }, M)]) : null : i(pn, { duration: e.duration, onShow: A, onHide: z }, () => Bt(i("div", { class: "q-tree__node-collapsible" + v.value, key: `${W}__q` }, [ae, i("div", { class: "q-tree__children" + (U.disabled === true ? " q-tree__node--disabled" : ""), role: "group" }, M)]), [[ka, U.expanded]])) : ae]);
     }
     function Q(w) {
       var _a2;
@@ -7977,7 +8019,7 @@
   function zf(e) {
     return (e * 100).toFixed(2) + "%";
   }
-  var If = { ...Se, ...Ei, label: String, color: String, textColor: String, square: Boolean, flat: Boolean, bordered: Boolean, noThumbnails: Boolean, thumbnailFit: { type: String, default: "cover" }, autoUpload: Boolean, hideUploadBtn: Boolean, disable: Boolean, readonly: Boolean }, pu = [...Bi, "start", "finish", "added", "removed"];
+  var If = __spreadProps(__spreadValues(__spreadValues({}, Se), Ei), { label: String, color: String, textColor: String, square: Boolean, flat: Boolean, bordered: Boolean, noThumbnails: Boolean, thumbnailFit: { type: String, default: "cover" }, autoUpload: Boolean, hideUploadBtn: Boolean, disable: Boolean, readonly: Boolean }), pu = [...Bi, "start", "finish", "added", "removed"];
   function Hf(e, t) {
     let o = K(), { props: r, slots: n, emit: a, proxy: l } = o, { $q: u } = l, c = xe(r, u);
     function f(j, fe, ke) {
@@ -7997,7 +8039,7 @@
     } })), v.isBusy === void 0 && (v.isBusy = T(false));
     let L = T(0), D = s(() => L.value === 0 ? 0 : v.uploadedSize.value / L.value), Z = s(() => zf(D.value)), B = s(() => Un(L.value)), F = s(() => d.value === true && v.isUploading.value !== true && (r.multiple === true || v.queuedFiles.value.length === 0) && (r.maxFiles === void 0 || v.files.value.length < _.value) && (r.maxTotalSize === void 0 || L.value < E.value)), $ = s(() => d.value === true && v.isBusy.value !== true && v.isUploading.value !== true && v.queuedFiles.value.length !== 0);
     Kt(Fa, le);
-    let q = s(() => "q-uploader column no-wrap" + (c.value === true ? " q-uploader--dark q-dark" : "") + (r.bordered === true ? " q-uploader--bordered" : "") + (r.square === true ? " q-uploader--square no-border-radius" : "") + (r.flat === true ? " q-uploader--flat no-shadow" : "") + (r.disable === true ? " disabled q-uploader--disable" : "") + (p.value === true ? " q-uploader--dnd" : "")), C = s(() => "q-uploader__header" + (r.color !== void 0 ? " bg-".concat(r.color) : "") + (r.textColor !== void 0 ? " text-".concat(r.textColor) : ""));
+    let q = s(() => "q-uploader column no-wrap" + (c.value === true ? " q-uploader--dark q-dark" : "") + (r.bordered === true ? " q-uploader--bordered" : "") + (r.square === true ? " q-uploader--square no-border-radius" : "") + (r.flat === true ? " q-uploader--flat no-shadow" : "") + (r.disable === true ? " disabled q-uploader--disable" : "") + (p.value === true ? " q-uploader--dnd" : "")), C = s(() => "q-uploader__header" + (r.color !== void 0 ? ` bg-${r.color}` : "") + (r.textColor !== void 0 ? ` text-${r.textColor}` : ""));
     Y(v.isUploading, (j, fe) => {
       fe === false && j === true ? a("start") : fe === true && j === false && a("finish");
     });
@@ -8064,7 +8106,7 @@
     });
     let ae = {};
     for (let j in v) Pu(v[j]) === true ? ft(ae, j, () => v[j].value) : ae[j] = v[j];
-    return Object.assign(ae, { upload: W, reset: A, removeUploadedFiles: z, removeQueuedFiles: H, removeFile: ee, pickFiles: x, addFiles: y }), qa(ae, { canAddFiles: () => F.value, canUpload: () => $.value, uploadSizeLabel: () => B.value, uploadProgressLabel: () => Z.value }), t({ ...v, upload: W, reset: A, removeUploadedFiles: z, removeQueuedFiles: H, removeFile: ee, pickFiles: x, addFiles: y, canAddFiles: F, canUpload: $, uploadSizeLabel: B, uploadProgressLabel: Z }), () => {
+    return Object.assign(ae, { upload: W, reset: A, removeUploadedFiles: z, removeQueuedFiles: H, removeFile: ee, pickFiles: x, addFiles: y }), qa(ae, { canAddFiles: () => F.value, canUpload: () => $.value, uploadSizeLabel: () => B.value, uploadProgressLabel: () => Z.value }), t(__spreadProps(__spreadValues({}, v), { upload: W, reset: A, removeUploadedFiles: z, removeQueuedFiles: H, removeFile: ee, pickFiles: x, addFiles: y, canAddFiles: F, canUpload: $, uploadSizeLabel: B, uploadProgressLabel: Z })), () => {
       let j = [i("div", { class: C.value }, M()), i("div", { class: "q-uploader__list scroll" }, V()), h("uploader")];
       v.isBusy.value === true && j.push(i("div", { class: "q-uploader__overlay absolute-full flex flex-center" }, [i(wt)]));
       let fe = { ref: g, class: q.value };
@@ -8078,7 +8120,7 @@
       t[o] = bp;
     }), t;
   }
-  var yp = tl(pu), ol = ({ name: e, props: t, emits: o, injectPlugin: r }) => P({ name: e, props: { ...If, ...t }, emits: ct(o) === true ? { ...yp, ...o } : [...pu, ...o], setup(n, { expose: a }) {
+  var yp = tl(pu), ol = ({ name: e, props: t, emits: o, injectPlugin: r }) => P({ name: e, props: __spreadValues(__spreadValues({}, If), t), emits: ct(o) === true ? __spreadValues(__spreadValues({}, yp), o) : [...pu, ...o], setup(n, { expose: a }) {
     return Hf(r, a);
   } });
   function on(e) {
@@ -8167,7 +8209,7 @@
     let e = pt(Fa, Ze);
     return e === Ze && console.error("QUploaderAddTrigger needs to be child of QUploader"), e;
   } });
-  var Uf = P({ name: "QVideo", props: { ...Lr, src: { type: String, required: true }, title: String, fetchpriority: { type: String, default: "auto" }, loading: { type: String, default: "eager" }, referrerpolicy: { type: String, default: "strict-origin-when-cross-origin" } }, setup(e) {
+  var Uf = P({ name: "QVideo", props: __spreadProps(__spreadValues({}, Lr), { src: { type: String, required: true }, title: String, fetchpriority: { type: String, default: "auto" }, loading: { type: String, default: "eager" }, referrerpolicy: { type: String, default: "strict-origin-when-cross-origin" } }), setup(e) {
     let t = Dr(e), o = s(() => "q-video" + (e.ratio !== void 0 ? " q-video--responsive" : ""));
     return () => i("div", { class: o.value, style: t.value }, [i("iframe", { src: e.src, title: e.title, fetchpriority: e.fetchpriority, loading: e.loading, referrerpolicy: e.referrerpolicy, frameborder: "0", allowfullscreen: true })]);
   } });
@@ -8245,7 +8287,7 @@
     return { from: e.from, to: e.to !== void 0 ? e.to : e.from };
   }
   function Rp(e) {
-    return typeof e == "number" ? e = { duration: e } : typeof e == "function" && (e = { onEnd: e }), { ...e, waitFor: e.waitFor === void 0 ? 0 : e.waitFor, duration: isNaN(e.duration) === true ? 300 : parseInt(e.duration, 10), easing: typeof e.easing == "string" && e.easing.length !== 0 ? e.easing : "ease-in-out", delay: isNaN(e.delay) === true ? 0 : parseInt(e.delay, 10), fill: typeof e.fill == "string" && e.fill.length !== 0 ? e.fill : "none", resize: e.resize === true, useCSS: e.useCSS === true || e.usecss === true, hideFromClone: e.hideFromClone === true || e.hidefromclone === true, keepToClone: e.keepToClone === true || e.keeptoclone === true, tween: e.tween === true, tweenFromOpacity: isNaN(e.tweenFromOpacity) === true ? 0.6 : parseFloat(e.tweenFromOpacity), tweenToOpacity: isNaN(e.tweenToOpacity) === true ? 0.5 : parseFloat(e.tweenToOpacity) };
+    return typeof e == "number" ? e = { duration: e } : typeof e == "function" && (e = { onEnd: e }), __spreadProps(__spreadValues({}, e), { waitFor: e.waitFor === void 0 ? 0 : e.waitFor, duration: isNaN(e.duration) === true ? 300 : parseInt(e.duration, 10), easing: typeof e.easing == "string" && e.easing.length !== 0 ? e.easing : "ease-in-out", delay: isNaN(e.delay) === true ? 0 : parseInt(e.delay, 10), fill: typeof e.fill == "string" && e.fill.length !== 0 ? e.fill : "none", resize: e.resize === true, useCSS: e.useCSS === true || e.usecss === true, hideFromClone: e.hideFromClone === true || e.hidefromclone === true, keepToClone: e.keepToClone === true || e.keeptoclone === true, tween: e.tween === true, tweenFromOpacity: isNaN(e.tweenFromOpacity) === true ? 0.6 : parseFloat(e.tweenFromOpacity), tweenToOpacity: isNaN(e.tweenToOpacity) === true ? 0.5 : parseFloat(e.tweenToOpacity) });
   }
   function em(e) {
     let t = typeof e;
@@ -8290,13 +8332,13 @@
         if (a.hideFromClone !== true && (B.style.display = "block", B.style.flex = "0 0 auto", B.style.opacity = 0, B.style.minWidth = "unset", B.style.maxWidth = "unset", B.style.minHeight = "unset", B.style.maxHeight = "unset", B.classList.remove("q-morph--internal")), a.keepToClone !== true && (w.style.display = "block", w.style.flex = "0 0 auto", w.style.opacity = 0, w.style.minWidth = "unset", w.style.maxWidth = "unset", w.style.minHeight = "unset", w.style.maxHeight = "unset"), w.classList.remove("q-morph--internal"), typeof a.classes == "string" && (q.className += " " + a.classes), typeof a.style == "string") q.style.cssText += " " + a.style;
         else if (ct(a.style) === true) for (let ue in a.style) q.style[ue] = a.style[ue];
         let lt = Jf(B), te = Jf(q), se = He === true ? document.documentElement : { scrollLeft: 0, scrollTop: 0 };
-        q.style.position = He === true ? "fixed" : "absolute", q.style.left = "".concat(ge.left - se.scrollLeft, "px"), q.style.right = "unset", q.style.top = "".concat(ge.top - se.scrollTop, "px"), q.style.margin = 0, a.resize === true && (q.style.minWidth = "unset", q.style.maxWidth = "unset", q.style.minHeight = "unset", q.style.maxHeight = "unset", q.style.overflow = "hidden", q.style.overflowX = "hidden", q.style.overflowY = "hidden"), document.body.appendChild(q), F !== void 0 && (F.style.cssText = L, F.style.transform = "none", F.style.animation = "none", F.style.transition = "none", F.style.position = q.style.position, F.style.left = "".concat(m.left - se.scrollLeft, "px"), F.style.right = "unset", F.style.top = "".concat(m.top - se.scrollTop, "px"), F.style.margin = 0, F.style.pointerEvents = "none", a.resize === true && (F.style.minWidth = "unset", F.style.maxWidth = "unset", F.style.minHeight = "unset", F.style.maxHeight = "unset", F.style.overflow = "hidden", F.style.overflowX = "hidden", F.style.overflowY = "hidden"), document.body.appendChild(F));
+        q.style.position = He === true ? "fixed" : "absolute", q.style.left = `${ge.left - se.scrollLeft}px`, q.style.right = "unset", q.style.top = `${ge.top - se.scrollTop}px`, q.style.margin = 0, a.resize === true && (q.style.minWidth = "unset", q.style.maxWidth = "unset", q.style.minHeight = "unset", q.style.maxHeight = "unset", q.style.overflow = "hidden", q.style.overflowX = "hidden", q.style.overflowY = "hidden"), document.body.appendChild(q), F !== void 0 && (F.style.cssText = L, F.style.transform = "none", F.style.animation = "none", F.style.transition = "none", F.style.position = q.style.position, F.style.left = `${m.left - se.scrollLeft}px`, F.style.right = "unset", F.style.top = `${m.top - se.scrollTop}px`, F.style.margin = 0, F.style.pointerEvents = "none", a.resize === true && (F.style.minWidth = "unset", F.style.maxWidth = "unset", F.style.minHeight = "unset", F.style.maxHeight = "unset", F.style.overflow = "hidden", F.style.overflowX = "hidden", F.style.overflowY = "hidden"), document.body.appendChild(F));
         let J = (ue) => {
           l === q && r !== true ? (q.style.cssText = Z, q.className = D) : (q.style.cssText = ce, q.className = X), w.parentNode === ee && ee.insertBefore(q, w), B.remove(), w.remove(), F == null ? void 0 : F.remove(), t = () => false, l.qMorphCancel = void 0, q.qMorphCancel = void 0, typeof a.onEnd == "function" && a.onEnd(r === true ? "to" : "from", ue === true);
         };
         if (a.useCSS !== true && typeof q.animate == "function") {
-          let ue = a.resize === true ? { transform: "translate(".concat(Ce, "px, ").concat(Fe, "px)"), width: "".concat(G, "px"), height: "".concat(me, "px") } : { transform: "translate(".concat(Ce, "px, ").concat(Fe, "px) scale(").concat(de, ", ").concat(Le, ")") }, we = a.resize === true ? { width: "".concat(De, "px"), height: "".concat(Ue, "px") } : {}, Ke = a.resize === true ? { width: "".concat(G, "px"), height: "".concat(me, "px") } : {}, Pe = a.resize === true ? { transform: "translate(".concat(-1 * Ce, "px, ").concat(-1 * Fe, "px)"), width: "".concat(De, "px"), height: "".concat(Ue, "px") } : { transform: "translate(".concat(-1 * Ce, "px, ").concat(-1 * Fe, "px) scale(").concat(1 / de, ", ").concat(1 / Le, ")") }, Je = F !== void 0 ? { opacity: a.tweenToOpacity } : { backgroundColor: h }, mt = F !== void 0 ? { opacity: 1 } : { backgroundColor: ae };
-          d = q.animate([{ margin: 0, borderWidth: y, borderStyle: k, borderColor: S, borderRadius: b, zIndex: lt, transformOrigin: "0 0", ...ue, ...Je }, { margin: 0, borderWidth: U, borderStyle: le, borderColor: M, borderRadius: V, zIndex: te, transformOrigin: "0 0", transform: j, ...we, ...mt }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), c = F === void 0 ? void 0 : F.animate([{ opacity: a.tweenFromOpacity, margin: 0, borderWidth: y, borderStyle: k, borderColor: S, borderRadius: b, zIndex: lt, transformOrigin: "0 0", transform: _, ...Ke }, { opacity: 0, margin: 0, borderWidth: U, borderStyle: le, borderColor: M, borderRadius: V, zIndex: te, transformOrigin: "0 0", ...Pe }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), u = a.hideFromClone === true || Oe === true ? void 0 : B.animate([{ margin: "".concat(Ie < 0 ? Ie / 2 : 0, "px ").concat(ze < 0 ? ze / 2 : 0, "px"), width: "".concat(G + m.marginH, "px"), height: "".concat(me + m.marginV, "px") }, { margin: 0, width: 0, height: 0 }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), f = a.keepToClone === true ? void 0 : w.animate([Oe === true ? { margin: "".concat(Ie < 0 ? Ie / 2 : 0, "px ").concat(ze < 0 ? ze / 2 : 0, "px"), width: "".concat(G + m.marginH, "px"), height: "".concat(me + m.marginV, "px") } : { margin: 0, width: 0, height: 0 }, { margin: "".concat(ie < 0 ? ie / 2 : 0, "px ").concat(nt < 0 ? nt / 2 : 0, "px"), width: "".concat(De + ge.marginH, "px"), height: "".concat(Ue + ge.marginV, "px") }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay });
+          let ue = a.resize === true ? { transform: `translate(${Ce}px, ${Fe}px)`, width: `${G}px`, height: `${me}px` } : { transform: `translate(${Ce}px, ${Fe}px) scale(${de}, ${Le})` }, we = a.resize === true ? { width: `${De}px`, height: `${Ue}px` } : {}, Ke = a.resize === true ? { width: `${G}px`, height: `${me}px` } : {}, Pe = a.resize === true ? { transform: `translate(${-1 * Ce}px, ${-1 * Fe}px)`, width: `${De}px`, height: `${Ue}px` } : { transform: `translate(${-1 * Ce}px, ${-1 * Fe}px) scale(${1 / de}, ${1 / Le})` }, Je = F !== void 0 ? { opacity: a.tweenToOpacity } : { backgroundColor: h }, mt = F !== void 0 ? { opacity: 1 } : { backgroundColor: ae };
+          d = q.animate([__spreadValues(__spreadValues({ margin: 0, borderWidth: y, borderStyle: k, borderColor: S, borderRadius: b, zIndex: lt, transformOrigin: "0 0" }, ue), Je), __spreadValues(__spreadValues({ margin: 0, borderWidth: U, borderStyle: le, borderColor: M, borderRadius: V, zIndex: te, transformOrigin: "0 0", transform: j }, we), mt)], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), c = F === void 0 ? void 0 : F.animate([__spreadValues({ opacity: a.tweenFromOpacity, margin: 0, borderWidth: y, borderStyle: k, borderColor: S, borderRadius: b, zIndex: lt, transformOrigin: "0 0", transform: _ }, Ke), __spreadValues({ opacity: 0, margin: 0, borderWidth: U, borderStyle: le, borderColor: M, borderRadius: V, zIndex: te, transformOrigin: "0 0" }, Pe)], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), u = a.hideFromClone === true || Oe === true ? void 0 : B.animate([{ margin: `${Ie < 0 ? Ie / 2 : 0}px ${ze < 0 ? ze / 2 : 0}px`, width: `${G + m.marginH}px`, height: `${me + m.marginV}px` }, { margin: 0, width: 0, height: 0 }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay }), f = a.keepToClone === true ? void 0 : w.animate([Oe === true ? { margin: `${Ie < 0 ? Ie / 2 : 0}px ${ze < 0 ? ze / 2 : 0}px`, width: `${G + m.marginH}px`, height: `${me + m.marginV}px` } : { margin: 0, width: 0, height: 0 }, { margin: `${ie < 0 ? ie / 2 : 0}px ${nt < 0 ? nt / 2 : 0}px`, width: `${De + ge.marginH}px`, height: `${Ue + ge.marginV}px` }], { duration: a.duration, easing: a.easing, fill: a.fill, delay: a.delay });
           let qt = (jt) => {
             u == null ? void 0 : u.cancel(), c == null ? void 0 : c.cancel(), f == null ? void 0 : f.cancel(), d.cancel(), d.removeEventListener("finish", qt), d.removeEventListener("cancel", qt), J(jt), u = void 0, c = void 0, f = void 0, d = void 0;
           };
@@ -8306,10 +8348,120 @@
             q.qMorphCancel = void 0, o = true, qt();
           }, d.addEventListener("finish", qt), d.addEventListener("cancel", qt), t = (jt) => o === true || d === void 0 ? false : jt === true ? (qt(true), true) : (r = r !== true, u == null ? void 0 : u.reverse(), c == null ? void 0 : c.reverse(), f == null ? void 0 : f.reverse(), d.reverse(), true);
         } else {
-          let ue = "q-morph-anim-".concat(++wp), we = document.createElement("style"), Ke = a.resize === true ? "\n            transform: translate(".concat(Ce, "px, ").concat(Fe, "px);\n            width: ").concat(G, "px;\n            height: ").concat(me, "px;\n          ") : "transform: translate(".concat(Ce, "px, ").concat(Fe, "px) scale(").concat(de, ", ").concat(Le, ");"), Pe = a.resize === true ? "\n            width: ".concat(De, "px;\n            height: ").concat(Ue, "px;\n          ") : "", Je = a.resize === true ? "\n            width: ".concat(G, "px;\n            height: ").concat(me, "px;\n          ") : "", mt = a.resize === true ? "\n            transform: translate(".concat(-1 * Ce, "px, ").concat(-1 * Fe, "px);\n            width: ").concat(De, "px;\n            height: ").concat(Ue, "px;\n          ") : "transform: translate(".concat(-1 * Ce, "px, ").concat(-1 * Fe, "px) scale(").concat(1 / de, ", ").concat(1 / Le, ");"), qt = F !== void 0 ? "opacity: ".concat(a.tweenToOpacity, ";") : "background-color: ".concat(h, ";"), jt = F !== void 0 ? "opacity: 1;" : "background-color: ".concat(ae, ";"), nn = F === void 0 ? "" : "\n            @keyframes ".concat(ue, "-from-tween {\n              0% {\n                opacity: ").concat(a.tweenFromOpacity, ";\n                margin: 0;\n                border-width: ").concat(y, ";\n                border-style: ").concat(k, ";\n                border-color: ").concat(S, ";\n                border-radius: ").concat(b, ";\n                z-index: ").concat(lt, ";\n                transform-origin: 0 0;\n                transform: ").concat(_, ";\n                ").concat(Je, "\n              }\n\n              100% {\n                opacity: 0;\n                margin: 0;\n                border-width: ").concat(U, ";\n                border-style: ").concat(le, ";\n                border-color: ").concat(M, ";\n                border-radius: ").concat(V, ";\n                z-index: ").concat(te, ";\n                transform-origin: 0 0;\n                ").concat(mt, "\n              }\n            }\n          "), ao = a.hideFromClone === true || Oe === true ? "" : "\n            @keyframes ".concat(ue, "-from {\n              0% {\n                margin: ").concat(Ie < 0 ? Ie / 2 : 0, "px ").concat(ze < 0 ? ze / 2 : 0, "px;\n                width: ").concat(G + m.marginH, "px;\n                height: ").concat(me + m.marginV, "px;\n              }\n\n              100% {\n                margin: 0;\n                width: 0;\n                height: 0;\n              }\n            }\n          "), jo = Oe === true ? "\n            margin: ".concat(Ie < 0 ? Ie / 2 : 0, "px ").concat(ze < 0 ? ze / 2 : 0, "px;\n            width: ").concat(G + m.marginH, "px;\n            height: ").concat(me + m.marginV, "px;\n          ") : "\n            margin: 0;\n            width: 0;\n            height: 0;\n          ", oe = a.keepToClone === true ? "" : "\n            @keyframes ".concat(ue, "-to {\n              0% {\n                ").concat(jo, "\n              }\n\n              100% {\n                margin: ").concat(ie < 0 ? ie / 2 : 0, "px ").concat(nt < 0 ? nt / 2 : 0, "px;\n                width: ").concat(De + ge.marginH, "px;\n                height: ").concat(Ue + ge.marginV, "px;\n              }\n            }\n          ");
-          we.innerHTML = "\n          @keyframes ".concat(ue, " {\n            0% {\n              margin: 0;\n              border-width: ").concat(y, ";\n              border-style: ").concat(k, ";\n              border-color: ").concat(S, ";\n              border-radius: ").concat(b, ";\n              background-color: ").concat(h, ";\n              z-index: ").concat(lt, ";\n              transform-origin: 0 0;\n              ").concat(Ke, "\n              ").concat(qt, "\n            }\n\n            100% {\n              margin: 0;\n              border-width: ").concat(U, ";\n              border-style: ").concat(le, ";\n              border-color: ").concat(M, ";\n              border-radius: ").concat(V, ";\n              background-color: ").concat(ae, ";\n              z-index: ").concat(te, ";\n              transform-origin: 0 0;\n              transform: ").concat(j, ";\n              ").concat(Pe, "\n              ").concat(jt, "\n            }\n          }\n\n          ").concat(ao, "\n\n          ").concat(nn, "\n\n          ").concat(oe, "\n        "), document.head.appendChild(we);
+          let ue = `q-morph-anim-${++wp}`, we = document.createElement("style"), Ke = a.resize === true ? `
+            transform: translate(${Ce}px, ${Fe}px);
+            width: ${G}px;
+            height: ${me}px;
+          ` : `transform: translate(${Ce}px, ${Fe}px) scale(${de}, ${Le});`, Pe = a.resize === true ? `
+            width: ${De}px;
+            height: ${Ue}px;
+          ` : "", Je = a.resize === true ? `
+            width: ${G}px;
+            height: ${me}px;
+          ` : "", mt = a.resize === true ? `
+            transform: translate(${-1 * Ce}px, ${-1 * Fe}px);
+            width: ${De}px;
+            height: ${Ue}px;
+          ` : `transform: translate(${-1 * Ce}px, ${-1 * Fe}px) scale(${1 / de}, ${1 / Le});`, qt = F !== void 0 ? `opacity: ${a.tweenToOpacity};` : `background-color: ${h};`, jt = F !== void 0 ? "opacity: 1;" : `background-color: ${ae};`, nn = F === void 0 ? "" : `
+            @keyframes ${ue}-from-tween {
+              0% {
+                opacity: ${a.tweenFromOpacity};
+                margin: 0;
+                border-width: ${y};
+                border-style: ${k};
+                border-color: ${S};
+                border-radius: ${b};
+                z-index: ${lt};
+                transform-origin: 0 0;
+                transform: ${_};
+                ${Je}
+              }
+
+              100% {
+                opacity: 0;
+                margin: 0;
+                border-width: ${U};
+                border-style: ${le};
+                border-color: ${M};
+                border-radius: ${V};
+                z-index: ${te};
+                transform-origin: 0 0;
+                ${mt}
+              }
+            }
+          `, ao = a.hideFromClone === true || Oe === true ? "" : `
+            @keyframes ${ue}-from {
+              0% {
+                margin: ${Ie < 0 ? Ie / 2 : 0}px ${ze < 0 ? ze / 2 : 0}px;
+                width: ${G + m.marginH}px;
+                height: ${me + m.marginV}px;
+              }
+
+              100% {
+                margin: 0;
+                width: 0;
+                height: 0;
+              }
+            }
+          `, jo = Oe === true ? `
+            margin: ${Ie < 0 ? Ie / 2 : 0}px ${ze < 0 ? ze / 2 : 0}px;
+            width: ${G + m.marginH}px;
+            height: ${me + m.marginV}px;
+          ` : `
+            margin: 0;
+            width: 0;
+            height: 0;
+          `, oe = a.keepToClone === true ? "" : `
+            @keyframes ${ue}-to {
+              0% {
+                ${jo}
+              }
+
+              100% {
+                margin: ${ie < 0 ? ie / 2 : 0}px ${nt < 0 ? nt / 2 : 0}px;
+                width: ${De + ge.marginH}px;
+                height: ${Ue + ge.marginV}px;
+              }
+            }
+          `;
+          we.innerHTML = `
+          @keyframes ${ue} {
+            0% {
+              margin: 0;
+              border-width: ${y};
+              border-style: ${k};
+              border-color: ${S};
+              border-radius: ${b};
+              background-color: ${h};
+              z-index: ${lt};
+              transform-origin: 0 0;
+              ${Ke}
+              ${qt}
+            }
+
+            100% {
+              margin: 0;
+              border-width: ${U};
+              border-style: ${le};
+              border-color: ${M};
+              border-radius: ${V};
+              background-color: ${ae};
+              z-index: ${te};
+              transform-origin: 0 0;
+              transform: ${j};
+              ${Pe}
+              ${jt}
+            }
+          }
+
+          ${ao}
+
+          ${nn}
+
+          ${oe}
+        `, document.head.appendChild(we);
           let he = "normal";
-          B.style.animation = "".concat(a.duration, "ms ").concat(a.easing, " ").concat(a.delay, "ms ").concat(he, " ").concat(a.fill, " ").concat(ue, "-from"), F !== void 0 && (F.style.animation = "".concat(a.duration, "ms ").concat(a.easing, " ").concat(a.delay, "ms ").concat(he, " ").concat(a.fill, " ").concat(ue, "-from-tween")), w.style.animation = "".concat(a.duration, "ms ").concat(a.easing, " ").concat(a.delay, "ms ").concat(he, " ").concat(a.fill, " ").concat(ue, "-to"), q.style.animation = "".concat(a.duration, "ms ").concat(a.easing, " ").concat(a.delay, "ms ").concat(he, " ").concat(a.fill, " ").concat(ue);
+          B.style.animation = `${a.duration}ms ${a.easing} ${a.delay}ms ${he} ${a.fill} ${ue}-from`, F !== void 0 && (F.style.animation = `${a.duration}ms ${a.easing} ${a.delay}ms ${he} ${a.fill} ${ue}-from-tween`), w.style.animation = `${a.duration}ms ${a.easing} ${a.delay}ms ${he} ${a.fill} ${ue}-to`, q.style.animation = `${a.duration}ms ${a.easing} ${a.delay}ms ${he} ${a.fill} ${ue}`;
           let Ee = ($e) => {
             $e === Object($e) && $e.animationName !== ue || (q.removeEventListener("animationend", Ee), q.removeEventListener("animationcancel", Ee), J(), we.remove());
           };
@@ -8339,12 +8491,12 @@
     if (e.animating === true || e.queue.length < 2) return;
     let [t, o] = e.queue;
     e.animating = true, t.animating = true, o.animating = true, Nr(t, "remove"), Nr(o, "remove");
-    let r = pa({ from: t.el, to: o.el, onToggle() {
+    let r = pa(__spreadProps(__spreadValues({ from: t.el, to: o.el, onToggle() {
       Nr(t, "add"), Nr(o, "remove");
-    }, ...o.opts, onEnd(n, a) {
+    } }, o.opts), { onEnd(n, a) {
       var _a2, _b;
       (_b = (_a2 = o.opts).onEnd) == null ? void 0 : _b.call(_a2, n, a), a !== true && (t.animating = false, o.animating = false, e.animating = false, e.cancel = void 0, e.queue.shift(), nm(e));
-    } });
+    } }));
     e.cancel = () => {
       r(true), e.cancel = void 0;
     };
@@ -8400,7 +8552,8 @@
     let t = e.__qmutation;
     t !== void 0 && ((_a2 = t.observer) == null ? void 0 : _a2.disconnect(), delete e.__qmutation);
   }
-  var um = $t({ name: "mutation", mounted(e, { modifiers: { once: t, ...o }, value: r }) {
+  var um = $t({ name: "mutation", mounted(e, _a2) {
+    var _b = _a2, { modifiers: _c2 } = _b, _d2 = _c2, { once: t } = _d2, o = __objRest(_d2, ["once"]), { value: r } = _b;
     let n = { once: t, opts: Object.keys(o).length === 0 ? Fp : o };
     im(e, n, r), e.__qmutation = n;
   }, updated(e, { oldValue: t, value: o }) {
@@ -8479,9 +8632,9 @@
       u && (n[l] = u);
     }), [r.duration, r.touchSensitivity, r.mouseSensitivity] = n, e.__qtouchhold = r, o.mouse === true) {
       let a = o.mouseCapture === true || o.mousecapture === true ? "Capture" : "";
-      vt(r, "main", [[e, "mousedown", "mouseStart", "passive".concat(a)]]);
+      vt(r, "main", [[e, "mousedown", "mouseStart", `passive${a}`]]);
     }
-    Ae.has.touch === true && vt(r, "main", [[e, "touchstart", "touchStart", "passive".concat(o.capture === true ? "Capture" : "")], [e, "touchend", "noop", "notPassiveCapture"]]);
+    Ae.has.touch === true && vt(r, "main", [[e, "touchstart", "touchStart", `passive${o.capture === true ? "Capture" : ""}`], [e, "touchend", "noop", "notPassiveCapture"]]);
   }, updated(e, t) {
     let o = e.__qtouchhold;
     o !== void 0 && t.oldValue !== t.value && (typeof t.value != "function" && o.end(), o.handler = t.value);
@@ -8490,7 +8643,7 @@
     let t = e.__qtouchhold;
     t !== void 0 && (Tt(t, "main"), Tt(t, "temp"), t.timer !== void 0 && clearTimeout(t.timer), (_a2 = t.styleCleanup) == null ? void 0 : _a2.call(t), delete e.__qtouchhold);
   } });
-  var vm = { esc: 27, tab: 9, enter: 13, space: 32, up: 38, left: 37, right: 39, down: 40, delete: [8, 46] }, Lp = new RegExp("^([\\d+]+|".concat(Object.keys(vm).join("|"), ")$"), "i");
+  var vm = { esc: 27, tab: 9, enter: 13, space: 32, up: 38, left: 37, right: 39, down: 40, delete: [8, 46] }, Lp = new RegExp(`^([\\d+]+|${Object.keys(vm).join("|")})$`, "i");
   function Dp(e, t) {
     let { top: o, left: r } = _t(e);
     return Math.abs(r - t.left) >= 7 || Math.abs(o - t.top) >= 7;
@@ -8541,11 +8694,11 @@
     } };
     if (e.__qtouchrepeat = u, t.mouse === true) {
       let c = t.mouseCapture === true || t.mousecapture === true ? "Capture" : "";
-      vt(u, "main", [[e, "mousedown", "mouseStart", "passive".concat(c)]]);
+      vt(u, "main", [[e, "mousedown", "mouseStart", `passive${c}`]]);
     }
-    if (Ae.has.touch === true && vt(u, "main", [[e, "touchstart", "touchStart", "passive".concat(t.capture === true ? "Capture" : "")], [e, "touchend", "noop", "passiveCapture"]]), n.length !== 0) {
+    if (Ae.has.touch === true && vt(u, "main", [[e, "touchstart", "touchStart", `passive${t.capture === true ? "Capture" : ""}`], [e, "touchend", "noop", "passiveCapture"]]), n.length !== 0) {
       let c = t.keyCapture === true || t.keycapture === true ? "Capture" : "";
-      vt(u, "main", [[e, "keydown", "keyboardStart", "notPassive".concat(c)]]);
+      vt(u, "main", [[e, "keydown", "keyboardStart", `notPassive${c}`]]);
     }
   }, updated(e, { oldValue: t, value: o }) {
     let r = e.__qtouchrepeat;
@@ -8560,7 +8713,7 @@
   function ba(e, t = document.body) {
     if (typeof e != "string") throw new TypeError("Expected a string as propName");
     if (!(t instanceof Element)) throw new TypeError("Expected a DOM element");
-    return getComputedStyle(t).getPropertyValue("--q-".concat(e)).trim() || null;
+    return getComputedStyle(t).getPropertyValue(`--q-${e}`).trim() || null;
   }
   var ul;
   function Op() {
@@ -8630,7 +8783,7 @@
     }
   }
   var _m = xm;
-  var Cm = P({ name: "BottomSheetComponent", props: { ...Se, title: String, message: String, actions: Array, grid: Boolean, cardClass: [String, Array, Object], cardStyle: [String, Array, Object] }, emits: ["ok", "hide"], setup(e, { emit: t }) {
+  var Cm = P({ name: "BottomSheetComponent", props: __spreadProps(__spreadValues({}, Se), { title: String, message: String, actions: Array, grid: Boolean, cardClass: [String, Array, Object], cardStyle: [String, Array, Object] }), emits: ["ok", "hide"], setup(e, { emit: t }) {
     let { proxy: o } = K(), r = xe(e, o.$q), n = T(null);
     function a() {
       n.value.show();
@@ -8667,12 +8820,12 @@
       return e.title && m.push(i(_o, { class: "q-dialog__title" }, () => e.title)), e.message && m.push(i(_o, { class: "q-dialog__message" }, () => e.message)), m.push(e.grid === true ? i("div", { class: "row items-stretch justify-start", role: "list" }, f()) : i("div", { role: "list" }, d())), m;
     }
     function g() {
-      return [i(hr, { class: ["q-bottom-sheet q-bottom-sheet--".concat(e.grid === true ? "grid" : "list") + (r.value === true ? " q-bottom-sheet--dark q-dark" : ""), e.cardClass], style: e.cardStyle }, p)];
+      return [i(hr, { class: [`q-bottom-sheet q-bottom-sheet--${e.grid === true ? "grid" : "list"}` + (r.value === true ? " q-bottom-sheet--dark q-dark" : ""), e.cardClass], style: e.cardStyle }, p)];
     }
     return Object.assign(o, { show: a, hide: l }), () => i(Ho, { ref: n, position: "bottom", onHide: c }, g);
   } });
   function wm(e, t) {
-    for (let o in t) o !== "spinner" && Object(t[o]) === t[o] ? (e[o] = Object(e[o]) !== e[o] ? {} : { ...e[o] }, wm(e[o], t[o])) : e[o] = t[o];
+    for (let o in t) o !== "spinner" && Object(t[o]) === t[o] ? (e[o] = Object(e[o]) !== e[o] ? {} : __spreadValues({}, e[o]), wm(e[o], t[o])) : e[o] = t[o];
   }
   function sl(e, t, o) {
     return (r) => {
@@ -8681,12 +8834,12 @@
         let { component: S, componentProps: b } = r;
         n = typeof S == "string" ? o.component(S) : S, a = b || {};
       } else {
-        let { class: S, style: b, ...h } = r;
+        let _a2 = r, { class: S, style: b } = _a2, h = __objRest(_a2, ["class", "style"]);
         n = e, a = h, S !== void 0 && (h.cardClass = S), b !== void 0 && (h.cardStyle = b);
       }
       let u, c = false, f = T(null), d = Eo(false, "dialog"), p = (S) => {
-        var _a2;
-        if (((_a2 = f.value) == null ? void 0 : _a2[S]) !== void 0) {
+        var _a3;
+        if (((_a3 = f.value) == null ? void 0 : _a3[S]) !== void 0) {
           f.value[S]();
           return;
         }
@@ -8714,7 +8867,7 @@
         if (u !== null) {
           if (l === true) Object.assign(a, S);
           else {
-            let { class: b, style: h, ..._ } = S;
+            let _a3 = S, { class: b, style: h } = _a3, _ = __objRest(_a3, ["class", "style"]);
             b !== void 0 && (_.cardClass = b), h !== void 0 && (_.cardStyle = h), wm(a, _);
           }
           u.$forceUpdate();
@@ -8728,9 +8881,9 @@
         k.unmount(d), ar(d), k = null, u = null, c !== true && m.forEach((S) => {
           S();
         });
-      }, k = an({ name: "QGlobalDialog", setup: () => () => i(n, { ...a, ref: f, onOk: x, onHide: y, onVnodeMounted(...S) {
+      }, k = an({ name: "QGlobalDialog", setup: () => () => i(n, __spreadProps(__spreadValues({}, a), { ref: f, onOk: x, onHide: y, onVnodeMounted(...S) {
         typeof a.onVnodeMounted == "function" && a.onVnodeMounted(...S), Be(() => p("show"));
-      } }) }, o);
+      } })) }, o);
       return u = k.mount(d), v;
     };
   }
@@ -8752,7 +8905,7 @@
     try {
       let t = JSON.parse(e);
       (t === Object(t) || Array.isArray(t) === true) && (e = t);
-    } catch {
+    } catch (e2) {
     }
     return e;
   }
@@ -8767,14 +8920,14 @@
   function Rm(e, t, o = {}, r) {
     let n, a;
     o.expires !== void 0 && (Object.prototype.toString.call(o.expires) === "[object Date]" ? n = o.expires.toUTCString() : typeof o.expires == "string" ? n = jp(o.expires) : (a = parseFloat(o.expires), n = isNaN(a) === false ? Mm(a * 864e5) : o.expires));
-    let l = "".concat(qm(e), "=").concat(Np(t)), u = [l, n !== void 0 ? "; Expires=" + n : "", o.path ? "; Path=" + o.path : "", o.domain ? "; Domain=" + o.domain : "", o.sameSite ? "; SameSite=" + o.sameSite : "", o.httpOnly ? "; HttpOnly" : "", o.secure ? "; Secure" : "", o.other ? "; " + o.other : ""].join("");
+    let l = `${qm(e)}=${Np(t)}`, u = [l, n !== void 0 ? "; Expires=" + n : "", o.path ? "; Path=" + o.path : "", o.domain ? "; Domain=" + o.domain : "", o.sameSite ? "; SameSite=" + o.sameSite : "", o.httpOnly ? "; HttpOnly" : "", o.secure ? "; Secure" : "", o.other ? "; " + o.other : ""].join("");
     if (r) {
       r.req.qCookies ? r.req.qCookies.push(u) : r.req.qCookies = [u], r.res.setHeader("Set-Cookie", r.req.qCookies);
       let c = r.req.headers.cookie || "";
       if (n !== void 0 && a < 0) {
         let f = cl(e, r);
-        f !== void 0 && (c = c.replace("".concat(e, "=").concat(f, "; "), "").replace("; ".concat(e, "=").concat(f), "").replace("".concat(e, "=").concat(f), ""));
-      } else c = c ? "".concat(l, "; ").concat(c) : u;
+        f !== void 0 && (c = c.replace(`${e}=${f}; `, "").replace(`; ${e}=${f}`, "").replace(`${e}=${f}`, ""));
+      } else c = c ? `${l}; ${c}` : u;
       r.req.headers.cookie = c;
     } else document.cookie = u;
   }
@@ -8788,7 +8941,7 @@
     return a;
   }
   function Up(e, t, o) {
-    Rm(e, "", { expires: -1, ...t }, o);
+    Rm(e, "", __spreadValues({ expires: -1 }, t), o);
   }
   function Kp(e, t) {
     return cl(e, t) !== null;
@@ -8801,12 +8954,12 @@
   } };
   Object.assign(Pm, Wp());
   var Am = Pm;
-  var $m = P({ name: "DialogPluginComponent", props: { ...Se, title: String, message: String, prompt: Object, options: Object, progress: [Boolean, Object], html: Boolean, ok: { type: [String, Object, Boolean], default: true }, cancel: [String, Object, Boolean], focus: { type: String, default: "ok", validator: (e) => ["ok", "cancel", "none"].includes(e) }, stackButtons: Boolean, color: String, cardClass: [String, Array, Object], cardStyle: [String, Array, Object] }, emits: ["ok", "hide"], setup(e, { emit: t }) {
+  var $m = P({ name: "DialogPluginComponent", props: __spreadProps(__spreadValues({}, Se), { title: String, message: String, prompt: Object, options: Object, progress: [Boolean, Object], html: Boolean, ok: { type: [String, Object, Boolean], default: true }, cancel: [String, Object, Boolean], focus: { type: String, default: "ok", validator: (e) => ["ok", "cancel", "none"].includes(e) }, stackButtons: Boolean, color: String, cardClass: [String, Array, Object], cardStyle: [String, Array, Object] }), emits: ["ok", "hide"], setup(e, { emit: t }) {
     let { proxy: o } = K(), { $q: r } = o, n = xe(e, r), a = T(null), l = T(e.prompt !== void 0 ? e.prompt.model : e.options !== void 0 ? e.options.model : void 0), u = s(() => "q-dialog-plugin" + (n.value === true ? " q-dialog-plugin--dark q-dark" : "") + (e.progress !== false ? " q-dialog-plugin--progress" : "")), c = s(() => e.color || (n.value === true ? "amber" : "primary")), f = s(() => e.progress === false ? null : ct(e.progress) === true ? { component: e.progress.spinner || wt, props: { color: e.progress.color || c.value } } : { component: wt, props: { color: c.value } }), d = s(() => e.prompt !== void 0 || e.options !== void 0), p = s(() => {
       if (d.value !== true) return {};
-      let { model: C, isValid: A, items: z, ...H } = e.prompt !== void 0 ? e.prompt : e.options;
+      let _a2 = e.prompt !== void 0 ? e.prompt : e.options, { model: C, isValid: A, items: z } = _a2, H = __objRest(_a2, ["model", "isValid", "items"]);
       return H;
-    }), g = s(() => ct(e.ok) === true || e.ok === true ? r.lang.label.ok : e.ok), m = s(() => ct(e.cancel) === true || e.cancel === true ? r.lang.label.cancel : e.cancel), v = s(() => e.prompt !== void 0 ? e.prompt.isValid !== void 0 && e.prompt.isValid(l.value) !== true : e.options !== void 0 ? e.options.isValid !== void 0 && e.options.isValid(l.value) !== true : false), x = s(() => ({ color: c.value, label: g.value, ripple: false, disable: v.value, ...ct(e.ok) === true ? e.ok : { flat: true }, "data-autofocus": e.focus === "ok" && d.value !== true || void 0, onClick: b })), y = s(() => ({ color: c.value, label: m.value, ripple: false, ...ct(e.cancel) === true ? e.cancel : { flat: true }, "data-autofocus": e.focus === "cancel" && d.value !== true || void 0, onClick: h }));
+    }), g = s(() => ct(e.ok) === true || e.ok === true ? r.lang.label.ok : e.ok), m = s(() => ct(e.cancel) === true || e.cancel === true ? r.lang.label.cancel : e.cancel), v = s(() => e.prompt !== void 0 ? e.prompt.isValid !== void 0 && e.prompt.isValid(l.value) !== true : e.options !== void 0 ? e.options.isValid !== void 0 && e.options.isValid(l.value) !== true : false), x = s(() => __spreadProps(__spreadValues({ color: c.value, label: g.value, ripple: false, disable: v.value }, ct(e.ok) === true ? e.ok : { flat: true }), { "data-autofocus": e.focus === "ok" && d.value !== true || void 0, onClick: b })), y = s(() => __spreadProps(__spreadValues({ color: c.value, label: m.value, ripple: false }, ct(e.cancel) === true ? e.cancel : { flat: true }), { "data-autofocus": e.focus === "cancel" && d.value !== true || void 0, onClick: h }));
     Y(() => e.prompt && e.prompt.model, E), Y(() => e.options && e.options.model, E);
     function k() {
       a.value.show();
@@ -8833,10 +8986,10 @@
       return e.html === true ? i(_o, { class: C, innerHTML: A }) : i(_o, { class: C }, () => A);
     }
     function Z() {
-      return [i(Or, { color: c.value, dense: true, autofocus: true, dark: n.value, ...p.value, modelValue: l.value, "onUpdate:modelValue": E, onKeyup: L })];
+      return [i(Or, __spreadProps(__spreadValues({ color: c.value, dense: true, autofocus: true, dark: n.value }, p.value), { modelValue: l.value, "onUpdate:modelValue": E, onKeyup: L }))];
     }
     function B() {
-      return [i(Ni, { color: c.value, options: e.options.items, dark: n.value, ...p.value, modelValue: l.value, "onUpdate:modelValue": E })];
+      return [i(Ni, __spreadProps(__spreadValues({ color: c.value, options: e.options.items, dark: n.value }, p.value), { modelValue: l.value, "onUpdate:modelValue": E }))];
     }
     function F() {
       let C = [];
@@ -8854,10 +9007,10 @@
   var Em = { install({ $q: e, parentApp: t }) {
     e.dialog = this.create = sl($m, true, t);
   } };
-  var Qr, bu, Bm = 0, zn = null, zt = {}, In = {}, Fm = { group: "__default_quasar_group__", delay: 0, message: false, html: false, spinnerSize: 80, spinnerColor: "", messageColor: "", backgroundColor: "", boxClass: "", spinner: wt, customClass: "" }, Lm = { ...Fm };
+  var Qr, bu, Bm = 0, zn = null, zt = {}, In = {}, Fm = { group: "__default_quasar_group__", delay: 0, message: false, html: false, spinnerSize: 80, spinnerColor: "", messageColor: "", backgroundColor: "", boxClass: "", spinner: wt, customClass: "" }, Lm = __spreadValues({}, Fm);
   function Yp(e) {
     if ((e == null ? void 0 : e.group) !== void 0 && In[e.group] !== void 0) return Object.assign(In[e.group], e);
-    let t = ct(e) === true && e.ignoreDefaults === true ? { ...Fm, ...e } : { ...Lm, ...e };
+    let t = ct(e) === true && e.ignoreDefaults === true ? __spreadValues(__spreadValues({}, Fm), e) : __spreadValues(__spreadValues({}, Lm), e);
     return In[t.group] = t, t;
   }
   var ko = Wt({ isActive: false }, { show(e) {
@@ -8876,7 +9029,7 @@
         function n() {
           if (ko.isActive !== true) return null;
           let a = [i(zt.spinner, { class: "q-loading__spinner", color: zt.spinnerColor, size: zt.spinnerSize })];
-          return zt.message && a.push(i("div", { class: "q-loading__message" + (zt.messageColor ? " text-".concat(zt.messageColor) : ""), [zt.html === true ? "innerHTML" : "textContent"]: zt.message })), i("div", { class: "q-loading fullscreen flex flex-center z-max " + zt.customClass.trim(), key: zt.uid }, [i("div", { class: "q-loading__backdrop" + (zt.backgroundColor ? " bg-".concat(zt.backgroundColor) : "") }), i("div", { class: "q-loading__box column items-center " + zt.boxClass }, a)]);
+          return zt.message && a.push(i("div", { class: "q-loading__message" + (zt.messageColor ? ` text-${zt.messageColor}` : ""), [zt.html === true ? "innerHTML" : "textContent"]: zt.message })), i("div", { class: "q-loading fullscreen flex flex-center z-max " + zt.customClass.trim(), key: zt.uid }, [i("div", { class: "q-loading__backdrop" + (zt.backgroundColor ? ` bg-${zt.backgroundColor}` : "") }), i("div", { class: "q-loading__box column items-center " + zt.boxClass }, a)]);
         }
         return () => i(st, { name: "q-transition--fade", appear: true, onAfterLeave: r }, n);
       } }, ko.__parentApp), bu = Qr.mount(o);
@@ -8885,7 +9038,7 @@
         ko.hide(t);
         return;
       }
-      ko.show({ ...o, group: t });
+      ko.show(__spreadProps(__spreadValues({}, o), { group: t }));
     };
   }, hide(e) {
     if (ko.isActive === true) {
@@ -8914,7 +9067,7 @@
       e.config.loadingBar !== void 0 && this.setDefaults(e.config.loadingBar);
       return;
     }
-    let o = T(e.config.loadingBar !== void 0 ? { ...e.config.loadingBar } : {});
+    let o = T(e.config.loadingBar !== void 0 ? __spreadValues({}, e.config.loadingBar) : {});
     function r() {
       yu.isActive = true;
     }
@@ -8922,7 +9075,7 @@
       yu.isActive = false;
     }
     let a = Eo("q-loading-bar");
-    an({ name: "LoadingBar", devtools: { hide: true }, setup: () => () => i(Da, { ...o.value, onStart: r, onStop: n, ref: dl }) }, t).mount(a), Object.assign(this, { start(l) {
+    an({ name: "LoadingBar", devtools: { hide: true }, setup: () => () => i(Da, __spreadProps(__spreadValues({}, o.value), { onStart: r, onStop: n, ref: dl })) }, t).mount(a), Object.assign(this, { start(l) {
       dl.value.start(l);
     }, stop() {
       dl.value.stop();
@@ -8968,7 +9121,7 @@
   function Jp({ add: e, remove: t }) {
     e.title && (document.title = e.title), Object.keys(t).length !== 0 && (["meta", "link", "script"].forEach((o) => {
       t[o].forEach((r) => {
-        document.head.querySelector("".concat(o, '[data-qmeta="').concat(r, '"]')).remove();
+        document.head.querySelector(`${o}[data-qmeta="${r}"]`).remove();
       });
     }), t.htmlAttr.filter(zm).forEach((o) => {
       document.documentElement.removeAttribute(o);
@@ -9016,13 +9169,16 @@
       if (isNaN(c) || c < 0) return Sa("wrong timeout", e);
       n.timeout = Number.isFinite(c) ? c : 0;
     }
-    n.timeout === 0 ? n.progress = false : n.progress === true && (n.meta.progressClass = "q-notification__progress" + (n.progressClass ? " ".concat(n.progressClass) : ""), n.meta.progressStyle = { animationDuration: "".concat(n.timeout + 1e3, "ms") });
+    n.timeout === 0 ? n.progress = false : n.progress === true && (n.meta.progressClass = "q-notification__progress" + (n.progressClass ? ` ${n.progressClass}` : ""), n.meta.progressStyle = { animationDuration: `${n.timeout + 1e3}ms` });
     let a = (Array.isArray(e.actions) === true ? e.actions : []).concat(e.ignoreDefaults !== true && Array.isArray(ml.actions) === true ? ml.actions : []).concat(Array.isArray((_a2 = xa[e.type]) == null ? void 0 : _a2.actions) === true ? xa[e.type].actions : []), { closeBtn: l } = n;
-    if (l && a.push({ label: typeof l == "string" ? l : t.lang.label.close }), n.actions = a.map(({ handler: c, noDismiss: f, ...d }) => ({ flat: true, ...d, onClick: typeof c == "function" ? () => {
-      c(), f !== true && u();
-    } : () => {
-      u();
-    } })), n.multiLine === void 0 && (n.multiLine = n.actions.length > 1), Object.assign(n.meta, { class: "q-notification row items-stretch q-notification--".concat(n.multiLine === true ? "multi-line" : "standard") + (n.color !== void 0 ? " bg-".concat(n.color) : "") + (n.textColor !== void 0 ? " text-".concat(n.textColor) : "") + (n.classes !== void 0 ? " ".concat(n.classes) : ""), wrapperClass: "q-notification__wrapper col relative-position border-radius-inherit " + (n.multiLine === true ? "column no-wrap justify-center" : "row items-center"), contentClass: "q-notification__content row items-center" + (n.multiLine === true ? "" : " col"), leftClass: n.meta.hasText === true ? "additional" : "single", attrs: { role: "alert", ...n.attrs } }), n.group === false ? (n.group = void 0, n.meta.group = void 0) : ((n.group === void 0 || n.group === true) && (n.group = [n.message, n.caption, n.multiline].concat(n.actions.map((c) => "".concat(c.label, "*").concat(c.icon))).join("|")), n.meta.group = n.group + "|" + n.position), n.actions.length === 0 ? n.actions = void 0 : n.meta.actionsClass = "q-notification__actions row items-center " + (n.multiLine === true ? "justify-end" : "col-auto") + (n.meta.hasMedia === true ? " q-notification__actions--with-media" : ""), o !== void 0) {
+    if (l && a.push({ label: typeof l == "string" ? l : t.lang.label.close }), n.actions = a.map((_b) => {
+      var _c2 = _b, { handler: c, noDismiss: f } = _c2, d = __objRest(_c2, ["handler", "noDismiss"]);
+      return __spreadProps(__spreadValues({ flat: true }, d), { onClick: typeof c == "function" ? () => {
+        c(), f !== true && u();
+      } : () => {
+        u();
+      } });
+    }), n.multiLine === void 0 && (n.multiLine = n.actions.length > 1), Object.assign(n.meta, { class: `q-notification row items-stretch q-notification--${n.multiLine === true ? "multi-line" : "standard"}` + (n.color !== void 0 ? ` bg-${n.color}` : "") + (n.textColor !== void 0 ? ` text-${n.textColor}` : "") + (n.classes !== void 0 ? ` ${n.classes}` : ""), wrapperClass: "q-notification__wrapper col relative-position border-radius-inherit " + (n.multiLine === true ? "column no-wrap justify-center" : "row items-center"), contentClass: "q-notification__content row items-center" + (n.multiLine === true ? "" : " col"), leftClass: n.meta.hasText === true ? "additional" : "single", attrs: __spreadValues({ role: "alert" }, n.attrs) }), n.group === false ? (n.group = void 0, n.meta.group = void 0) : ((n.group === void 0 || n.group === true) && (n.group = [n.message, n.caption, n.multiline].concat(n.actions.map((c) => `${c.label}*${c.icon}`)).join("|")), n.meta.group = n.group + "|" + n.position), n.actions.length === 0 ? n.actions = void 0 : n.meta.actionsClass = "q-notification__actions row items-center " + (n.multiLine === true ? "justify-end" : "col-auto") + (n.meta.hasMedia === true ? " q-notification__actions--with-media" : ""), o !== void 0) {
       o.notif.meta.timer && (clearTimeout(o.notif.meta.timer), o.notif.meta.timer = void 0), n.meta.uid = o.notif.meta.uid;
       let c = To[n.position].value.indexOf(o.notif);
       To[n.position].value[c] = n;
@@ -9038,8 +9194,8 @@
       } else {
         if (c.meta.timer && (clearTimeout(c.meta.timer), c.meta.timer = void 0), n.badgePosition !== void 0) {
           if (r0.includes(n.badgePosition) === false) return Sa("wrong badgePosition", e);
-        } else n.badgePosition = "top-".concat(n.position.indexOf("left") !== -1 ? "right" : "left");
-        n.meta.uid = c.meta.uid, n.meta.badge = c.meta.badge + 1, n.meta.badgeClass = "q-notification__badge q-notification__badge--".concat(n.badgePosition) + (n.badgeColor !== void 0 ? " bg-".concat(n.badgeColor) : "") + (n.badgeTextColor !== void 0 ? " text-".concat(n.badgeTextColor) : "") + (n.badgeClass ? " ".concat(n.badgeClass) : "");
+        } else n.badgePosition = `top-${n.position.indexOf("left") !== -1 ? "right" : "left"}`;
+        n.meta.uid = c.meta.uid, n.meta.badge = c.meta.badge + 1, n.meta.badgeClass = `q-notification__badge q-notification__badge--${n.badgePosition}` + (n.badgeColor !== void 0 ? ` bg-${n.badgeColor}` : "") + (n.badgeTextColor !== void 0 ? ` text-${n.badgeTextColor}` : "") + (n.badgeClass ? ` ${n.badgeClass}` : "");
         let f = To[n.position].value.indexOf(c);
         To[n.position].value[f] = vl[n.meta.group] = n;
       }
@@ -9072,7 +9228,7 @@
       let o = Qm["" + e.meta.uid];
       if (o) {
         let { width: r, height: n } = getComputedStyle(o);
-        o.style.left = "".concat(o.offsetLeft, "px"), o.style.width = r, o.style.height = n;
+        o.style.left = `${o.offsetLeft}px`, o.style.width = r, o.style.height = n;
       }
       To[e.position].value.splice(t, 1), typeof e.onDismiss == "function" && e.onDismiss();
     }
@@ -9081,15 +9237,15 @@
     return e != null && o0.test(e) !== true;
   }
   function Sa(e, t) {
-    return console.error("Notify: ".concat(e), t), false;
+    return console.error(`Notify: ${e}`, t), false;
   }
   function i0() {
     return P({ name: "QNotifications", devtools: { hide: true }, setup() {
-      return () => i("div", { class: "q-notifications" }, xu.map((e) => i(Bu, { key: e, class: Nm[e], tag: "div", name: "q-notification--".concat(e) }, () => To[e].value.map((t) => {
+      return () => i("div", { class: "q-notifications" }, xu.map((e) => i(Bu, { key: e, class: Nm[e], tag: "div", name: `q-notification--${e}` }, () => To[e].value.map((t) => {
         let o = t.meta, r = [];
         if (o.hasMedia === true && (t.spinner !== false ? r.push(i(t.spinner, { class: "q-notification__spinner q-notification__spinner--" + o.leftClass, color: t.spinnerColor, size: t.spinnerSize })) : t.icon ? r.push(i(Re, { class: "q-notification__icon q-notification__icon--" + o.leftClass, name: t.icon, color: t.iconColor, size: t.iconSize, role: "img" })) : t.avatar && r.push(i(Va, { class: "q-notification__avatar q-notification__avatar--" + o.leftClass }, () => i("img", { src: t.avatar, "aria-hidden": "true" })))), o.hasText === true) {
           let a, l = { class: "q-notification__message col" };
-          if (t.html === true) l.innerHTML = t.caption ? "<div>".concat(t.message, '</div><div class="q-notification__caption">').concat(t.caption, "</div>") : t.message;
+          if (t.html === true) l.innerHTML = t.caption ? `<div>${t.message}</div><div class="q-notification__caption">${t.caption}</div>` : t.message;
           else {
             let u = [t.message];
             a = t.caption ? [i("div", u), i("div", { class: "q-notification__caption" }, [t.caption])] : u;
@@ -9097,9 +9253,9 @@
           r.push(i("div", l, a));
         }
         let n = [i("div", { class: o.contentClass }, r)];
-        return t.progress === true && n.push(i("div", { key: "".concat(o.uid, "|p|").concat(o.badge), class: o.progressClass, style: o.progressStyle })), t.actions !== void 0 && n.push(i("div", { class: o.actionsClass }, t.actions.map((a) => i(Ve, a)))), o.badge > 1 && n.push(i("div", { key: "".concat(o.uid, "|").concat(o.badge), class: t.meta.badgeClass, style: t.badgeStyle }, [o.badge])), i("div", { ref: (a) => {
+        return t.progress === true && n.push(i("div", { key: `${o.uid}|p|${o.badge}`, class: o.progressClass, style: o.progressStyle })), t.actions !== void 0 && n.push(i("div", { class: o.actionsClass }, t.actions.map((a) => i(Ve, a)))), o.badge > 1 && n.push(i("div", { key: `${o.uid}|${o.badge}`, class: t.meta.badgeClass, style: t.badgeStyle }, [o.badge])), i("div", __spreadValues({ ref: (a) => {
           Qm["" + o.uid] = a;
-        }, key: o.uid, class: o.class, ...o.attrs }, [i("div", { class: o.wrapperClass }, n)]);
+        }, key: o.uid, class: o.class }, o.attrs), [i("div", { class: o.wrapperClass }, n)]);
       }))));
     } });
   }
@@ -9111,8 +9267,8 @@
     if (e.notify = this.create = (o) => jm(o, e), e.notify.setDefaults = this.setDefaults, e.notify.registerType = this.registerType, e.config.notify !== void 0 && this.setDefaults(e.config.notify), this.__installed !== true) {
       xu.forEach((r) => {
         To[r] = T([]);
-        let n = ["left", "center", "right"].includes(r) === true ? "center" : r.indexOf("top") !== -1 ? "top" : "bottom", a = r.indexOf("left") !== -1 ? "start" : r.indexOf("right") !== -1 ? "end" : "center", l = ["left", "right"].includes(r) ? "items-".concat(r === "left" ? "start" : "end", " justify-center") : r === "center" ? "flex-center" : "items-".concat(a);
-        Nm[r] = "q-notifications__list q-notifications__list--".concat(n, " fixed column no-wrap ").concat(l);
+        let n = ["left", "center", "right"].includes(r) === true ? "center" : r.indexOf("top") !== -1 ? "top" : "bottom", a = r.indexOf("left") !== -1 ? "start" : r.indexOf("right") !== -1 ? "end" : "center", l = ["left", "right"].includes(r) ? `items-${r === "left" ? "start" : "end"} justify-center` : r === "center" ? "flex-center" : `items-${a}`;
+        Nm[r] = `q-notifications__list q-notifications__list--${n} fixed column no-wrap ${l}`;
       });
       let o = Eo("q-notify");
       an(i0(), t).mount(o);
@@ -9319,7 +9475,7 @@
           }
           let k = { key: x, status: "rejected", reason: y };
           if (u[x] = k, o === true) {
-            n = true, g({ ...k, resultAggregator: u });
+            n = true, g(__spreadProps(__spreadValues({}, k), { resultAggregator: u }));
             return;
           }
           setTimeout(m);
@@ -9381,7 +9537,7 @@
     } };
   }
   window.Vue === void 0 && console.error("[ Quasar ] Vue is required to run. Please add a script tag for it before loading Quasar.");
-  window.Quasar = { version: "2.18.5", install(e, t) {
-    Ju(e, { components: nl, directives: ll, plugins: pl, ...t });
-  }, lang: Yo, iconSet: Qn, ...nl, ...ll, ...pl, ...ku, ...Cu };
+  window.Quasar = __spreadValues(__spreadValues(__spreadValues(__spreadValues(__spreadValues({ version: "2.18.5", install(e, t) {
+    Ju(e, __spreadValues({ components: nl, directives: ll, plugins: pl }, t));
+  }, lang: Yo, iconSet: Qn }, nl), ll), pl), ku), Cu);
 })();

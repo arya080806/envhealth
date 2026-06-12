@@ -1,5 +1,5 @@
 export default {
-  template: '<video :controls="controls" :autoplay="autoplay" :muted="muted" :src="computed_src" />',
+  template: `<video :controls="controls" :autoplay="autoplay" :muted="muted" :src="computed_src" />`,
   props: {
     controls: Boolean,
     autoplay: Boolean,

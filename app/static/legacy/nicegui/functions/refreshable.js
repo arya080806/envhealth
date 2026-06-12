@@ -1,3 +1,3 @@
 export default {
-  template: "<slot></slot>"
+  template: `<slot></slot>`
 };

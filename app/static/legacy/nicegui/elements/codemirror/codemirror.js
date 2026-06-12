@@ -1,6 +1,47 @@
+var __defProp = Object.defineProperty;
+var __defProps = Object.defineProperties;
+var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 import * as CM from "nicegui-codemirror";
 export default {
-  template: "\n    <div></div>\n  ",
+  template: `
+    <div></div>
+  `,
   props: {
     value: String,
     language: String,
@@ -46,14 +87,16 @@ export default {
       for (const language of this.languages)
         for (const alias of [language.name, ...language.alias])
           if (name.toLowerCase() === alias.toLowerCase()) return language;
-      console.error("Language not found: ".concat(this.language));
+      console.error(`Language not found: ${this.language}`);
       console.info("Supported language names:", languages.map((lang) => lang.name).join(", "));
       return null;
     },
     // Get the names of all supported languages
-    async getLanguages() {
-      if (!this.editor) await this.editorPromise;
-      return this.languages.map((lang) => lang.name).sort(Intl.Collator("en").compare);
+    getLanguages() {
+      return __async(this, null, function* () {
+        if (!this.editor) yield this.editorPromise;
+        return this.languages.map((lang) => lang.name).sort(Intl.Collator("en").compare);
+      });
     },
     setLanguage(language) {
       if (!language) {
@@ -73,9 +116,11 @@ export default {
         });
       });
     },
-    async getThemes() {
-      if (!this.editor) await this.editorPromise;
-      return Object.keys(this.themes).filter((key) => Array.isArray(this.themes[key])).sort(Intl.Collator("en").compare);
+    getThemes() {
+      return __async(this, null, function* () {
+        if (!this.editor) yield this.editorPromise;
+        return Object.keys(this.themes).filter((key) => Array.isArray(this.themes[key])).sort(Intl.Collator("en").compare);
+      });
     },
     setTheme(theme) {
       const new_theme = this.themes[theme];
@@ -148,25 +193,27 @@ export default {
       return extensions;
     }
   },
-  async mounted() {
-    this.emitting = true;
-    this.themes = { ...CM.themes, oneDark: CM.oneDark };
-    this.themeConfig = new CM.Compartment();
-    this.languages = CM.languages;
-    this.languageConfig = new CM.Compartment();
-    this.editableConfig = new CM.Compartment();
-    this.editableStates = { true: CM.EditorView.editable.of(true), false: CM.EditorView.editable.of(false) };
-    this.lineWrappingConfig = new CM.Compartment();
-    const extensions = this.setupExtensions();
-    this.editor = new CM.EditorView({
-      doc: this.value,
-      extensions,
-      parent: this.$el
+  mounted() {
+    return __async(this, null, function* () {
+      this.emitting = true;
+      this.themes = __spreadProps(__spreadValues({}, CM.themes), { oneDark: CM.oneDark });
+      this.themeConfig = new CM.Compartment();
+      this.languages = CM.languages;
+      this.languageConfig = new CM.Compartment();
+      this.editableConfig = new CM.Compartment();
+      this.editableStates = { true: CM.EditorView.editable.of(true), false: CM.EditorView.editable.of(false) };
+      this.lineWrappingConfig = new CM.Compartment();
+      const extensions = this.setupExtensions();
+      this.editor = new CM.EditorView({
+        doc: this.value,
+        extensions,
+        parent: this.$el
+      });
+      this.resolveEditor(this.editor);
+      this.setLanguage(this.language);
+      this.setTheme(this.theme);
+      this.setDisabled(this.disable);
+      this.setLineWrapping(this.lineWrapping);
     });
-    this.resolveEditor(this.editor);
-    this.setLanguage(this.language);
-    this.setTheme(this.theme);
-    this.setDisabled(this.disable);
-    this.setLineWrapping(this.lineWrapping);
   }
 };

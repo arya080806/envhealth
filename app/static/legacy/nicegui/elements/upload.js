@@ -1,5 +1,14 @@
 export default {
-  template: '\n    <q-uploader\n      ref="qRef"\n      :url="computed_url"\n    >\n      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">\n        <slot :name="slot" v-bind="slotProps || {}" />\n      </template>\n    </q-uploader>\n  ',
+  template: `
+    <q-uploader
+      ref="qRef"
+      :url="computed_url"
+    >
+      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">
+        <slot :name="slot" v-bind="slotProps || {}" />
+      </template>
+    </q-uploader>
+  `,
   mounted() {
     setTimeout(() => this.compute_url(), 0);
   },

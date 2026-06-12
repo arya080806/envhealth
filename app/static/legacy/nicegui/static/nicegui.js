@@ -1,3 +1,39 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key2, value2) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key2] = value2;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve2, reject) => {
+    var fulfilled = (value2) => {
+      try {
+        step(generator.next(value2));
+      } catch (e2) {
+        reject(e2);
+      }
+    };
+    var rejected = (value2) => {
+      try {
+        step(generator.throw(value2));
+      } catch (e2) {
+        reject(e2);
+      }
+    };
+    var step = (x) => x.done ? resolve2(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 var _a;
 const True = true;
 const False = false;
@@ -29,14 +65,14 @@ function initUnoCss() {
       }
     }
     if (newClassesString.length === 0) return;
-    queue = queue.then(async () => {
-      await window.__unocss_runtime.extract(newClassesString);
+    queue = queue.then(() => __async(null, null, function* () {
+      yield window.__unocss_runtime.extract(newClassesString);
       if (isInitialized) return;
       for (const style of document.querySelectorAll("style[data-unocss-runtime-layer]"))
         document.head.appendChild(style);
       document.getElementById("app").classList.remove("nicegui-unocss-loading");
       isInitialized = true;
-    });
+    }));
   }).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class"] });
 }
 function applyColors(colors) {
@@ -57,8 +93,10 @@ function applyColors(colors) {
     const colorName = color.replaceAll("_", "-");
     const colorVar = "--q-" + colorName;
     document.body.style.setProperty(colorVar, colors[color]);
-    customCSS += ".text-".concat(colorName, " { color: var(").concat(colorVar, ") !important; }\n");
-    customCSS += ".bg-".concat(colorName, " { background-color: var(").concat(colorVar, ") !important; }\n");
+    customCSS += `.text-${colorName} { color: var(${colorVar}) !important; }
+`;
+    customCSS += `.bg-${colorName} { background-color: var(${colorVar}) !important; }
+`;
   }
   if (!customCSS) return;
   const style = document.createElement("style");
@@ -86,10 +124,9 @@ function replaceUndefinedAttributes(element2) {
   (_d = element2.text) != null ? _d : element2.text = null;
   (_e = element2.events) != null ? _e : element2.events = [];
   (_f = element2.update_method) != null ? _f : element2.update_method = null;
-  element2.slots = {
-    default: { ids: element2.children || [] },
-    ...(_g = element2.slots) != null ? _g : {}
-  };
+  element2.slots = __spreadValues({
+    default: { ids: element2.children || [] }
+  }, (_g = element2.slots) != null ? _g : {});
 }
 function getElement(id2) {
   const _id = id2 instanceof Element ? id2.id.slice(1) : id2;
@@ -116,7 +153,7 @@ function runMethod(target, method_name, args) {
       return element2.$refs.qRef[method_name](...args);
     }
   }
-  let msg = 'Method "'.concat(method_name, '" not found.');
+  let msg = `Method "${method_name}" not found.`;
   if (method_name.includes("=>") || method_name.startsWith("(")) {
     msg += " To run arbitrary JavaScript, use ui.run_javascript() instead.";
   }
@@ -203,26 +240,25 @@ function renderRecursively(elements, id, propsContext) {
   if (element === void 0) {
     return;
   }
-  const props = {
+  const props = __spreadValues({
     id: "c" + id,
     ref: "r" + id,
     key: id,
     // HACK: workaround for #600 and #898
     class: element.class.join(" ") || void 0,
-    style: Object.entries(element.style).reduce((str, [p, val]) => "".concat(str).concat(p, ":").concat(val, ";"), "") || void 0,
-    ...element.props
-  };
+    style: Object.entries(element.style).reduce((str, [p, val]) => `${str}${p}:${val};`, "") || void 0
+  }, element.props);
   Object.entries(props).forEach(([key, value]) => {
     if (key.startsWith(":")) {
       try {
         try {
-          props[key.substring(1)] = new Function("props", "return (".concat(value, ")"))(propsContext);
+          props[key.substring(1)] = new Function("props", `return (${value})`)(propsContext);
         } catch (e) {
           props[key.substring(1)] = eval(value);
         }
         delete props[key];
       } catch (e2) {
-        console.error("Error while converting ".concat(key, " attribute to function:"), e2);
+        console.error(`Error while converting ${key} attribute to function:`, e2);
       }
     }
   });
@@ -264,10 +300,9 @@ function renderRecursively(elements, id, propsContext) {
     }
   });
   const slots = {};
-  const element_slots = {
-    default: { ids: element.children || [] },
-    ...element.slots
-  };
+  const element_slots = __spreadValues({
+    default: { ids: element.children || [] }
+  }, element.slots);
   Object.entries(element_slots).forEach(([name, data]) => {
     slots[name] = (props2) => {
       const rendered = [];
@@ -295,7 +330,7 @@ function renderRecursively(elements, id, propsContext) {
 }
 function runJavascript(code, request_id) {
   new Promise((resolve) => resolve(eval(code))).catch((reason) => {
-    if (reason instanceof SyntaxError) return eval("(async() => {".concat(code, "})()"));
+    if (reason instanceof SyntaxError) return eval(`(async() => {${code}})()`);
     else throw reason;
   }).then((result) => {
     if (request_id) {
@@ -369,7 +404,7 @@ function createApp(elements2, options) {
       options.query.tab_id = TAB_ID;
       options.query.old_tab_id = OLD_TAB_ID;
       window.socket = io(url, {
-        path: "".concat(options.prefix, "/_nicegui_ws/socket.io"),
+        path: `${options.prefix}/_nicegui_ws/socket.io`,
         query: options.query,
         extraHeaders: options.extraHeaders,
         transports: "prerendering" in document && document.prerendering === true ? ["polling", ...options.transports] : options.transports
@@ -383,9 +418,9 @@ function createApp(elements2, options) {
             return function(...args) {
               const msg = args[0];
               if (typeof msg === "string" && msg.length > MAX_WEBSOCKET_MESSAGE_SIZE) {
-                const errorMessage = "Payload size ".concat(msg.length, " exceeds the maximum allowed limit.");
+                const errorMessage = `Payload size ${msg.length} exceeds the maximum allowed limit.`;
                 console.error(errorMessage);
-                args[0] = '42["log",{"client_id":"'.concat(window.clientId, '","level":"error","message":"').concat(errorMessage, '"}]');
+                args[0] = `42["log",{"client_id":"${window.clientId}","level":"error","message":"${errorMessage}"}]`;
                 if (window.tooLongMessageTimerId) clearTimeout(window.tooLongMessageTimerId);
                 const popup = document.getElementById("too_long_message_popup");
                 popup.ariaHidden = false;
@@ -420,21 +455,21 @@ function createApp(elements2, options) {
             window.location.reload();
           }
         },
-        try_reconnect: async () => {
+        try_reconnect: () => __async(this, null, function* () {
           document.getElementById("popup").ariaHidden = false;
-          await fetch(window.location.href, { headers: { "NiceGUI-Check": "try_reconnect" } });
+          yield fetch(window.location.href, { headers: { "NiceGUI-Check": "try_reconnect" } });
           console.log("reloading because reconnect was requested");
           window.location.reload();
-        },
+        }),
         disconnect: () => {
           document.getElementById("popup").ariaHidden = false;
         },
-        load_js_components: async (msg) => {
-          const urls = msg.components.map((c) => "".concat(options.prefix, "/_nicegui/").concat(options.version, "/components/").concat(c.key));
-          const imports = await Promise.all(urls.map((url2) => import(url2)));
+        load_js_components: (msg) => __async(this, null, function* () {
+          const urls = msg.components.map((c) => `${options.prefix}/_nicegui/${options.version}/components/${c.key}`);
+          const imports = yield Promise.all(urls.map((url2) => import(url2)));
           msg.components.forEach((c, i) => app.component(c.tag, imports[i].default));
-        },
-        update: async (msg) => {
+        }),
+        update: (msg) => __async(this, null, function* () {
           var _a2, _b, _c;
           let eventListenersChanged = false;
           for (const [id2, element2] of Object.entries(msg)) {
@@ -448,7 +483,7 @@ function createApp(elements2, options) {
           }
           if (eventListenersChanged) {
             logAndEmit("warning", "Event listeners changed after initial definition. Re-rendering affected elements.");
-            await this.$nextTick();
+            yield this.$nextTick();
           }
           for (const [id2, element2] of Object.entries(msg)) {
             if (element2 === null) {
@@ -458,13 +493,13 @@ function createApp(elements2, options) {
             replaceUndefinedAttributes(element2);
             this.elements[id2] = element2;
           }
-          await this.$nextTick();
+          yield this.$nextTick();
           for (const [id2, element2] of Object.entries(msg)) {
             if (element2 == null ? void 0 : element2.update_method) {
               (_c = getElement(id2)) == null ? void 0 : _c[element2.update_method]();
             }
           }
-        },
+        }),
         run_javascript: (msg) => runJavascript(msg.code, msg.request_id),
         open: (msg) => {
           const url2 = msg.path.startsWith("/") ? options.prefix + msg.path : msg.path;
@@ -477,7 +512,7 @@ function createApp(elements2, options) {
       const socketMessageQueue = [];
       let isProcessingSocketMessage = false;
       for (const [event2, handler2] of Object.entries(messageHandlers)) {
-        window.socket.on(event2, async (...args) => {
+        window.socket.on(event2, (...args) => __async(this, null, function* () {
           if (args.length > 0 && args[0]._id !== void 0) {
             const message_id = args[0]._id;
             if (message_id < window.nextMessageId) return;
@@ -490,14 +525,14 @@ function createApp(elements2, options) {
               const handler3 = socketMessageQueue.shift();
               isProcessingSocketMessage = true;
               try {
-                await handler3();
+                yield handler3();
               } catch (e2) {
                 console.error(e2);
               }
               isProcessingSocketMessage = false;
             }
           }
-        });
+        }));
       }
     }
   });

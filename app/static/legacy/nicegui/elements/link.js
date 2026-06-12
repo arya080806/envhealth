@@ -1,5 +1,5 @@
 export default {
-  template: '<a :href="computed_href" :target="target"><slot></slot></a>',
+  template: `<a :href="computed_href" :target="target"><slot></slot></a>`,
   mounted() {
     setTimeout(this.compute_href, 0);
   },

@@ -21,7 +21,7 @@ function handleStateEvent(event) {
 }
 function handleFragmentNavigation(href, targetUrl) {
   const fragmentName = targetUrl.hash.substring(1);
-  const target = document.getElementById(fragmentName) || document.querySelector('a[name="'.concat(fragmentName, '"]'));
+  const target = document.getElementById(fragmentName) || document.querySelector(`a[name="${fragmentName}"]`);
   if (!target) return false;
   target.scrollIntoView({ behavior: "smooth" });
   const cleanHref = stripPathPrefix(href);
@@ -50,5 +50,5 @@ document.addEventListener("click", (e) => {
   }
 });
 export default {
-  template: "<div><slot></slot></div>"
+  template: `<div><slot></slot></div>`
 };

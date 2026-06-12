@@ -10,7 +10,7 @@ export default {
     Object.getOwnPropertyNames(Object.getPrototypeOf(this.terminal)).filter((key) => key.startsWith("on") && typeof this.terminal[key] === "function").forEach((key) => {
       this.terminal[key]((e) => this.$emit(key.slice(2).toLowerCase(), e));
     });
-    this.$nextTick().then(() => loadResource(window.path_prefix + "".concat(this.resourcePath, "/xterm.css")));
+    this.$nextTick().then(() => loadResource(window.path_prefix + `${this.resourcePath}/xterm.css`));
   },
   methods: {
     getRows() {
@@ -34,7 +34,7 @@ export default {
     run_terminal_method(name, ...args) {
       if (name.startsWith(":")) {
         name = name.slice(1);
-        args = args.map((arg) => new Function("return (".concat(arg, ");")).call(this.terminal));
+        args = args.map((arg) => new Function(`return (${arg});`).call(this.terminal));
       }
       return runMethod(this.terminal, name, args);
     }

@@ -1,6 +1,12 @@
 import { convertDynamicProperties } from "../../static/utils/dynamic_properties.js";
 export default {
-  template: '\n    <q-table ref="qRef" :columns="convertedColumns" @fullscreen="setFullscreenClass">\n      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">\n        <slot :name="slot" v-bind="slotProps || {}" />\n      </template>\n    </q-table>\n  ',
+  template: `
+    <q-table ref="qRef" :columns="convertedColumns" @fullscreen="setFullscreenClass">
+      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">
+        <slot :name="slot" v-bind="slotProps || {}" />
+      </template>
+    </q-table>
+  `,
   props: {
     columns: Array
   },

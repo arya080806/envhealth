@@ -1,91 +1,116 @@
+var __async = (__this, __arguments, generator) => {
+  return new Promise((resolve, reject) => {
+    var fulfilled = (value) => {
+      try {
+        step(generator.next(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var rejected = (value) => {
+      try {
+        step(generator.throw(value));
+      } catch (e) {
+        reject(e);
+      }
+    };
+    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
+    step((generator = generator.apply(__this, __arguments)).next());
+  });
+};
 import SceneLib from "nicegui-scene";
 const { THREE, TWEEN, Stats } = SceneLib;
 export default {
-  template: '\n    <div style="position:relative" data-initializing>\n      <canvas style="position:relative"></canvas>\n    </div>',
-  async mounted() {
-    await this.$nextTick();
-    this.scene = getElement(this.sceneId).scene;
-    if (this.showStats) {
-      this.stats = new Stats();
-      this.stats.domElement.style.position = "absolute";
-      this.stats.domElement.style.top = "0px";
-      this.$el.appendChild(this.stats.domElement);
-    }
-    if (this.cameraType === "perspective") {
-      this.camera = new THREE.PerspectiveCamera(
-        this.cameraParams.fov,
-        this.width / this.height,
-        this.cameraParams.near,
-        this.cameraParams.far
-      );
-    } else {
-      this.camera = new THREE.OrthographicCamera(
-        -this.cameraParams.size / 2 * (this.width / this.height),
-        this.cameraParams.size / 2 * (this.width / this.height),
-        this.cameraParams.size / 2,
-        -this.cameraParams.size / 2,
-        this.cameraParams.near,
-        this.cameraParams.far
-      );
-    }
-    this.look_at = new THREE.Vector3(0, 0, 0);
-    this.camera.lookAt(this.look_at);
-    this.camera.up = new THREE.Vector3(0, 0, 1);
-    this.camera.position.set(0, -3, 5);
-    this.renderer = void 0;
-    try {
-      this.renderer = new THREE.WebGLRenderer({
-        antialias: true,
-        alpha: true,
-        canvas: this.$el.children[0]
-      });
-    } catch {
-      this.$el.innerHTML = "Could not create WebGL renderer.";
-      this.$el.style.width = this.width + "px";
-      this.$el.style.height = this.height + "px";
-      this.$el.style.padding = "10px";
-      this.$el.style.border = "1px solid silver";
-      return;
-    }
-    this.renderer.setClearColor("#eee");
-    this.renderer.setSize(this.width, this.height);
-    this.$nextTick(() => this.resize());
-    window.addEventListener("resize", this.resize, false);
-    window.addEventListener("DOMContentLoaded", this.resize, false);
-    const render = () => {
-      var _a;
-      requestAnimationFrame(() => setTimeout(() => render(), 1e3 / this.fps));
-      (_a = this.camera_tween) == null ? void 0 : _a.update();
-      this.renderer.render(this.scene, this.camera);
-      if (this.showStats) this.stats.update();
-    };
-    render();
-    const raycaster = new THREE.Raycaster();
-    const click_handler = (mouseEvent) => {
-      let x = mouseEvent.offsetX / this.renderer.domElement.width * 2 - 1;
-      let y = -(mouseEvent.offsetY / this.renderer.domElement.height) * 2 + 1;
-      raycaster.setFromCamera({ x, y }, this.camera);
-      this.$emit("click3d", {
-        hits: raycaster.intersectObjects(this.scene.children, true).filter((o) => o.object.object_id).map((o) => ({
-          object_id: o.object.object_id,
-          object_name: o.object.name,
-          point: o.point
-        })),
-        click_type: mouseEvent.type,
-        button: mouseEvent.button,
-        alt_key: mouseEvent.altKey,
-        ctrl_key: mouseEvent.ctrlKey,
-        meta_key: mouseEvent.metaKey,
-        shift_key: mouseEvent.shiftKey
-      });
-    };
-    this.$el.onclick = click_handler;
-    this.$el.ondblclick = click_handler;
-    const connectInterval = setInterval(() => {
-      if (window.socket.id === void 0) return;
-      this.$emit("init");
-      clearInterval(connectInterval);
-    }, 100);
+  template: `
+    <div style="position:relative" data-initializing>
+      <canvas style="position:relative"></canvas>
+    </div>`,
+  mounted() {
+    return __async(this, null, function* () {
+      yield this.$nextTick();
+      this.scene = getElement(this.sceneId).scene;
+      if (this.showStats) {
+        this.stats = new Stats();
+        this.stats.domElement.style.position = "absolute";
+        this.stats.domElement.style.top = "0px";
+        this.$el.appendChild(this.stats.domElement);
+      }
+      if (this.cameraType === "perspective") {
+        this.camera = new THREE.PerspectiveCamera(
+          this.cameraParams.fov,
+          this.width / this.height,
+          this.cameraParams.near,
+          this.cameraParams.far
+        );
+      } else {
+        this.camera = new THREE.OrthographicCamera(
+          -this.cameraParams.size / 2 * (this.width / this.height),
+          this.cameraParams.size / 2 * (this.width / this.height),
+          this.cameraParams.size / 2,
+          -this.cameraParams.size / 2,
+          this.cameraParams.near,
+          this.cameraParams.far
+        );
+      }
+      this.look_at = new THREE.Vector3(0, 0, 0);
+      this.camera.lookAt(this.look_at);
+      this.camera.up = new THREE.Vector3(0, 0, 1);
+      this.camera.position.set(0, -3, 5);
+      this.renderer = void 0;
+      try {
+        this.renderer = new THREE.WebGLRenderer({
+          antialias: true,
+          alpha: true,
+          canvas: this.$el.children[0]
+        });
+      } catch (e) {
+        this.$el.innerHTML = "Could not create WebGL renderer.";
+        this.$el.style.width = this.width + "px";
+        this.$el.style.height = this.height + "px";
+        this.$el.style.padding = "10px";
+        this.$el.style.border = "1px solid silver";
+        return;
+      }
+      this.renderer.setClearColor("#eee");
+      this.renderer.setSize(this.width, this.height);
+      this.$nextTick(() => this.resize());
+      window.addEventListener("resize", this.resize, false);
+      window.addEventListener("DOMContentLoaded", this.resize, false);
+      const render = () => {
+        var _a;
+        requestAnimationFrame(() => setTimeout(() => render(), 1e3 / this.fps));
+        (_a = this.camera_tween) == null ? void 0 : _a.update();
+        this.renderer.render(this.scene, this.camera);
+        if (this.showStats) this.stats.update();
+      };
+      render();
+      const raycaster = new THREE.Raycaster();
+      const click_handler = (mouseEvent) => {
+        let x = mouseEvent.offsetX / this.renderer.domElement.width * 2 - 1;
+        let y = -(mouseEvent.offsetY / this.renderer.domElement.height) * 2 + 1;
+        raycaster.setFromCamera({ x, y }, this.camera);
+        this.$emit("click3d", {
+          hits: raycaster.intersectObjects(this.scene.children, true).filter((o) => o.object.object_id).map((o) => ({
+            object_id: o.object.object_id,
+            object_name: o.object.name,
+            point: o.point
+          })),
+          click_type: mouseEvent.type,
+          button: mouseEvent.button,
+          alt_key: mouseEvent.altKey,
+          ctrl_key: mouseEvent.ctrlKey,
+          meta_key: mouseEvent.metaKey,
+          shift_key: mouseEvent.shiftKey
+        });
+      };
+      this.$el.onclick = click_handler;
+      this.$el.ondblclick = click_handler;
+      const connectInterval = setInterval(() => {
+        if (window.socket.id === void 0) return;
+        this.$emit("init");
+        clearInterval(connectInterval);
+      }, 100);
+    });
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.resize);

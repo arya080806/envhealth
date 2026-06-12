@@ -1,5 +1,26 @@
 export default {
-  template: '\n    <div :style="{ position: \'relative\', aspectRatio: size ? size[0] / size[1] : undefined }">\n      <img\n        ref="img"\n        :src="computed_src"\n        :style="{ width: \'100%\', height: \'100%\', opacity: src ? 1 : 0 }"\n        @load="onImageLoaded"\n        v-on="onCrossEvents"\n        v-on="onUserEvents"\n        draggable="false"\n      />\n      <svg ref="svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" :viewBox="viewBox" preserveAspectRatio="none">\n        <g :style="{ display: showCross ? \'block\' : \'none\' }">\n          <line v-if="cross" :x1="x" y1="0" :x2="x" y2="100%" :stroke="cross === true ? \'black\' : cross" />\n          <line v-if="cross" x1="0" :y1="y" x2="100%" :y2="y" :stroke="cross === true ? \'black\' : cross" />\n          <slot name="cross" :x="x" :y="y"></slot>\n        </g>\n        <g ref="contentGroup"></g>\n      </svg>\n      <slot></slot>\n    </div>\n  ',
+  template: `
+    <div :style="{ position: 'relative', aspectRatio: size ? size[0] / size[1] : undefined }">
+      <img
+        ref="img"
+        :src="computed_src"
+        :style="{ width: '100%', height: '100%', opacity: src ? 1 : 0 }"
+        @load="onImageLoaded"
+        v-on="onCrossEvents"
+        v-on="onUserEvents"
+        draggable="false"
+      />
+      <svg ref="svg" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none" :viewBox="viewBox" preserveAspectRatio="none">
+        <g :style="{ display: showCross ? 'block' : 'none' }">
+          <line v-if="cross" :x1="x" y1="0" :x2="x" y2="100%" :stroke="cross === true ? 'black' : cross" />
+          <line v-if="cross" x1="0" :y1="y" x2="100%" :y2="y" :stroke="cross === true ? 'black' : cross" />
+          <slot name="cross" :x="x" :y="y"></slot>
+        </g>
+        <g ref="contentGroup"></g>
+      </svg>
+      <slot></slot>
+    </div>
+  `,
   data() {
     return {
       viewBox: "0 0 0 0",
@@ -58,10 +79,10 @@ export default {
       if (content === this.previousContent) return;
       if (this.sanitize) {
         if (!this.DOMPurify) return;
-        const sanitized = this.DOMPurify.sanitize("<svg>".concat(content, "</svg>"), {
+        const sanitized = this.DOMPurify.sanitize(`<svg>${content}</svg>`, {
           USE_PROFILES: { svg: true, svgFilters: true }
         });
-        const match = sanitized.match(/^<svg>(.*)<\/svg>$/is);
+        const match = sanitized.match(new RegExp("^<svg>(.*)<\\/svg>$", "is"));
         this.$refs.contentGroup.innerHTML = match ? match[1] : "";
       } else {
         this.$refs.contentGroup.innerHTML = content;
@@ -114,7 +135,7 @@ export default {
     onPointerEvent(type, e) {
       const imageWidth = this.src ? this.loaded_image_width : this.size ? this.size[0] : 1;
       const imageHeight = this.src ? this.loaded_image_height : this.size ? this.size[1] : 1;
-      this.$emit("svg:".concat(type), {
+      this.$emit(`svg:${type}`, {
         type,
         element_id: e.target.id,
         image_x: e.offsetX * imageWidth / this.$refs.svg.clientWidth,
@@ -122,7 +143,7 @@ export default {
       });
     },
     updateViewbox(width, height) {
-      this.viewBox = "0 0 ".concat(width, " ").concat(height);
+      this.viewBox = `0 0 ${width} ${height}`;
     }
   },
   computed: {

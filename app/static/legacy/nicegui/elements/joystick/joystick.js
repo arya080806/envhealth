@@ -1,13 +1,28 @@
+var __defProp = Object.defineProperty;
+var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __propIsEnum = Object.prototype.propertyIsEnumerable;
+var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
+var __spreadValues = (a, b) => {
+  for (var prop in b || (b = {}))
+    if (__hasOwnProp.call(b, prop))
+      __defNormalProp(a, prop, b[prop]);
+  if (__getOwnPropSymbols)
+    for (var prop of __getOwnPropSymbols(b)) {
+      if (__propIsEnum.call(b, prop))
+        __defNormalProp(a, prop, b[prop]);
+    }
+  return a;
+};
 import { nipplejs } from "nicegui-joystick";
 export default {
   template: "<div><div></div></div>",
   mounted() {
-    const joystick = nipplejs.create({
+    const joystick = nipplejs.create(__spreadValues({
       zone: this.$el.children[0],
       position: { left: "50%", top: "50%" },
-      dynamicPage: true,
-      ...this.options
-    });
+      dynamicPage: true
+    }, this.options));
     joystick.on("start", (e) => this.$emit("start", e));
     joystick.on("move", (_, data) => this.$emit("move", { data }));
     joystick.on("end", (e) => this.$emit("end", e));

@@ -64,7 +64,13 @@ function set_point_cloud_data(position2, color, geometry) {
   }
 }
 export default {
-  template: '\n    <div style="position:relative" data-initializing>\n      <canvas style="position:relative"></canvas>\n      <div style="position:absolute;pointer-events:none;top:0"></div>\n      <div style="position:absolute;pointer-events:none;top:0"></div>\n      <div style="position:absolute;display:none;inset:0;cursor:pointer">WebGL context lost. Click to re-initialize.</div>\n    </div>',
+  template: `
+    <div style="position:relative" data-initializing>
+      <canvas style="position:relative"></canvas>
+      <div style="position:absolute;pointer-events:none;top:0"></div>
+      <div style="position:absolute;pointer-events:none;top:0"></div>
+      <div style="position:absolute;display:none;inset:0;cursor:pointer">WebGL context lost. Click to re-initialize.</div>
+    </div>`,
   mounted() {
     this.scene = new THREE.Scene();
     this.clock = new THREE.Clock();
@@ -111,7 +117,7 @@ export default {
         alpha: true,
         canvas: this.$el.children[0]
       });
-    } catch {
+    } catch (e) {
       this.$el.innerHTML = "Could not create WebGL renderer.";
       this.$el.style.width = this.width + "px";
       this.$el.style.height = this.height + "px";
@@ -172,7 +178,7 @@ export default {
     const applyConstraint = (constraint, position) => {
       if (!constraint) return;
       const [variable, expression] = constraint.split("=").map((s) => s.trim());
-      position[variable] = eval(expression.replace(/x|y|z/g, (match) => "(".concat(position[match], ")")));
+      position[variable] = eval(expression.replace(/x|y|z/g, (match) => `(${position[match]})`));
     };
     const handleDrag = (event) => {
       this.dragConstraints.split(",").forEach((constraint2) => applyConstraint(constraint2, event.object.position));

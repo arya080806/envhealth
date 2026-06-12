@@ -1,5 +1,5 @@
 export default {
-  template: '<q-scroll-area ref="qRef" @scroll="onScroll"><slot></slot></q-scroll-area>',
+  template: `<q-scroll-area ref="qRef" @scroll="onScroll"><slot></slot></q-scroll-area>`,
   data() {
     return {
       shouldScroll: true,

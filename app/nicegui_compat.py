@@ -12,13 +12,26 @@ from nicegui.dependencies import js_components, libraries, register_importmap_ov
 _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 _NICEGUI_ROOT = Path(nicegui_client.__file__).resolve().parent
 _LEGACY_ROOT = _PROJECT_ROOT / 'app' / 'static' / 'legacy' / 'nicegui'
-_ASSET_VERSION = '20260612-legacy1'
+_ASSET_VERSION = '20260612-legacy4'
 _IMPORTMAP_ANCHOR = '    <script type="importmap">\n'
 _POLYFILL_TAG = (
     f'    <script src="{{{{ prefix | safe }}}}/static/vendor/es-module-shims.legacy.js?v={_ASSET_VERSION}"></script>\n'
 )
 _LEGACY_BOOTSTRAP = '''    <script>
       (function () {
+        var loadErrors = [];
+        function rememberError(message) {
+          if (!message) return;
+          loadErrors.push(String(message).slice(0, 220));
+          if (loadErrors.length > 3) loadErrors.shift();
+        }
+        window.addEventListener('error', function (event) {
+          rememberError(event && (event.message || (event.error && event.error.message)));
+        });
+        window.addEventListener('unhandledrejection', function (event) {
+          var reason = event && event.reason;
+          rememberError(reason && (reason.message || reason));
+        });
         if (!String.prototype.replaceAll) {
           String.prototype.replaceAll = function (search, replacement) {
             return this.split(search).join(replacement);
@@ -26,23 +39,32 @@ _LEGACY_BOOTSTRAP = '''    <script>
         }
         function showLoadError() {
           var app = document.getElementById('app');
-          if (!app || app.childNodes.length > 0) return;
+          if (!app) return;
+          if (app.__vue_app__ || app.querySelector('.nicegui-content, .q-layout')) return;
+          var currentText = (app.textContent || '').replace(/\\s+/g, ' ').trim();
+          if (app.childNodes.length > 0 && currentText && currentText !== 'Loading...') return;
+          var detail = loadErrors.length
+            ? '<div style="margin-top:10px;font-size:11px;opacity:.66;word-break:break-word;">' + loadErrors.join('<br>') + '</div>'
+            : '';
           app.innerHTML = '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:28px;text-align:center;color:#f6fbf4;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;background:#123428;">'
             + '<div style="max-width:460px;line-height:1.65;">'
             + '<div style="font-size:18px;font-weight:700;margin-bottom:10px;">&#27491;&#22312;&#21551;&#29992; iPad &#20860;&#23481;&#21152;&#36733;</div>'
             + '<div style="font-size:14px;opacity:.88;">&#22914;&#26524;&#39029;&#38754;&#38271;&#26102;&#38388;&#20572;&#22312;&#36825;&#37324;&#65292;&#35831;&#21047;&#26032;&#19968;&#27425;&#65307;&#31995;&#32479;&#27491;&#22312;&#20351;&#29992;&#26087;&#29256; Safari &#21487;&#35299;&#26512;&#30340;&#21069;&#31471;&#36816;&#34892;&#26102;&#12290;</div>'
+            + detail
             + '<button onclick="location.reload()" style="margin-top:18px;border:0;border-radius:999px;padding:10px 18px;background:#f6fbf4;color:#123428;font-weight:700;">&#21047;&#26032;&#39029;&#38754;</button>'
             + '</div></div>';
         }
         if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', function () { setTimeout(showLoadError, 9000); });
+          document.addEventListener('DOMContentLoaded', function () { setTimeout(showLoadError, 30000); });
         } else {
-          setTimeout(showLoadError, 9000);
+          setTimeout(showLoadError, 30000);
         }
       })();
     </script>
 '''
 _TEMPLATE_REPLACEMENTS = {
+    '    {% for url in js_imports_urls %}\n    <link rel="modulepreload" href="{{ url }}" />\n    {% endfor %}':
+        '    {# modulepreload disabled for older iPad WebKit compatibility #}',
     '    <script>\n      addStyle = (c) => document.head.append(Object.assign(document.createElement("style"), { textContent: c }));\n    </script>':
         '    <script>\n'
         '      window.addStyle = function (c) {\n'
@@ -54,6 +76,10 @@ _TEMPLATE_REPLACEMENTS = {
     '      document.getElementById("esm-fallback")?.remove();':
         '      var esmFallback = document.getElementById("esm-fallback");\n'
         '      if (esmFallback) esmFallback.remove();',
+    '      import * as Vue from "vue";':
+        f'      import * as Vue from "{{{{ prefix | safe }}}}/static/legacy/nicegui/static/vue.esm-browser.prod.js?v={_ASSET_VERSION}";',
+    '      import DOMPurify from "dompurify";':
+        f'      import DOMPurify from "{{{{ prefix | safe }}}}/static/legacy/nicegui/static/dompurify.mjs?v={_ASSET_VERSION}";',
     '    <script defer src="{{ prefix | safe }}/_nicegui/{{version}}/static/quasar.umd.prod.js"></script>':
         f'    <script defer src="{{{{ prefix | safe }}}}/static/legacy/nicegui/static/quasar.umd.prod.js?v={_ASSET_VERSION}"></script>',
     '    <script defer src="{{ prefix | safe }}/_nicegui/{{version}}/static/nicegui.js"></script>':

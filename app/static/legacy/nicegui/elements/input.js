@@ -1,5 +1,21 @@
 export default {
-  template: '\n    <q-input\n      ref="qRef"\n      v-bind="$attrs"\n      v-model="inputValue"\n      :shadow-text="shadowText"\n      @keydown.tab="perform_autocomplete"\n      :list="id + \'-datalist\'"\n    >\n      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">\n        <slot :name="slot" v-bind="slotProps || {}" />\n      </template>\n    </q-input>\n    <datalist v-if="withDatalist" :id="id + \'-datalist\'">\n      <option v-for="option in this._autocomplete" :value="option"></option>\n    </datalist>\n  ',
+  template: `
+    <q-input
+      ref="qRef"
+      v-bind="$attrs"
+      v-model="inputValue"
+      :shadow-text="shadowText"
+      @keydown.tab="perform_autocomplete"
+      :list="id + '-datalist'"
+    >
+      <template v-for="(_, slot) in $slots" v-slot:[slot]="slotProps">
+        <slot :name="slot" v-bind="slotProps || {}" />
+      </template>
+    </q-input>
+    <datalist v-if="withDatalist" :id="id + '-datalist'">
+      <option v-for="option in this._autocomplete" :value="option"></option>
+    </datalist>
+  `,
   props: {
     _autocomplete: Array,
     value: String,
