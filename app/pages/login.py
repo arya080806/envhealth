@@ -25,18 +25,28 @@ LOGIN_CSS = '''
 }
 .mobile-page.research-login-page {
     color: var(--ink) !important;
+    isolation: isolate;
+    overflow: hidden auto !important;
+    background-color: #F6F8EF !important;
     background:
         linear-gradient(180deg, rgba(255,255,248,.94), rgba(238,247,235,.98)),
         url('/static/images/light-bamboo-paper.webp') center/cover no-repeat,
         #F6F8EF !important;
 }
 .mobile-page.research-login-page::before {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    margin: 0;
+    z-index: 0;
     background:
         linear-gradient(180deg, rgba(47,123,88,.04), transparent 22%),
         repeating-linear-gradient(90deg, rgba(38,70,52,.035) 0 1px, transparent 1px 42px);
     opacity: .42;
 }
 .research-login-shell {
+    position: relative;
+    z-index: 2;
     width: 100%;
     min-height: 100vh;
     padding: 48px 22px 34px;
@@ -225,7 +235,7 @@ def create_login_page():
                 submit_btn.enable()
                 new_btn.enable()
 
-        with ui.element('div').classes('mobile-page research-login-page'):
+        with ui.element('div').classes('mobile-page light-page research-login-page'):
             with ui.element('div').classes('research-login-shell'):
                 ui.html('<div class="research-login-brand">RESEARCH ACCESS</div>', sanitize=False)
                 ui.html('<div class="research-login-title">参与者登记</div>', sanitize=False)

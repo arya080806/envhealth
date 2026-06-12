@@ -1,5 +1,6 @@
 """Home page."""
 from nicegui import app, ui
+from starlette.responses import RedirectResponse
 
 from app.components.guide import guide_entry
 from app.components.nav import smooth_navigate
@@ -205,15 +206,14 @@ HOME_PAGE_STYLE = '''
 def create_home_page():
     @ui.page('/')
     def home_page():
+        user = app.storage.user.get('user', None)
+        if not user:
+            return RedirectResponse('/login', status_code=302)
+
         ui.add_head_html(META_VIEWPORT)
         ui.add_head_html(COMMON_STYLE)
         ui.add_head_html(HOME_PAGE_STYLE)
         guide_entry(right_offset=24, top_offset=24)
-
-        user = app.storage.user.get('user', None)
-        if not user:
-            smooth_navigate('/login')
-            return
 
         with ui.element('div').classes('home-page'):
             with ui.element('div').classes('home-shell'):
