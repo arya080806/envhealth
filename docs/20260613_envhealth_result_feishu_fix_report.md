@@ -49,8 +49,11 @@
 - 线上 `.env` 已补充：
   - `FEISHU_BITABLE_CHAT_SUMMARY_TABLE_ID=tblZkSIqni3IjZ9J`
   - `FEISHU_BITABLE_SLIDER_SUMMARY_TABLE_ID=tbl0b7OU7sommUqK`
+- 线上飞书 Base 已新增/确认“会话汇总”表：
+  - `FEISHU_BITABLE_SESSIONS_TABLE_ID=tblJ8uNrq1VbskhJ`
 - 补充后已重启服务并执行同步重试，原先两条“智能参数表 ID 缺失”的失败记录已恢复同步。
 - 新增飞书 upsert 容错：如果本地队列保存的 `remote_record_id` 在飞书端已不存在，单条同步和批量同步都会自动改为插入新记录，避免 `record not found` 长期卡死。
+- 线上飞书队列最终状态：`success=23`，`failed=0`，`latest_failures=[]`。
 
 ## 三、验证结果
 
@@ -65,13 +68,14 @@
 - 飞书字段映射本地校验通过，新增字段可转换为对应中文字段名。
 - 线上部署后健康接口 `https://envhealth.cn/api/status` 返回正常。
 - 线上图片接口 `display=1` 和下载接口返回 200。
+- 线上飞书同步重试最终无失败项。
 
 ## 四、尚需继续确认
 
 1. 当前版本已部署到 `envhealth.cn`，健康接口和图片接口已通过；仍需用户按真实流程做页面视觉复查。
 2. 线上飞书已完成一次重试，智能参数缺失配置已修复；仍需用测试账号做四模式端到端校验。
 3. iPad 端仍需要在真实 iPad/Safari 或远程浏览器里做视觉检查，重点看结果页滑杆、长按下载、底部导航和大图高度。
-4. 仍有一条 `session_summary` 因 `FEISHU_BITABLE_SESSIONS_TABLE_ID` 指向不存在表而失败。当前用户重点要求为四个模式子表记录，后续应新建或指定“会话汇总”表后再清理这条失败。
+4. 飞书历史失败项已清理完成；后续重点是用新测试账号再次跑四模式，确认新字段内容符合研究记录需求。
 
 ## 五、后续执行计划
 
