@@ -1553,15 +1553,6 @@ def queue_mode_usage_sync_for_session(session_id: str):
         return
 
     conn = _get_conn()
-    rows = conn.execute(
-        '''
-        SELECT id, mode_used, created_at
-        FROM sessions
-        WHERE user_id = ? AND mode_used IN ('drag', 'inspire', 'chat', 'slider', 'ai')
-        ORDER BY created_at DESC
-        ''',
-        (user_id,),
-    ).fetchall()
     participant_row = conn.execute(
         '''
         SELECT COALESCE(NULLIF(hp.participant_code, ''), u.participant_id) AS participant_code,
@@ -1575,6 +1566,23 @@ def queue_mode_usage_sync_for_session(session_id: str):
         (user_id,),
     ).fetchone()
     now = time.time()
+    participant_code = normalize_hci_participant_code(
+        (participant_row['participant_code'] if participant_row else '')
+        or data.get('participant_code')
+        or data.get('participant_id')
+        or ''
+    )
+    user_ids = _participant_user_ids(conn, user_id, participant_code)
+    placeholders = ','.join('?' for _ in user_ids)
+    rows = conn.execute(
+        f'''
+        SELECT id, mode_used, created_at
+        FROM sessions
+        WHERE user_id IN ({placeholders}) AND mode_used IN ('drag', 'inspire', 'chat', 'slider', 'ai')
+        ORDER BY created_at DESC
+        ''',
+        tuple(user_ids),
+    ).fetchall()
     counts = {
         'drag_usage_count': 0,
         'inspire_usage_count': 0,
@@ -1591,14 +1599,8 @@ def queue_mode_usage_sync_for_session(session_id: str):
     last_mode_used = str(last_row['mode_used'] or '') if last_row else mode_used
     if last_mode_used == 'ai':
         last_mode_used = 'slider'
-    participant_code = normalize_hci_participant_code(
-        (participant_row['participant_code'] if participant_row else '')
-        or data.get('participant_code')
-        or data.get('participant_id')
-        or ''
-    )
     payload = {
-        'summary_key': str(user_id),
+        'summary_key': _participant_summary_key(participant_code, user_id),
         'participant_code': participant_code,
         'display_name': (participant_row['display_name'] if participant_row else '') or data.get('display_name', ''),
         'total_usage_count': sum(counts.values()),
@@ -1647,6 +1649,37 @@ def _row_get(row: sqlite3.Row | dict, key: str, default=None):
     if isinstance(row, sqlite3.Row):
         return row[key] if key in row.keys() else default
     return row.get(key, default)
+
+
+def _participant_summary_key(participant_code: str, user_id: int) -> str:
+    code = normalize_hci_participant_code(participant_code or '')
+    return code if code else str(user_id)
+
+
+def _participant_user_ids(conn: sqlite3.Connection, user_id: int, participant_code: str) -> list[int]:
+    ids = {int(user_id)}
+    code = normalize_hci_participant_code(participant_code or '')
+    if not code:
+        return sorted(ids)
+    legacy_code = _legacy_hci_participant_code(code)
+    code_values = tuple(value for value in (code, legacy_code) if value)
+    if not code_values:
+        return sorted(ids)
+    placeholders = ','.join('?' for _ in code_values)
+    rows = conn.execute(
+        f'''
+        SELECT DISTINCT u.id
+        FROM users u
+        LEFT JOIN hci_participants hp ON hp.user_id = u.id
+        WHERE u.participant_id IN ({placeholders})
+           OR hp.participant_code IN ({placeholders})
+        ''',
+        code_values + code_values,
+    ).fetchall()
+    for row in rows:
+        if row['id']:
+            ids.add(int(row['id']))
+    return sorted(ids)
 
 
 def _countable_work_session(row: sqlite3.Row | dict) -> bool:
@@ -1698,19 +1731,22 @@ def _work_count_summary_payload(user_id: int) -> dict | None:
         ''',
         (user_id,),
     ).fetchone()
+    if not participant:
+        conn.close()
+        return None
+    participant_code = normalize_hci_participant_code(participant['participant_code'] or '')
+    user_ids = _participant_user_ids(conn, user_id, participant_code)
+    placeholders = ','.join('?' for _ in user_ids)
     rows = conn.execute(
-        '''
+        f'''
         SELECT id, mode_used, generated_image_path, canvas_snapshot_path, canvas_json_path,
                generation_count, generation_status, canvas_history
         FROM sessions
-        WHERE user_id = ?
+        WHERE user_id IN ({placeholders})
         ''',
-        (user_id,),
+        tuple(user_ids),
     ).fetchall()
     conn.close()
-
-    if not participant:
-        return None
 
     counts = {
         'total_draft_work_count': 0,
@@ -1737,9 +1773,9 @@ def _work_count_summary_payload(user_id: int) -> dict | None:
 
     now = time.time()
     return {
-        'summary_key': str(user_id),
+        'summary_key': _participant_summary_key(participant_code, user_id),
         'user_id': user_id,
-        'participant_code': normalize_hci_participant_code(participant['participant_code'] or ''),
+        'participant_code': participant_code,
         'display_name': participant['display_name'] or '',
         **counts,
         'updated_at': _iso_time(now),
