@@ -816,15 +816,17 @@ window.EnvCanvas = (function () {
     getElementCount: getElementCount,
     isBackgroundLoaded: function() { return _bgLoaded; },
     initDragDrop: initDragDrop,
-    getCanvasDataURL: function() {
+    getCanvasDataURL: function(maxMultiplier) {
       if (!_canvas) return '';
       _canvas.discardActiveObject();
       _canvas.renderAll();
+      maxMultiplier = Number(maxMultiplier || 4);
+      if (!isFinite(maxMultiplier) || maxMultiplier <= 0) maxMultiplier = 4;
       var multiplier = 1;
       if (_origW && _canvas.getWidth && _canvas.getWidth() > 0) {
-        multiplier = Math.max(1, Math.min(4, _origW / _canvas.getWidth()));
+        multiplier = Math.max(1, Math.min(maxMultiplier, _origW / _canvas.getWidth()));
       } else if (_bgScale > 0) {
-        multiplier = Math.max(1, Math.min(4, 1 / _bgScale));
+        multiplier = Math.max(1, Math.min(maxMultiplier, 1 / _bgScale));
       }
       return _canvas.toDataURL({ format: 'png', multiplier: multiplier });
     },

@@ -9,6 +9,7 @@ from nicegui import ui
 
 from app.components.icons import get_svg, icon_bench, icon_cabin, icon_pond, icon_sun, icon_tree
 from app.components.nav import bottom_nav, smooth_navigate
+from app.services.layout_snapshot import recover_drag_layout_snapshot
 from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_canvas_snapshot, save_output
 from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
@@ -782,30 +783,58 @@ def create_drag_page():
 
         async def save_draft():
             if not session:
-                _show_save_dialog('无法保存', '当前会话无效，请返回重新进入。')
+                _show_save_dialog('\u65e0\u6cd5\u4fdd\u5b58', '\u5f53\u524d\u4f1a\u8bdd\u65e0\u6548\uff0c\u8bf7\u8fd4\u56de\u91cd\u65b0\u8fdb\u5165\u3002')
                 return
 
             save_btn.disable()
             try:
                 session.mode_used = 'drag'
-                canvas_data_url = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getCanvasDataURL()) || ""', timeout=8.0)
-                objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=8.0)
-
-                if canvas_data_url and canvas_data_url.startswith('data:image'):
-                    save_canvas_snapshot(sid, canvas_data_url)
-                if objects_json is not None:
-                    save_canvas_json(sid, objects_json or '[]')
+                saved_parts = []
 
                 try:
                     layout_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getLayoutJSON()) || "[]"', timeout=5.0)
                     raw_elements = json.loads(layout_json) if layout_json else []
                     session.placed_elements = raw_elements if isinstance(raw_elements, list) else []
+                    saved_parts.append('\u5143\u7d20\u5750\u6807')
                 except Exception:
                     pass
 
-                _show_save_dialog('已保存进度', '当前画布和元素位置已同步到草稿箱。')
+                try:
+                    objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=8.0)
+                    if objects_json is not None:
+                        save_canvas_json(sid, objects_json or '[]')
+                        saved_parts.append('\u753b\u5e03JSON')
+                except Exception:
+                    pass
+
+                snapshot_saved = False
+                snapshot_note = ''
+                try:
+                    canvas_data_url = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getCanvasDataURL(2)) || ""', timeout=24.0)
+                    if canvas_data_url and canvas_data_url.startswith('data:image'):
+                        save_canvas_snapshot(sid, canvas_data_url)
+                        snapshot_saved = True
+                        saved_parts.append('\u5143\u7d20\u5e03\u5c40\u56fe')
+                except Exception as exc:
+                    snapshot_note = str(exc)[:120]
+
+                if not snapshot_saved:
+                    try:
+                        recovered_path = recover_drag_layout_snapshot(sid)
+                        if recovered_path:
+                            saved_parts.append('\u6062\u590d\u7248\u5143\u7d20\u5e03\u5c40\u56fe')
+                    except Exception as exc:
+                        snapshot_note = snapshot_note or str(exc)[:120]
+
+                if not saved_parts:
+                    raise RuntimeError('\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e')
+
+                copy = '\u5df2\u540c\u6b65\uff1a' + '\u3001'.join(saved_parts) + '\u3002'
+                if snapshot_note and not snapshot_saved:
+                    copy += '\n\u9ad8\u6e05\u5feb\u7167\u5bfc\u51fa\u8d85\u65f6\uff0c\u5df2\u5148\u4fdd\u5b58\u7ed3\u6784\u5316\u8bb0\u5f55\u548c\u6062\u590d\u7248\u5e03\u5c40\u56fe\u3002'
+                _show_save_dialog('\u5df2\u4fdd\u5b58\u8fdb\u5ea6', copy)
             except Exception as exc:
-                _show_save_dialog('保存失败', str(exc)[:160])
+                _show_save_dialog('\u4fdd\u5b58\u5931\u8d25', str(exc)[:160])
             finally:
                 save_btn.enable()
 
@@ -829,7 +858,7 @@ def create_drag_page():
 
             canvas_data_url = ''
             try:
-                canvas_data_url = await ui.run_javascript('EnvCanvas.getCanvasDataURL()', timeout=10.0)
+                canvas_data_url = await ui.run_javascript('EnvCanvas.getCanvasDataURL(2)', timeout=24.0)
             except Exception:
                 pass
 
@@ -842,6 +871,11 @@ def create_drag_page():
             if canvas_data_url:
                 try:
                     save_canvas_snapshot(sid, canvas_data_url)
+                except Exception:
+                    pass
+            else:
+                try:
+                    recover_drag_layout_snapshot(sid)
                 except Exception:
                     pass
 
