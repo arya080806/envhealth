@@ -817,7 +817,7 @@ def create_drag_page():
                 snapshot_note = ''
                 try:
                     upload_result = await ui.run_javascript(
-                        f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 2)) || ""',
+                        f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 4)) || ""',
                         timeout=45.0,
                     )
                     upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
@@ -870,7 +870,7 @@ def create_drag_page():
             snapshot_saved = False
             try:
                 upload_result = await ui.run_javascript(
-                    f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 2)) || ""',
+                    f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 4)) || ""',
                     timeout=45.0,
                 )
                 upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
