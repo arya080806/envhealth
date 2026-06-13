@@ -17,7 +17,7 @@ if (-not (Test-Path -LiteralPath $scp)) { $scp = "scp" }
 New-Item -ItemType Directory -Force -Path $LocalRecordDir | Out-Null
 
 $remote = "$RemoteUser@$RemoteHost"
-$remoteCommand = "cd $RemoteProject && python -m app.services.research_archive --output $RemoteExport"
+$remoteCommand = "cd $RemoteProject && /home/zm/.local/bin/uv run python -m app.services.research_archive --output $RemoteExport"
 Write-Host "Generating remote archive on $remote..."
 & $ssh -i $IdentityFile -o BatchMode=yes -o ConnectTimeout=20 $remote $remoteCommand
 if ($LASTEXITCODE -ne 0) {
