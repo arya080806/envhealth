@@ -658,7 +658,7 @@ def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_e
 
   loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
     .then(function() {{
-      var envCanvasVersion = 'drag-http-snapshot-20260613';
+      var envCanvasVersion = 'drag-layout-restore-20260613';
       var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
       if (oldEnvScript && oldEnvScript.src.indexOf(envCanvasVersion) === -1) {{
         try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}

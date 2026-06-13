@@ -507,6 +507,7 @@ window.EnvCanvas = (function () {
         heightPct: Math.round((b.height / bH) * 1000) / 10,
         rotation: Math.round(o.angle || 0),
         elemId: o.elemId || '',
+        stackIndex: index,
       };
     });
   }
@@ -581,7 +582,9 @@ window.EnvCanvas = (function () {
     var bH = _origH * _bgScale || _canvas.getHeight();
     var pending = 0;
     var restored = 0;
-    layout.slice(0, MAX_ELEMENTS).forEach(function (item, i) {
+    var restoredItems = [];
+    var source = layout.slice(0, MAX_ELEMENTS);
+    source.forEach(function (item, i) {
       var data = _findElementAsset(item);
       if (!data || !data.dataUrl) return;
       pending += 1;
@@ -593,7 +596,7 @@ window.EnvCanvas = (function () {
         var cy = _bgTop + _clampPct(item.y) / 100 * bH;
         var srcSize = Math.max(g.width || 60, g.height || 60);
         var defaultScale = (_canvas.getWidth() * 0.13) / srcSize;
-        var hasRelativeScale = Number(item.scaleToBg) > 0 || Number(item.widthPct) > 0;
+        var hasRelativeScale = Number(item.scaleToBg) > 0 || Number(item.widthPct) > 0 || Number(item.scale) > 0;
         var targetScale = Number(item.scaleToBg) > 0
           ? Number(item.scaleToBg) * _bgScale
           : (Number(item.scale) > 0 ? Number(item.scale) : defaultScale);
@@ -618,10 +621,20 @@ window.EnvCanvas = (function () {
         });
         _applyInteractiveDefaults(g);
         _keepObjectInsideCanvas(g);
-        _canvas.add(g);
-        _elements.push(g);
+        restoredItems.push({ index: i, item: item, object: g });
         restored += 1;
         if (!pending) {
+          restoredItems.sort(function (a, b) {
+            var stackA = Number(a.item && a.item.stackIndex);
+            var stackB = Number(b.item && b.item.stackIndex);
+            if (!isFinite(stackA)) stackA = a.index;
+            if (!isFinite(stackB)) stackB = b.index;
+            return stackA - stackB;
+          });
+          restoredItems.forEach(function (row) {
+            _canvas.add(row.object);
+            _elements.push(row.object);
+          });
           _canvas.renderAll();
           _updateCount();
         }

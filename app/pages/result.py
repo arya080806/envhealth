@@ -228,6 +228,63 @@ RESULT_CSS = '''
 .history-delete-btn:active {
     transform: translateY(1px);
 }
+.result-confirm-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(20, 35, 26, .36);
+}
+.result-confirm-overlay.open {
+    display: flex;
+}
+.result-confirm-card {
+    width: min(92vw, 420px);
+    padding: 18px;
+    border-radius: 8px;
+    background: #FFFFF8;
+    border: 1px solid rgba(47,123,88,.16);
+    box-shadow: 0 22px 60px rgba(18, 44, 30, .22);
+}
+.result-confirm-title {
+    color: #173126;
+    font-size: 17px;
+    line-height: 1.35;
+    font-weight: 950;
+}
+.result-confirm-copy {
+    margin-top: 8px;
+    color: rgba(23,49,38,.72);
+    font-size: 13px;
+    line-height: 1.55;
+    font-weight: 760;
+}
+.result-confirm-actions {
+    margin-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.result-confirm-actions button {
+    min-height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(47,123,88,.16);
+    font-size: 14px;
+    line-height: 1;
+    font-weight: 950;
+    cursor: pointer;
+}
+.result-confirm-cancel {
+    color: #2F7B58;
+    background: rgba(47,123,88,.08);
+}
+.result-confirm-delete {
+    color: #FFFFFF;
+    background: #9D3434;
+}
 .canvas-snapshot {
     width: min(100%, 760px);
     max-height: min(58vh, 460px);
@@ -474,7 +531,7 @@ RESULT_LIGHTBOX_JS = '''
         box = document.createElement('div');
         box.id = 'result-image-lightbox';
         box.className = 'result-lightbox';
-        box.innerHTML = '<button class="result-lightbox-close" type="button" aria-label="关闭大图">×</button><img alt="查看大图">';
+        box.innerHTML = '<button class="result-lightbox-close" type="button" aria-label="close">×</button><img alt="preview">';
         document.body.appendChild(box);
         box.addEventListener('click', function (event) {
             if (event.target === box || event.target.classList.contains('result-lightbox-close')) {
@@ -492,28 +549,82 @@ RESULT_LIGHTBOX_JS = '''
         box.classList.add('open');
     }
 
+    function ensureConfirmDialog() {
+        var overlay = document.getElementById('result-delete-confirm');
+        if (overlay) return overlay;
+        overlay = document.createElement('div');
+        overlay.id = 'result-delete-confirm';
+        overlay.className = 'result-confirm-overlay';
+        overlay.innerHTML = [
+            '<div class="result-confirm-card" role="dialog" aria-modal="true">',
+            '<div class="result-confirm-title">\u786e\u8ba4\u5220\u9664\u8fd9\u6761\u64cd\u4f5c\u8bb0\u5f55\u5417\uff1f</div>',
+            '<div class="result-confirm-copy">\u5220\u9664\u540e\uff0c\u8fd9\u6761\u64cd\u4f5c\u56fe\u5c06\u4e0d\u518d\u663e\u793a\u5728\u5f53\u524d\u8bb0\u5f55\u548c\u540e\u7eed\u672c\u5730\u5f52\u6863\u7d22\u5f15\u4e2d\u3002</div>',
+            '<div class="result-confirm-actions">',
+            '<button class="result-confirm-cancel" type="button">\u53d6\u6d88</button>',
+            '<button class="result-confirm-delete" type="button">\u5220\u9664</button>',
+            '</div></div>',
+        ].join('');
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function confirmDeleteRecord() {
+        return new Promise(function (resolve) {
+            var overlay = ensureConfirmDialog();
+            var cancel = overlay.querySelector('.result-confirm-cancel');
+            var del = overlay.querySelector('.result-confirm-delete');
+            function finish(value) {
+                overlay.classList.remove('open');
+                cancel.removeEventListener('click', onCancel);
+                del.removeEventListener('click', onDelete);
+                overlay.removeEventListener('click', onOverlay);
+                resolve(value);
+            }
+            function onCancel() { finish(false); }
+            function onDelete() { finish(true); }
+            function onOverlay(event) { if (event.target === overlay) finish(false); }
+            cancel.addEventListener('click', onCancel);
+            del.addEventListener('click', onDelete);
+            overlay.addEventListener('click', onOverlay);
+            overlay.classList.add('open');
+        });
+    }
+
+    function reindexCanvasHistory(section) {
+        if (!section) return;
+        var labels = Array.from(section.querySelectorAll('.history-card[data-history-kind="canvas"] .history-label'));
+        var total = labels.length;
+        labels.forEach(function (label, index) {
+            var stamp = label.dataset.stamp || '';
+            label.innerHTML = '\u7b2c ' + (total - index) + ' \u6b21\u64cd\u4f5c' + (stamp ? '<br>' + stamp : '');
+        });
+    }
+
     document.addEventListener('click', function (event) {
         var deleteButton = event.target.closest('.history-delete-btn');
         if (deleteButton) {
             event.preventDefault();
             event.stopPropagation();
-            var confirmed = window.confirm('确认删除这条操作记录吗？');
-            if (!confirmed) return;
-            deleteButton.disabled = true;
-            fetch('/api/canvas-history/delete', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    session_id: deleteButton.dataset.sessionId || '',
-                    filename: deleteButton.dataset.filename || ''
-                })
-            }).then(function (resp) {
-                if (!resp.ok) throw new Error('delete failed');
-                var card = deleteButton.closest('.history-card');
-                if (card) card.remove();
-            }).catch(function () {
-                deleteButton.disabled = false;
-                window.alert('删除失败，请稍后再试。');
+            confirmDeleteRecord().then(function (confirmed) {
+                if (!confirmed) return;
+                deleteButton.disabled = true;
+                fetch('/api/canvas-history/delete', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        session_id: deleteButton.dataset.sessionId || '',
+                        filename: deleteButton.dataset.filename || ''
+                    })
+                }).then(function (resp) {
+                    if (!resp.ok) throw new Error('delete failed');
+                    var card = deleteButton.closest('.history-card');
+                    var section = card && card.closest('.result-section');
+                    if (card) card.remove();
+                    reindexCanvasHistory(section);
+                }).catch(function () {
+                    deleteButton.disabled = false;
+                    window.alert('\u5220\u9664\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\u3002');
+                });
             });
             return;
         }
@@ -583,11 +694,12 @@ RESULT_LIGHTBOX_JS = '''
         if (event.key !== 'Escape') return;
         var box = document.getElementById('result-image-lightbox');
         if (box) box.classList.remove('open');
+        var confirm = document.getElementById('result-delete-confirm');
+        if (confirm) confirm.classList.remove('open');
     });
 })();
 </script>
 '''
-
 
 def _path_url(path_value: str | None, *, thumb: bool = False, display: bool = False) -> str:
     return media_url(path_value or '', thumb=thumb, display=display)
@@ -875,7 +987,7 @@ def _render_canvas_snapshot(session, mode: str) -> None:
             path_value = items[0].get('path')
             snap_url = _path_url(path_value)
             ui.html(
-                '<div class="history-card">'
+                '<div class="history-card" data-history-kind="canvas">'
                 f'<a class="history-link result-image-link" href="{snap_url}">'
                 f'<img class="canvas-snapshot" src="{snap_url}" alt="{escape(title)}" '
                 'loading="lazy" decoding="async"></a>'
@@ -895,10 +1007,10 @@ def _render_canvas_snapshot(session, mode: str) -> None:
                     label = f'\u7b2c {total - index} \u6b21\u64cd\u4f5c'
                     stamp = _format_time(item.get('created_at'))
                     ui.html(
-                        '<div class="history-card">'
+                        '<div class="history-card" data-history-kind="canvas">'
                         f'<a class="history-link result-image-link" href="{full_url}">'
                         f'<img src="{display_url or full_url}" alt="{escape(label)}">'
-                        f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>'
+                        f'<div class="history-label" data-stamp="{escape(stamp, quote=True)}">{escape(label)}<br>{escape(stamp)}</div></a>'
                         f'{_delete_button(path_value)}'
                         '</div>',
                         sanitize=False,
