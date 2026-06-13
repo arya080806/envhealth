@@ -45,6 +45,10 @@ if ($LASTEXITCODE -ne 0) {
 Copy-Item -LiteralPath $tempArchive -Destination $localArchive -Force
 
 Write-Host "Extracting archive..."
+Remove-Item -LiteralPath (Join-Path $LocalRecordDir "participants") -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath (Join-Path $LocalRecordDir "index.csv") -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath (Join-Path $LocalRecordDir "index.xlsx") -Force -ErrorAction SilentlyContinue
+Remove-Item -LiteralPath (Join-Path $LocalRecordDir "manifest.json") -Force -ErrorAction SilentlyContinue
 & tar -xzf $tempArchive -C $LocalRecordDir
 if ($LASTEXITCODE -ne 0) {
     throw "Archive extraction failed with exit code $LASTEXITCODE"

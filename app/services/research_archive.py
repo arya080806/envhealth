@@ -101,6 +101,13 @@ def _time_text(value: Any) -> str:
     return time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(ts))
 
 
+def _time_segment(value: Any) -> str:
+    text = _time_text(value)
+    if not text:
+        return 'unknown_time'
+    return text.replace('-', '').replace(':', '').replace(' ', '_')
+
+
 def _json_text(value: Any) -> str:
     if value in (None, ''):
         return ''
@@ -246,12 +253,27 @@ def generate_research_archive(output_root: str | Path = DEFAULT_EXPORT_ROOT) -> 
     root = Path(output_root)
     root.mkdir(parents=True, exist_ok=True)
     participants_root = root / 'participants'
+    if participants_root.exists():
+        shutil.rmtree(participants_root)
     participants_root.mkdir(parents=True, exist_ok=True)
     exported_at = _time_text(time.time())
     stats = ExportStats()
     index_rows: list[dict[str, Any]] = []
 
     sessions = get_all_sessions()
+    sequence_by_participant_mode: dict[tuple[str, str], dict[str, int]] = {}
+    counters: dict[tuple[str, str], int] = {}
+    for session in sorted(sessions, key=lambda row: float(row.get('created_at') or 0)):
+        mode = str(session.get('mode_used') or '').strip()
+        if mode not in MODES:
+            continue
+        participant_code = normalize_hci_participant_code(session.get('participant_id') or '')
+        participant_name = str(session.get('display_name') or '').strip()
+        participant_key = participant_code or participant_name or f"user_{session.get('user_id') or 'unknown'}"
+        key = (participant_key, mode)
+        counters[key] = counters.get(key, 0) + 1
+        sequence_by_participant_mode.setdefault(key, {})[str(session.get('id') or '')] = counters[key]
+
     for session in sessions:
         mode = str(session.get('mode_used') or '').strip()
         if mode not in MODES:
@@ -259,9 +281,15 @@ def generate_research_archive(output_root: str | Path = DEFAULT_EXPORT_ROOT) -> 
         stats.sessions += 1
         participant_code = normalize_hci_participant_code(session.get('participant_id') or '')
         participant_name = str(session.get('display_name') or '').strip()
-        participant_segment = _safe_segment(participant_code or participant_name, 'unknown_participant')
+        participant_key = participant_code or participant_name or f"user_{session.get('user_id') or 'unknown'}"
+        participant_segment = _safe_segment(
+            '_'.join(part for part in (participant_code, participant_name) if part),
+            _safe_segment(participant_key, 'unknown_participant'),
+        )
+        mode_label = MODES.get(mode, mode)
+        mode_sequence = sequence_by_participant_mode.get((participant_key, mode), {}).get(str(session.get('id') or ''), 1)
         session_segment = _safe_segment(
-            f"{session.get('id')}_{mode}_{session.get('scene_type') or session.get('selected_recommend')}",
+            f"{_time_segment(session.get('created_at'))}_{mode_label}_第{mode_sequence:02d}次_{session.get('id')}",
             str(session.get('id') or 'session'),
         )
         session_dir = participants_root / participant_segment / session_segment

@@ -134,17 +134,7 @@ RESULT_CSS = '''
     pointer-events: none;
 }
 .compare-divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 26px;
-    height: 26px;
-    transform: translate(-50%, -50%);
-    border-radius: 999px;
-    background: rgba(255,255,248,.92);
-    border: 1px solid rgba(47,123,88,.22);
-    box-shadow: 0 8px 20px rgba(38,70,52,.18);
+    content: none;
 }
 .compare-range {
     width: 100%;
@@ -388,6 +378,22 @@ RESULT_CSS = '''
     .result-shell {
         padding: 24px 34px 190px;
     }
+    .compare-hero {
+        justify-self: center;
+        max-width: min(100%, 1120px);
+    }
+    .compare-stage {
+        min-height: clamp(420px, 58vh, 650px);
+        max-height: 70vh;
+    }
+    .compare-stage img {
+        object-fit: cover;
+    }
+    .compare-stage.single img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
     .compare-mini-card img {
         height: 220px;
     }
@@ -397,8 +403,12 @@ RESULT_CSS = '''
     .history-card img {
         height: 128px;
     }
-    .compare-stage {
-        min-height: 340px;
+    .slider-list {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .canvas-snapshot {
+        width: min(100%, 980px);
+        max-height: min(64vh, 620px);
     }
 }
 @media (max-width: 360px) {
@@ -782,10 +792,9 @@ def _render_canvas_snapshot(session, mode: str) -> None:
         ui.html(f'<div class="detail-section-title">{escape(title)}</div>', sanitize=False)
         if len(items) == 1:
             snap_url = _path_url(items[0].get('path'))
-            snap_display_url = _path_url(items[0].get('path'), display=True)
             ui.html(
                 f'<a class="history-link result-image-link" href="{snap_url}">'
-                f'<img class="canvas-snapshot" src="{snap_display_url or snap_url}" alt="{escape(title)}" '
+                f'<img class="canvas-snapshot" src="{snap_url}" alt="{escape(title)}" '
                 'loading="lazy" decoding="async"></a>',
                 sanitize=False,
             )

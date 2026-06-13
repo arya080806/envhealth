@@ -32,6 +32,10 @@ window.InspireCanvas = (function () {
   var inlineLabel = null;
   var skipNextSingleSelection = false;
   var isUpdatingSelection = false;
+  var bgImage = null;
+  var bgOriginalWidth = 0;
+  var bgOriginalHeight = 0;
+  var bgScale = 1;
 
   var LENS_META = {
     restorative: {
@@ -479,6 +483,10 @@ window.InspireCanvas = (function () {
     layersVisible = true;
     currentMode = 'draw';
     isRestoringHistory = false;
+    bgImage = null;
+    bgOriginalWidth = 0;
+    bgOriginalHeight = 0;
+    bgScale = 1;
   }
 
   function performClear() {
@@ -829,6 +837,10 @@ window.InspireCanvas = (function () {
         left: 0, top: 0, scaleX: scale, scaleY: scale,
         selectable: false, evented: false, opacity: 0.88,
       });
+      bgImage = img;
+      bgOriginalWidth = img.width || 0;
+      bgOriginalHeight = img.height || 0;
+      bgScale = scale || 1;
       canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
     }, { crossOrigin: 'anonymous' });
   }
@@ -1369,13 +1381,27 @@ window.InspireCanvas = (function () {
 
     getCanvasDataURL: function () {
       if (!canvas) return '';
+      var previousOpacity = bgImage ? bgImage.opacity : null;
       try {
         removeInlineLabel();
         canvas.discardActiveObject();
+        if (bgImage) bgImage.set('opacity', 1);
         canvas.renderAll();
-        return canvas.toDataURL({ format: 'png' });
+        var multiplier = 1;
+        if (bgOriginalWidth && canvas.getWidth && canvas.getWidth() > 0) {
+          multiplier = Math.max(1, Math.min(4, bgOriginalWidth / canvas.getWidth()));
+        } else if (bgScale > 0) {
+          multiplier = Math.max(1, Math.min(4, 1 / bgScale));
+        }
+        var dataUrl = canvas.toDataURL({ format: 'png', multiplier: multiplier });
+        return dataUrl;
       } catch (e) {
         return '';
+      } finally {
+        if (bgImage && previousOpacity !== null) {
+          bgImage.set('opacity', previousOpacity);
+          canvas.renderAll();
+        }
       }
     },
 

@@ -820,7 +820,13 @@ window.EnvCanvas = (function () {
       if (!_canvas) return '';
       _canvas.discardActiveObject();
       _canvas.renderAll();
-      return _canvas.toDataURL({ format: 'png' });
+      var multiplier = 1;
+      if (_origW && _canvas.getWidth && _canvas.getWidth() > 0) {
+        multiplier = Math.max(1, Math.min(4, _origW / _canvas.getWidth()));
+      } else if (_bgScale > 0) {
+        multiplier = Math.max(1, Math.min(4, 1 / _bgScale));
+      }
+      return _canvas.toDataURL({ format: 'png', multiplier: multiplier });
     },
     getObjectsJSON: function() {
       if (!_canvas) return '[]';
