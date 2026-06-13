@@ -897,31 +897,33 @@ window.EnvCanvas = (function () {
         objDataList = parsed;
       }
 
+      if (objDataList && objDataList.length) {
+        _clearRestoredElements();
+        fabric.util.enlivenObjects(objDataList, function(objs) {
+          objs.forEach(function(obj, i) {
+            var raw = objDataList[i] || {};
+            obj.set({
+              elemIcon: raw.elemIcon || '',
+              elemName: raw.elemName || '',
+              elemCat: raw.elemCat || '',
+              elemId: raw.elemId || ('el_r_' + Date.now() + '_' + i),
+            });
+            _applyInteractiveDefaults(obj);
+            _canvas.add(obj);
+            _elements.push(obj);
+            _refreshObject(obj);
+          });
+          _canvas.renderAll();
+          _updateCount();
+        });
+        return;
+      }
+
       if (fallback.length) layout = fallback;
       if (layout.length) {
         _clearRestoredElements();
         if (_restoreFromLayout(layout)) return;
       }
-      if (!objDataList || !objDataList.length) return;
-
-      _clearRestoredElements();
-      fabric.util.enlivenObjects(objDataList, function(objs) {
-        objs.forEach(function(obj, i) {
-          var raw = objDataList[i] || {};
-          obj.set({
-            elemIcon: raw.elemIcon || '',
-            elemName: raw.elemName || '',
-            elemCat: raw.elemCat || '',
-            elemId: raw.elemId || ('el_r_' + Date.now() + '_' + i),
-          });
-          _applyInteractiveDefaults(obj);
-          _canvas.add(obj);
-          _elements.push(obj);
-          _refreshObject(obj);
-        });
-        _canvas.renderAll();
-        _updateCount();
-      });
     },
     _debugCanvas: function() { return _canvas; },
   };

@@ -820,6 +820,11 @@ def create_drag_page():
                 except Exception:
                     pass
 
+                if not saved_parts:
+                    raise RuntimeError('\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e')
+                _show_save_dialog('\u5df2\u4fdd\u5b58', '')
+                await asyncio.sleep(0.05)
+
                 snapshot_saved = False
                 snapshot_note = ''
                 try:
@@ -844,13 +849,9 @@ def create_drag_page():
                     except Exception as exc:
                         snapshot_note = snapshot_note or str(exc)[:120]
 
-                if not saved_parts:
-                    raise RuntimeError('\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e')
-
-                copy = ''
                 if snapshot_note and not snapshot_saved:
-                    copy = '\u9ad8\u6e05\u5feb\u7167\u5bfc\u51fa\u8d85\u65f6\uff0c\u5df2\u4fdd\u5b58\u7ed3\u6784\u5316\u8bb0\u5f55\u3002'
-                _show_save_dialog('\u5df2\u4fdd\u5b58', copy)
+                    # Keep the fast success message visible; the structured draft is already saved.
+                    pass
             except Exception as exc:
                 _show_save_dialog('\u4fdd\u5b58\u5931\u8d25', str(exc)[:160])
             finally:

@@ -198,6 +198,7 @@ RESULT_CSS = '''
     width: 100%;
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-flow: row dense;
     gap: 10px;
 }
 .history-card img {
@@ -254,13 +255,6 @@ RESULT_CSS = '''
     font-size: 17px;
     line-height: 1.35;
     font-weight: 950;
-}
-.result-confirm-copy {
-    margin-top: 8px;
-    color: rgba(23,49,38,.72);
-    font-size: 13px;
-    line-height: 1.55;
-    font-weight: 760;
 }
 .result-confirm-actions {
     margin-top: 18px;
@@ -558,7 +552,6 @@ RESULT_LIGHTBOX_JS = '''
         overlay.innerHTML = [
             '<div class="result-confirm-card" role="dialog" aria-modal="true">',
             '<div class="result-confirm-title">\u786e\u8ba4\u5220\u9664\u8fd9\u6761\u64cd\u4f5c\u8bb0\u5f55\u5417\uff1f</div>',
-            '<div class="result-confirm-copy">\u5220\u9664\u540e\uff0c\u8fd9\u6761\u64cd\u4f5c\u56fe\u5c06\u4e0d\u518d\u663e\u793a\u5728\u5f53\u524d\u8bb0\u5f55\u548c\u540e\u7eed\u672c\u5730\u5f52\u6863\u7d22\u5f15\u4e2d\u3002</div>',
             '<div class="result-confirm-actions">',
             '<button class="result-confirm-cancel" type="button">\u53d6\u6d88</button>',
             '<button class="result-confirm-delete" type="button">\u5220\u9664</button>',
@@ -598,6 +591,12 @@ RESULT_LIGHTBOX_JS = '''
             var stamp = label.dataset.stamp || '';
             label.innerHTML = '\u7b2c ' + (total - index) + ' \u6b21\u64cd\u4f5c' + (stamp ? '<br>' + stamp : '');
         });
+        var grid = section.querySelector('.history-grid');
+        if (grid) {
+            grid.style.display = 'none';
+            void grid.offsetHeight;
+            grid.style.display = 'grid';
+        }
     }
 
     document.addEventListener('click', function (event) {
