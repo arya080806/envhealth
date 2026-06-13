@@ -658,12 +658,18 @@ def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_e
 
   loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
     .then(function() {{
-      if (window.EnvCanvas && !window.EnvCanvas.requestClearAll) {{
+      var envCanvasVersion = 'drag-http-snapshot-20260613';
+      var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
+      if (oldEnvScript && oldEnvScript.src.indexOf(envCanvasVersion) === -1) {{
         try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
-        var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
+        oldEnvScript.remove();
+      }}
+      if (window.EnvCanvas && (!window.EnvCanvas.requestClearAll || !window.EnvCanvas.uploadCanvasSnapshot)) {{
+        try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
+        oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
         if (oldEnvScript) oldEnvScript.remove();
       }}
-      return loadScriptOnce('/static/canvas_editor.js?v=drag-loader-fit-20260606c', 'EnvCanvas', 'env-canvas');
+      return loadScriptOnce('/static/canvas_editor.js?v=' + envCanvasVersion, 'EnvCanvas', 'env-canvas');
     }})
     .then(function() {{ initDrag(0); }})
     .catch(function() {{ showCanvasFailure('画布加载失败，请刷新页面'); }});
