@@ -62,6 +62,9 @@ def recover_drag_layout_snapshot(session_id: str) -> str:
     session = db_get_session(session_id)
     if not session or session.get('mode_used') != 'drag':
         return ''
+    history = session.get('canvas_history') or []
+    if isinstance(history, list) and any(isinstance(item, dict) and item.get('layout_recovery_disabled') for item in history):
+        return ''
     existing = resolve_media_path(session.get('canvas_snapshot_path'))
     if existing:
         return str(existing)

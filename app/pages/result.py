@@ -162,6 +162,7 @@ RESULT_CSS = '''
 }
 .compare-mini-card,
 .history-card {
+    position: relative;
     min-width: 0;
     overflow: hidden;
     border-radius: 8px;
@@ -205,6 +206,27 @@ RESULT_CSS = '''
     object-fit: contain;
     display: block;
     background: rgba(47,123,88,.08);
+}
+.history-delete-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 4;
+    min-width: 34px;
+    min-height: 34px;
+    padding: 0 10px;
+    border: 0;
+    border-radius: 999px;
+    color: #FFFFFF;
+    background: rgba(146, 42, 42, .88);
+    box-shadow: 0 8px 20px rgba(48, 19, 19, .18);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 950;
+    cursor: pointer;
+}
+.history-delete-btn:active {
+    transform: translateY(1px);
 }
 .canvas-snapshot {
     width: min(100%, 760px);
@@ -471,6 +493,30 @@ RESULT_LIGHTBOX_JS = '''
     }
 
     document.addEventListener('click', function (event) {
+        var deleteButton = event.target.closest('.history-delete-btn');
+        if (deleteButton) {
+            event.preventDefault();
+            event.stopPropagation();
+            var confirmed = window.confirm('确认删除这条操作记录吗？');
+            if (!confirmed) return;
+            deleteButton.disabled = true;
+            fetch('/api/canvas-history/delete', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    session_id: deleteButton.dataset.sessionId || '',
+                    filename: deleteButton.dataset.filename || ''
+                })
+            }).then(function (resp) {
+                if (!resp.ok) throw new Error('delete failed');
+                var card = deleteButton.closest('.history-card');
+                if (card) card.remove();
+            }).catch(function () {
+                deleteButton.disabled = false;
+                window.alert('删除失败，请稍后再试。');
+            });
+            return;
+        }
         var link = event.target.closest('a.result-image-link');
         if (link) {
             event.preventDefault();
@@ -810,15 +856,31 @@ def _render_canvas_snapshot(session, mode: str) -> None:
     elements = _canvas_elements(session)
     if not items and not elements:
         return
-    title = '元素布局' if mode == 'drag' else '创作画布'
+    title = '\u5143\u7d20\u5e03\u5c40' if mode == 'drag' else '\u521b\u4f5c\u753b\u5e03'
+    session_id = getattr(session, 'id', '') or ''
+
+    def _delete_button(path_value: str) -> str:
+        filename = media_filename(path_value or '')
+        if not filename:
+            return ''
+        return (
+            '<button class="history-delete-btn" type="button" '
+            f'data-session-id="{escape(session_id, quote=True)}" '
+            f'data-filename="{escape(filename, quote=True)}">\u5220\u9664</button>'
+        )
+
     with ui.column().classes('result-section').style('gap:0'):
         ui.html(f'<div class="detail-section-title">{escape(title)}</div>', sanitize=False)
         if len(items) == 1:
-            snap_url = _path_url(items[0].get('path'))
+            path_value = items[0].get('path')
+            snap_url = _path_url(path_value)
             ui.html(
+                '<div class="history-card">'
                 f'<a class="history-link result-image-link" href="{snap_url}">'
                 f'<img class="canvas-snapshot" src="{snap_url}" alt="{escape(title)}" '
-                'loading="lazy" decoding="async"></a>',
+                'loading="lazy" decoding="async"></a>'
+                f'{_delete_button(path_value)}'
+                '</div>',
                 sanitize=False,
             )
             _render_canvas_elements(elements)
@@ -827,18 +889,21 @@ def _render_canvas_snapshot(session, mode: str) -> None:
             with ui.element('div').classes('history-grid'):
                 total = len(items)
                 for index, item in enumerate(items):
-                    full_url = _path_url(item.get('path'))
-                    display_url = _path_url(item.get('path'), display=True)
-                    label = f'第 {total - index} 次操作'
+                    path_value = item.get('path')
+                    full_url = _path_url(path_value)
+                    display_url = _path_url(path_value, display=True)
+                    label = f'\u7b2c {total - index} \u6b21\u64cd\u4f5c'
                     stamp = _format_time(item.get('created_at'))
                     ui.html(
-                        f'<a class="history-card history-link result-image-link" href="{full_url}">'
+                        '<div class="history-card">'
+                        f'<a class="history-link result-image-link" href="{full_url}">'
                         f'<img src="{display_url or full_url}" alt="{escape(label)}">'
-                        f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>',
+                        f'<div class="history-label">{escape(label)}<br>{escape(stamp)}</div></a>'
+                        f'{_delete_button(path_value)}'
+                        '</div>',
                         sanitize=False,
                     )
         _render_canvas_elements(elements)
-
 
 def _render_slider_detail(session) -> None:
     configs = [
@@ -950,3 +1015,4 @@ def create_result_page():
                 if mode == 'chat':
                     _render_chat_detail(session)
                 _render_actions(session, sid, mode)
+

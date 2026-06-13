@@ -776,15 +776,20 @@ def create_drag_page():
         ui.add_body_html(_build_drag_bootstrap(img_url, sid, canvas_json_url, getattr(session, 'placed_elements', []) if session else []))
 
         with ui.dialog() as save_dialog, ui.card().classes('drag-save-card'):
-            save_dialog_title = ui.label('已保存进度').classes('drag-save-title')
-            save_dialog_copy = ui.label('当前画布和元素位置已同步到草稿箱。').classes('drag-save-copy')
+            save_dialog_title = ui.label('正在保存...').classes('drag-save-title')
+            save_dialog_copy = ui.label('').classes('drag-save-copy').style('display:none')
             ui.button('知道了', on_click=save_dialog.close).props('unelevated no-caps').classes('drag-save-action').style(
                 'width:100%;background:#2F7B58;color:#F8FAF2;font-weight:900;'
             )
 
         def _show_save_dialog(title: str, copy: str) -> None:
             save_dialog_title.set_text(title)
-            save_dialog_copy.set_text(copy)
+            if copy:
+                save_dialog_copy.set_text(copy)
+                save_dialog_copy.style('display:block')
+            else:
+                save_dialog_copy.set_text('')
+                save_dialog_copy.style('display:none')
             save_dialog.open()
 
         async def save_draft():
@@ -794,6 +799,8 @@ def create_drag_page():
 
             save_btn.disable()
             try:
+                _show_save_dialog('\u6b63\u5728\u4fdd\u5b58...', '')
+                await asyncio.sleep(0.05)
                 session.mode_used = 'drag'
                 saved_parts = []
 
@@ -840,10 +847,10 @@ def create_drag_page():
                 if not saved_parts:
                     raise RuntimeError('\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e')
 
-                copy = '\u5df2\u540c\u6b65\uff1a' + '\u3001'.join(saved_parts) + '\u3002'
+                copy = ''
                 if snapshot_note and not snapshot_saved:
-                    copy += '\n\u9ad8\u6e05\u5feb\u7167\u5bfc\u51fa\u8d85\u65f6\uff0c\u5df2\u5148\u4fdd\u5b58\u7ed3\u6784\u5316\u8bb0\u5f55\u548c\u6062\u590d\u7248\u5e03\u5c40\u56fe\u3002'
-                _show_save_dialog('\u5df2\u4fdd\u5b58\u8fdb\u5ea6', copy)
+                    copy = '\u9ad8\u6e05\u5feb\u7167\u5bfc\u51fa\u8d85\u65f6\uff0c\u5df2\u4fdd\u5b58\u7ed3\u6784\u5316\u8bb0\u5f55\u3002'
+                _show_save_dialog('\u5df2\u4fdd\u5b58', copy)
             except Exception as exc:
                 _show_save_dialog('\u4fdd\u5b58\u5931\u8d25', str(exc)[:160])
             finally:

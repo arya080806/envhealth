@@ -23,6 +23,7 @@ from app.state import (
     export_sessions_json,
     resolve_media_path,
     media_url,
+    media_filename,
 )
 from app.db import get_export_summary
 
@@ -436,6 +437,56 @@ def register_api_routes():
             'display_url': media_url(saved_path, display=True),
             'thumbnail_url': media_url(saved_path, thumb=True),
         })
+
+    @app.post('/api/canvas-history/delete')
+    async def delete_canvas_history_item(request: Request):
+        data, error = await _json_payload(request)
+        if error:
+            return error
+        session_id = _clean_text(data.get('session_id', ''), 64)
+        filename = _clean_text(data.get('filename', ''), 160)
+        session = get_session(session_id) if session_id else None
+        if not session:
+            return JSONResponse({'error': 'invalid session'}, status_code=400)
+        if not filename or filename != Path(filename).name:
+            return JSONResponse({'error': 'invalid filename'}, status_code=400)
+
+        history = getattr(session, 'canvas_history', []) or []
+        if not isinstance(history, list):
+            history = []
+        kept = []
+        removed = []
+        for item in history:
+            if isinstance(item, dict) and media_filename(item.get('path') or '') == filename:
+                removed.append(item)
+            else:
+                kept.append(item)
+        if not removed:
+            return JSONResponse({'error': 'not found'}, status_code=404)
+
+        generation_history = getattr(session, 'generation_history', []) or []
+        if isinstance(generation_history, list):
+            for item in generation_history:
+                if isinstance(item, dict) and media_filename(item.get('canvas_path') or '') == filename:
+                    item['canvas_path'] = ''
+            session.generation_history = generation_history
+
+        if kept:
+            session.canvas_history = kept[-30:]
+        else:
+            session.canvas_history = [{
+                'layout_recovery_disabled': True,
+                'deleted_at': time.time(),
+            }]
+        latest = ''
+        if kept:
+            latest_item = sorted(
+                [item for item in kept if isinstance(item, dict)],
+                key=lambda item: float(item.get('created_at') or 0),
+            )[-1]
+            latest = str(latest_item.get('path') or '')
+        session.canvas_snapshot_path = latest
+        return JSONResponse({'ok': True, 'removed': len(removed), 'latest': media_url(latest) if latest else ''})
 
     @app.get('/api/image/{filename}')
     async def serve_image(filename: str, request: Request):
