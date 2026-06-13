@@ -598,8 +598,7 @@ class FeishuClient:
             try:
                 saved_record_id = self.update_record(table_id, record_id, fields)
             except FeishuSyncError as exc:
-                message = str(exc)
-                if '1254043' not in message and 'record not found' not in message.lower():
+                if not _is_record_not_found_error(exc):
                     raise
                 saved_record_id = self.insert_record(table_id, fields)
         else:
@@ -734,6 +733,11 @@ def _chunks(items: list[Any], size: int = 100) -> list[list[Any]]:
     return [items[i:i + size] for i in range(0, len(items), size)]
 
 
+def _is_record_not_found_error(exc: Exception) -> bool:
+    message = str(exc)
+    return '1254043' in message or 'record not found' in message.lower()
+
+
 def _sync_jobs_batch_blocking(jobs: list[dict], client: FeishuClient) -> dict[int, tuple[bool, str]]:
     if not jobs:
         return {}
@@ -787,6 +791,21 @@ def _sync_jobs_batch_blocking(jobs: list[dict], client: FeishuClient) -> dict[in
             try:
                 record_ids = client.batch_update_records(table_id, records)
             except Exception as exc:
+                if _is_record_not_found_error(exc):
+                    for prepared, record in chunk:
+                        try:
+                            record_id = client.upsert_record(
+                                table_id,
+                                prepared.fields,
+                                unique_field=prepared.unique_field,
+                                unique_value=prepared.unique_value,
+                                known_record_id='',
+                                legacy_unique_values=prepared.legacy_unique_values,
+                            )
+                            results[prepared.job_id] = (True, record_id or str(record.get('record_id') or ''))
+                        except Exception as fallback_exc:
+                            results[prepared.job_id] = (False, str(fallback_exc))
+                    continue
                 for prepared, _ in chunk:
                     results[prepared.job_id] = (False, str(exc))
                 continue

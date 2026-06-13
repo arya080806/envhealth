@@ -50,7 +50,7 @@
   - `FEISHU_BITABLE_CHAT_SUMMARY_TABLE_ID=tblZkSIqni3IjZ9J`
   - `FEISHU_BITABLE_SLIDER_SUMMARY_TABLE_ID=tbl0b7OU7sommUqK`
 - 补充后已重启服务并执行同步重试，原先两条“智能参数表 ID 缺失”的失败记录已恢复同步。
-- 新增飞书 upsert 容错：如果本地队列保存的 `remote_record_id` 在飞书端已不存在，程序会自动改为插入新记录，避免 `record not found` 长期卡死。
+- 新增飞书 upsert 容错：如果本地队列保存的 `remote_record_id` 在飞书端已不存在，单条同步和批量同步都会自动改为插入新记录，避免 `record not found` 长期卡死。
 
 ## 三、验证结果
 
