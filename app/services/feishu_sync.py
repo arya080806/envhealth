@@ -595,7 +595,13 @@ class FeishuClient:
                 if record_id:
                     break
         if record_id:
-            saved_record_id = self.update_record(table_id, record_id, fields)
+            try:
+                saved_record_id = self.update_record(table_id, record_id, fields)
+            except FeishuSyncError as exc:
+                message = str(exc)
+                if '1254043' not in message and 'record not found' not in message.lower():
+                    raise
+                saved_record_id = self.insert_record(table_id, fields)
         else:
             saved_record_id = self.insert_record(table_id, fields)
         lookup = self._record_lookup_cache.get((table_id, unique_field))
