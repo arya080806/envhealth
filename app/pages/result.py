@@ -4,12 +4,11 @@ from __future__ import annotations
 import json
 import time
 from html import escape
-from pathlib import Path
 
 from nicegui import app, ui
 
 from app.components.nav import bottom_nav, smooth_navigate
-from app.state import get_session, media_url, resolve_media_path
+from app.state import get_session, media_filename, media_url, resolve_media_path
 from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
 
@@ -64,6 +63,106 @@ RESULT_CSS = '''
     font-weight: 950;
     margin-bottom: 12px;
 }
+.compare-heading-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+.original-view-btn {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: #2F7B58;
+    background: rgba(47,123,88,.08);
+    border: 1px solid rgba(47,123,88,.16);
+    text-decoration: none;
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 900;
+}
+.compare-hero {
+    --compare-pos: 24%;
+    width: 100%;
+    display: grid;
+    gap: 10px;
+}
+.compare-stage {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    min-height: 210px;
+    max-height: 68vh;
+    overflow: hidden;
+    border-radius: 8px;
+    border: 1px solid rgba(47,123,88,.12);
+    background: rgba(47,123,88,.07);
+    cursor: zoom-in;
+    -webkit-touch-callout: default;
+}
+.compare-stage img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background: rgba(47,123,88,.05);
+}
+.compare-stage.single img {
+    position: static;
+}
+.compare-after-img {
+    z-index: 1;
+}
+.compare-before-img {
+    z-index: 2;
+    clip-path: inset(0 calc(100% - var(--compare-pos)) 0 0);
+}
+.compare-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--compare-pos);
+    z-index: 3;
+    width: 2px;
+    background: rgba(255,255,248,.92);
+    box-shadow: 0 0 0 1px rgba(47,123,88,.22);
+    pointer-events: none;
+}
+.compare-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 26px;
+    height: 26px;
+    transform: translate(-50%, -50%);
+    border-radius: 999px;
+    background: rgba(255,255,248,.92);
+    border: 1px solid rgba(47,123,88,.22);
+    box-shadow: 0 8px 20px rgba(38,70,52,.18);
+}
+.compare-range {
+    width: 100%;
+    accent-color: #2F7B58;
+}
+.compare-caption-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: rgba(23,49,38,.64);
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 850;
+}
+.compare-download-proxy {
+    display: none;
+}
 .compare-mini-grid {
     width: 100%;
     display: grid;
@@ -117,8 +216,8 @@ RESULT_CSS = '''
     background: rgba(47,123,88,.08);
 }
 .canvas-snapshot {
-    width: min(100%, 520px);
-    max-height: 240px;
+    width: min(100%, 760px);
+    max-height: min(58vh, 460px);
     object-fit: contain;
     display: block;
     margin: 0 auto;
@@ -298,6 +397,9 @@ RESULT_CSS = '''
     .history-card img {
         height: 128px;
     }
+    .compare-stage {
+        min-height: 340px;
+    }
 }
 @media (max-width: 360px) {
     .result-shell {
@@ -306,6 +408,9 @@ RESULT_CSS = '''
     }
     .compare-mini-card img {
         height: 142px;
+    }
+    .compare-stage {
+        min-height: 178px;
     }
 }
 </style>
@@ -333,14 +438,75 @@ RESULT_LIGHTBOX_JS = '''
         return box;
     }
 
-    document.addEventListener('click', function (event) {
-        var link = event.target.closest('a.result-image-link');
-        if (!link) return;
-        event.preventDefault();
+    function openLightbox(src) {
+        if (!src) return;
         var box = ensureLightbox();
         var img = box.querySelector('img');
-        img.src = link.getAttribute('href') || link.dataset.fullImage || '';
+        img.src = src;
         box.classList.add('open');
+    }
+
+    document.addEventListener('click', function (event) {
+        var link = event.target.closest('a.result-image-link');
+        if (link) {
+            event.preventDefault();
+            openLightbox(link.getAttribute('href') || link.dataset.fullImage || '');
+            return;
+        }
+        var stage = event.target.closest('.compare-stage[data-full-image]');
+        if (!stage || event.target.closest('input, a, button')) return;
+        openLightbox(stage.dataset.fullImage || '');
+    });
+
+    document.addEventListener('input', function (event) {
+        var range = event.target.closest('.compare-range');
+        if (!range) return;
+        var hero = range.closest('.compare-hero');
+        if (!hero) return;
+        hero.style.setProperty('--compare-pos', String(range.value || 0) + '%');
+    });
+
+    var longPressTimer = null;
+    var longPressStart = null;
+
+    function clearLongPress() {
+        if (longPressTimer) window.clearTimeout(longPressTimer);
+        longPressTimer = null;
+        longPressStart = null;
+    }
+
+    function downloadFromHero(hero) {
+        var url = hero.dataset.downloadUrl || '';
+        if (!url) return;
+        var link = hero.querySelector('.compare-download-proxy');
+        if (!link) {
+            link = document.createElement('a');
+            link.className = 'compare-download-proxy';
+            hero.appendChild(link);
+        }
+        link.href = url;
+        link.download = hero.dataset.downloadName || '';
+        link.click();
+    }
+
+    document.addEventListener('pointerdown', function (event) {
+        var hero = event.target.closest('.compare-hero[data-download-url]');
+        if (!hero || event.target.closest('input, a, button')) return;
+        longPressStart = {x: event.clientX, y: event.clientY};
+        longPressTimer = window.setTimeout(function () {
+            downloadFromHero(hero);
+            clearLongPress();
+        }, 760);
+    });
+
+    document.addEventListener('pointermove', function (event) {
+        if (!longPressStart) return;
+        var dx = Math.abs(event.clientX - longPressStart.x);
+        var dy = Math.abs(event.clientY - longPressStart.y);
+        if (dx > 12 || dy > 12) clearLongPress();
+    });
+    ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (name) {
+        document.addEventListener(name, clearLongPress);
     });
 
     document.addEventListener('keydown', function (event) {
@@ -470,6 +636,13 @@ def _history(session) -> list[dict]:
     return sorted(items, key=lambda item: float(item.get('created_at') or 0), reverse=True)
 
 
+def _is_canvas_snapshot_path(path_value: str | None) -> bool:
+    name = media_filename(path_value)
+    if not name:
+        return False
+    return '_canvas_' in name and name.lower().endswith(('.png', '.jpg', '.jpeg', '.webp'))
+
+
 def _canvas_history(session) -> list[dict]:
     raw = getattr(session, 'canvas_history', []) or []
     if isinstance(raw, str):
@@ -477,17 +650,32 @@ def _canvas_history(session) -> list[dict]:
             raw = json.loads(raw)
         except Exception:
             raw = []
-    items = [item for item in raw if isinstance(item, dict) and resolve_media_path(item.get('path') or '')]
+    items = [
+        item for item in raw
+        if isinstance(item, dict)
+        and _is_canvas_snapshot_path(item.get('path') or '')
+        and resolve_media_path(item.get('path') or '')
+    ]
     for item in _history(session):
         canvas_path = item.get('canvas_path') if isinstance(item, dict) else ''
-        if canvas_path and resolve_media_path(canvas_path) and not any(str(row.get('path') or '') == str(canvas_path) for row in items):
+        if (
+            canvas_path
+            and _is_canvas_snapshot_path(canvas_path)
+            and resolve_media_path(canvas_path)
+            and not any(str(row.get('path') or '') == str(canvas_path) for row in items)
+        ):
             items.append({
                 'path': canvas_path,
                 'created_at': item.get('created_at') or 0,
                 'mode': item.get('mode') or getattr(session, 'mode_used', ''),
             })
     latest = getattr(session, 'canvas_snapshot_path', '') or ''
-    if latest and resolve_media_path(latest) and not any(str(item.get('path') or '') == str(latest) for item in items):
+    if (
+        latest
+        and _is_canvas_snapshot_path(latest)
+        and resolve_media_path(latest)
+        and not any(str(item.get('path') or '') == str(latest) for item in items)
+    ):
         items.append({'path': latest, 'created_at': getattr(session, 'generation_finished_at', 0) or time.time()})
     return sorted(items, key=lambda item: float(item.get('created_at') or 0), reverse=True)
 
@@ -500,32 +688,68 @@ def _format_time(value) -> str:
 
 
 def _render_compare(session) -> None:
-    original_url = _path_url(getattr(session, 'uploaded_image_path', '') if session else '')
-    generated_url = _path_url(getattr(session, 'generated_image_path', '') if session else '')
-    original_display_url = _path_url(getattr(session, 'uploaded_image_path', '') if session else '', display=True)
-    generated_display_url = _path_url(getattr(session, 'generated_image_path', '') if session else '', display=True)
+    original_path = getattr(session, 'uploaded_image_path', '') if session else ''
+    generated_path = getattr(session, 'generated_image_path', '') if session else ''
+    original_url = _path_url(original_path)
+    generated_url = _path_url(generated_path)
+    original_display_url = _path_url(original_path, display=True)
+    generated_display_url = _path_url(generated_path, display=True)
     if not original_url and not generated_url:
         ui.html('<div class="result-empty">暂无可显示的结果图片。</div>', sanitize=False)
         return
 
+    download_path = resolve_media_path(generated_path)
+    download_url = f'/api/download/{download_path.name}' if download_path else generated_url
+    download_name = download_path.name if download_path else media_filename(generated_path)
+    main_full_url = generated_url or original_url
+    main_src = generated_display_url or generated_url or original_display_url or original_url
+    original_src = original_display_url or original_url
+
     with ui.column().classes('result-section').style('gap:0'):
-        ui.html('<div class="result-heading">改造前 vs 改造后</div>', sanitize=False)
-        ui.element('div').classes('section-divider')
-        with ui.element('div').classes('compare-mini-grid'):
-            if original_url:
-                ui.html(
-                    f'<a class="compare-mini-card compare-mini-link result-image-link" href="{original_url}">'
-                    f'<img src="{original_display_url or original_url}" alt="改造前">'
-                    '<div class="compare-mini-label">改造前</div></a>',
-                    sanitize=False,
-                )
-            if generated_url:
-                ui.html(
-                    f'<a class="compare-mini-card compare-mini-link result-image-link" href="{generated_url}">'
-                    f'<img src="{generated_display_url or generated_url}" alt="改造后">'
-                    '<div class="compare-mini-label">改造后</div></a>',
-                    sanitize=False,
-                )
+        original_button = (
+            f'<a class="original-view-btn result-image-link" href="{escape(original_url, quote=True)}">查看原图</a>'
+            if original_url else ''
+        )
+        ui.html(
+            '<div class="compare-heading-row">'
+            '<div class="result-heading">改造详情</div>'
+            f'{original_button}'
+            '</div>',
+            sanitize=False,
+        )
+        if original_url and generated_url:
+            ui.html(
+                '<div class="compare-hero" '
+                f'data-download-url="{escape(download_url, quote=True)}" '
+                f'data-download-name="{escape(download_name, quote=True)}">'
+                f'<div class="compare-stage" data-full-image="{escape(generated_url, quote=True)}">'
+                f'<img class="compare-after-img" src="{escape(main_src, quote=True)}" alt="改造后" loading="eager" decoding="async">'
+                f'<img class="compare-before-img" src="{escape(original_src, quote=True)}" alt="改造前" loading="eager" decoding="async">'
+                '<div class="compare-divider" aria-hidden="true"></div>'
+                '</div>'
+                '<input class="compare-range" type="range" min="0" max="100" value="24" aria-label="滑动查看原图">'
+                '<div class="compare-caption-row"><span>改造后</span><span>滑动查看原图</span></div>'
+                f'<a class="compare-download-proxy" href="{escape(download_url, quote=True)}" '
+                f'download="{escape(download_name, quote=True)}"></a>'
+                '</div>',
+                sanitize=False,
+            )
+            return
+
+        label = '改造后' if generated_url else '改造前'
+        ui.html(
+            '<div class="compare-hero" '
+            f'data-download-url="{escape(download_url, quote=True)}" '
+            f'data-download-name="{escape(download_name, quote=True)}">'
+            f'<div class="compare-stage single" data-full-image="{escape(main_full_url, quote=True)}">'
+            f'<img src="{escape(main_src, quote=True)}" alt="{label}" loading="eager" decoding="async">'
+            '</div>'
+            f'<div class="compare-caption-row"><span>{label}</span></div>'
+            f'<a class="compare-download-proxy" href="{escape(download_url, quote=True)}" '
+            f'download="{escape(download_name, quote=True)}"></a>'
+            '</div>',
+            sanitize=False,
+        )
 
 
 def _render_history(session) -> None:
@@ -561,7 +785,8 @@ def _render_canvas_snapshot(session, mode: str) -> None:
             snap_display_url = _path_url(items[0].get('path'), display=True)
             ui.html(
                 f'<a class="history-link result-image-link" href="{snap_url}">'
-                f'<img class="canvas-snapshot" src="{snap_display_url or snap_url}" alt="{escape(title)}"></a>',
+                f'<img class="canvas-snapshot" src="{snap_display_url or snap_url}" alt="{escape(title)}" '
+                'loading="lazy" decoding="async"></a>',
                 sanitize=False,
             )
             _render_canvas_elements(elements)

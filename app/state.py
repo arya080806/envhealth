@@ -20,6 +20,7 @@ from app.db import (
     export_json,
     log_interaction,
 )
+from app.services.image_variants import warm_image_variants
 
 UPLOAD_DIR = Path(__file__).parent.parent / 'uploads'
 OUTPUT_DIR = Path(__file__).parent.parent / 'outputs'
@@ -190,6 +191,7 @@ def save_upload(session_id: str, file_bytes: bytes, filename: str) -> str:
     safe_name = f"{session_id}_{uuid.uuid4().hex[:6]}{ext}"
     path = UPLOAD_DIR / safe_name
     path.write_bytes(file_bytes)
+    warm_image_variants(path)
     db_update_session(session_id, uploaded_image_path=str(path))
     return str(path)
 
@@ -206,6 +208,7 @@ def save_output(session_id: str, image_bytes: bytes, suffix: str = '.png') -> st
     safe_name = f"{session_id}_out_{uuid.uuid4().hex[:6]}{suffix}"
     path = OUTPUT_DIR / safe_name
     path.write_bytes(image_bytes)
+    warm_image_variants(path)
     history = session.get('generation_history') or []
     if not isinstance(history, list):
         history = []
@@ -250,6 +253,7 @@ def save_canvas_snapshot(session_id: str, data_url: str) -> str:
     safe_name = f"{session_id}_canvas_{uuid.uuid4().hex[:6]}.png"
     path = SNAPSHOT_DIR / safe_name
     path.write_bytes(img_bytes)
+    warm_image_variants(path)
     history = session.get('canvas_history') or []
     if not isinstance(history, list):
         history = []

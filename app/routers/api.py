@@ -9,10 +9,10 @@ from datetime import date
 from pathlib import Path
 
 from nicegui import app
-from PIL import Image
 from starlette.requests import Request
 from starlette.responses import JSONResponse, FileResponse, Response
 
+from app.services.image_variants import get_display_image, get_thumb
 from app.state import (
     save_upload,
     save_output,
@@ -417,11 +417,11 @@ def register_api_routes():
         path = resolve_media_path(filename)
         if path:
             if thumb:
-                thumb_path = _get_thumb(path)
+                thumb_path = get_thumb(path)
                 if thumb_path:
                     return _cached_file_response(thumb_path, media_type='image/jpeg')
             if display:
-                display_path = _get_display_image(path)
+                display_path = get_display_image(path)
                 if display_path:
                     return _cached_file_response(display_path, media_type='image/jpeg')
             return _cached_file_response(path)
@@ -434,11 +434,11 @@ def register_api_routes():
         path = _safe_child_file(PRESET_IMAGE_DIR, filename)
         if path:
             if thumb:
-                thumb_path = _get_thumb(path)
+                thumb_path = get_thumb(path)
                 if thumb_path:
                     return _cached_file_response(thumb_path, media_type='image/jpeg')
             if display:
-                display_path = _get_display_image(path)
+                display_path = get_display_image(path)
                 if display_path:
                     return _cached_file_response(display_path, media_type='image/jpeg')
             return _cached_file_response(path)
@@ -858,62 +858,3 @@ def register_api_routes():
 
     logger.info("API 路由注册完成")
 
-
-THUMB_SIZE = (176, 176)
-DISPLAY_SIZE = (1280, 1280)
-DISPLAY_QUALITY = 82
-THUMB_DIR = Path(__file__).resolve().parent.parent.parent / 'outputs' / 'thumbs'
-DISPLAY_DIR = Path(__file__).resolve().parent.parent.parent / 'outputs' / 'display'
-THUMB_DIR.mkdir(parents=True, exist_ok=True)
-DISPLAY_DIR.mkdir(parents=True, exist_ok=True)
-
-
-def _variant_name(original: Path, label: str) -> str:
-    try:
-        stat = original.stat()
-        fingerprint = f'{stat.st_size:x}_{stat.st_mtime_ns:x}'
-    except OSError:
-        fingerprint = '0'
-    return f'{original.stem}_{fingerprint}_{label}.jpg'
-
-
-def _image_to_rgb(img):
-    if img.mode == 'RGB':
-        return img
-    if img.mode in ('RGBA', 'LA') or (img.mode == 'P' and 'transparency' in img.info):
-        base = Image.new('RGB', img.size, (255, 255, 248))
-        base.paste(img.convert('RGBA'), mask=img.convert('RGBA').split()[-1])
-        return base
-    return img.convert('RGB')
-
-
-def _get_thumb(original: Path) -> Path | None:
-    thumb_path = THUMB_DIR / _variant_name(original, 'thumb')
-    if thumb_path.exists():
-        return thumb_path
-    try:
-        from PIL import ImageOps
-        with Image.open(original) as opened:
-            img = ImageOps.exif_transpose(opened)
-            img.thumbnail(THUMB_SIZE)
-            img = _image_to_rgb(img)
-            img.save(thumb_path, 'JPEG', quality=70, optimize=True)
-        return thumb_path
-    except Exception:
-        return None
-
-
-def _get_display_image(original: Path) -> Path | None:
-    display_path = DISPLAY_DIR / _variant_name(original, 'display')
-    if display_path.exists():
-        return display_path
-    try:
-        from PIL import ImageOps
-        with Image.open(original) as opened:
-            img = ImageOps.exif_transpose(opened)
-            img.thumbnail(DISPLAY_SIZE)
-            img = _image_to_rgb(img)
-            img.save(display_path, 'JPEG', quality=DISPLAY_QUALITY, optimize=True, progressive=True)
-        return display_path
-    except Exception:
-        return None

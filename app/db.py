@@ -1055,6 +1055,14 @@ def _json_loads_safe(value, fallback):
         return fallback
 
 
+def _json_dumps_summary(value, max_len: int = 10000) -> str:
+    try:
+        text = json.dumps(value, ensure_ascii=False, separators=(',', ':'))
+    except Exception:
+        text = ''
+    return text[:max_len]
+
+
 def _session_summary_payload(session_id: str) -> dict | None:
     conn = _get_conn()
     row = conn.execute(
@@ -1175,9 +1183,13 @@ def _drag_element_summary_payload(session_id: str) -> dict | None:
         ),
         'display_name': data.get('display_name', ''),
         'scene_type': data.get('scene_type', ''),
+        'uploaded_image_path': data.get('uploaded_image_path', ''),
         'plant_element_count': plant_count,
         'other_element_count': other_count,
         'total_custom_element_count': plant_count + other_count,
+        'canvas_snapshot_path': data.get('canvas_snapshot_path', ''),
+        'canvas_json_path': data.get('canvas_json_path', ''),
+        'placed_elements_json': _json_dumps_summary(elements),
         'generated_image_path': data.get('generated_image_path', ''),
         'updated_at': _iso_time(time.time()),
     }
@@ -1278,6 +1290,10 @@ def _inspire_element_summary_payload(session_id: str) -> dict | None:
         'user_custom_plant_count': user_plant,
         'user_custom_other_count': user_other,
         'user_custom_labels': '; '.join(custom_labels)[:1000],
+        'uploaded_image_path': data.get('uploaded_image_path', ''),
+        'canvas_snapshot_path': data.get('canvas_snapshot_path', ''),
+        'canvas_json_path': data.get('canvas_json_path', ''),
+        'sketch_data_json': _json_dumps_summary(sketch_data),
         'generated_image_path': data.get('generated_image_path', ''),
         'updated_at': _iso_time(time.time()),
     }
@@ -1389,6 +1405,7 @@ def _chat_mode_summary_payload(session_id: str) -> dict | None:
         'mood_tag_count': len(mood_tags),
         'mood_tags': '; '.join(mood_tags)[:500],
         'user_prompt': extra_text[:2000],
+        'feeling_text': extra_text[:2000],
         'extra_text_length': len(extra_text),
         'has_extra_text': bool(extra_text),
         'chat_green_level': params['green'],
@@ -1399,6 +1416,7 @@ def _chat_mode_summary_payload(session_id: str) -> dict | None:
         'generation_status': data.get('generation_status', ''),
         'generation_error': str(data.get('generation_error') or '')[:500],
         'llm_prompt': _chat_prompt_for_summary(data, mood_tags, extra_text),
+        'uploaded_image_path': data.get('uploaded_image_path', ''),
         'generated_image_path': data.get('generated_image_path', ''),
         'updated_at': _iso_time(time.time()),
     }
@@ -1467,6 +1485,7 @@ def _slider_mode_summary_payload(session_id: str) -> dict | None:
         'display_name': data.get('display_name', ''),
         'scene_type': data.get('scene_type', ''),
         'selected_recommend': data.get('selected_recommend', ''),
+        'uploaded_image_path': data.get('uploaded_image_path', ''),
         'green_level': params['green'],
         'urban_level': params['urban'],
         'vitality_level': params['vitality'],
