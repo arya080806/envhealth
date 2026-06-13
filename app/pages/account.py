@@ -7,7 +7,7 @@ from html import escape
 from nicegui import app, ui
 
 from app.components.guide import guide_entry
-from app.components.nav import smooth_navigate
+from app.components.nav import bottom_nav, smooth_navigate
 from app.db import get_hci_participant_by_user_id, normalize_hci_participant_code
 from app.theme import COMMON_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
@@ -34,7 +34,7 @@ ACCOUNT_CSS = '''
 }
 .account-shell {
     width: 100%;
-    padding: 20px 20px 96px;
+    padding: 20px 20px 150px;
     gap: 16px;
 }
 .account-hero,
@@ -246,3 +246,5 @@ def create_account_page():
                 ui.button('退出登录', icon='logout', on_click=logout, color=None).classes(
                     'account-logout-btn'
                 ).props('unelevated no-caps')
+
+            bottom_nav('\u7528\u6237', light=True)

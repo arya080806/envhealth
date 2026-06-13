@@ -8,6 +8,7 @@ from html import escape
 from nicegui import app, ui
 
 from app.components.nav import bottom_nav, smooth_navigate
+from app.services.layout_snapshot import recover_drag_layout_snapshot
 from app.state import get_session, media_filename, media_url, resolve_media_path
 from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
@@ -245,6 +246,19 @@ RESULT_CSS = '''
     font-size: 12px;
     line-height: 1.3;
     font-weight: 850;
+}
+.canvas-element-index {
+    width: 20px;
+    height: 20px;
+    border-radius: 999px;
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto;
+    color: #FFFFFF;
+    background: #2F7B58;
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 950;
 }
 .canvas-element-meta {
     color: rgba(23,49,38,.56);
@@ -616,13 +630,16 @@ def _render_canvas_elements(elements: list[dict]) -> None:
     if not elements:
         return
     pills = []
-    for item in elements:
+    for index, item in enumerate(elements, start=1):
         icon = escape(str(item.get('icon') or item.get('emoji') or '').strip())
         label = escape(_element_label(item))
         meta = escape(_element_meta(item))
         meta_html = f'<span class="canvas-element-meta">{meta}</span>' if meta else ''
         icon_html = f'<span>{icon}</span>' if icon else ''
-        pills.append(f'<span class="canvas-element-pill">{icon_html}<span>{label}</span>{meta_html}</span>')
+        pills.append(
+            f'<span class="canvas-element-pill"><span class="canvas-element-index">{index}</span>'
+            f'{icon_html}<span>{label}</span>{meta_html}</span>'
+        )
     ui.html(
         '<div class="canvas-elements">'
         '<div class="canvas-elements-title">创作元素</div>'
@@ -654,6 +671,12 @@ def _is_canvas_snapshot_path(path_value: str | None) -> bool:
 
 
 def _canvas_history(session) -> list[dict]:
+    if getattr(session, 'mode_used', '') == 'drag':
+        try:
+            recover_drag_layout_snapshot(getattr(session, 'id', '') or '')
+            session = get_session(getattr(session, 'id', '') or '') or session
+        except Exception:
+            pass
     raw = getattr(session, 'canvas_history', []) or []
     if isinstance(raw, str):
         try:
