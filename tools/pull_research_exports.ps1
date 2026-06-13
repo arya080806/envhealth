@@ -79,7 +79,9 @@ with tarfile.open(archive, "r:gz") as tf:
 '@
 $env:ENVHEALTH_ARCHIVE = $tempArchive
 $env:ENVHEALTH_DEST = $LocalRecordDir
-& $python -c $extractCode
+$extractScript = Join-Path $env:TEMP "envhealth_extract_research_archive.py"
+Set-Content -LiteralPath $extractScript -Value $extractCode -Encoding UTF8
+& $python $extractScript
 if ($LASTEXITCODE -ne 0) {
     throw "Archive extraction failed with exit code $LASTEXITCODE"
 }
