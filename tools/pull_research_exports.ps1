@@ -4,11 +4,14 @@ param(
     [string]$RemoteProject = "/home/zm/envhealth",
     [string]$RemoteExport = "/home/zm/envhealth/research_exports",
     [string]$RemoteArchive = "/tmp/envhealth_research_exports.tar.gz",
-    [string]$LocalRecordDir = "D:\SSH\环境游戏程序\记录",
+    [string]$LocalRecordDir = "",
     [string]$IdentityFile = "$env:USERPROFILE\.ssh\id_rsa"
 )
 
 $ErrorActionPreference = "Stop"
+if ([string]::IsNullOrWhiteSpace($LocalRecordDir)) {
+    $LocalRecordDir = $PSScriptRoot
+}
 
 $ssh = "C:\Program Files\Git\usr\bin\ssh.exe"
 $scp = "C:\Program Files\Git\usr\bin\scp.exe"
