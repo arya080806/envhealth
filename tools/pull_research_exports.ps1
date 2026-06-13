@@ -49,7 +49,37 @@ Remove-Item -LiteralPath (Join-Path $LocalRecordDir "participants") -Recurse -Fo
 Remove-Item -LiteralPath (Join-Path $LocalRecordDir "index.csv") -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath (Join-Path $LocalRecordDir "index.xlsx") -Force -ErrorAction SilentlyContinue
 Remove-Item -LiteralPath (Join-Path $LocalRecordDir "manifest.json") -Force -ErrorAction SilentlyContinue
-& tar -xzf $tempArchive -C $LocalRecordDir
+$pythonCandidates = @(
+    "$env:LOCALAPPDATA\Programs\Python\Python312\python.exe",
+    "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe",
+    "$env:LOCALAPPDATA\Programs\Python\Python310\python.exe"
+)
+$python = $pythonCandidates | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if (-not $python) {
+    $pythonCommand = Get-Command python -ErrorAction SilentlyContinue
+    if ($pythonCommand) { $python = $pythonCommand.Source }
+}
+if (-not $python) {
+    throw "Python is required to extract UTF-8 archive paths correctly"
+}
+$extractCode = @'
+import os
+import tarfile
+from pathlib import Path
+
+archive = Path(os.environ["ENVHEALTH_ARCHIVE"])
+dest = Path(os.environ["ENVHEALTH_DEST"]).resolve()
+
+with tarfile.open(archive, "r:gz") as tf:
+    for member in tf.getmembers():
+        target = (dest / member.name).resolve()
+        if dest != target and dest not in target.parents:
+            raise RuntimeError(f"Unsafe archive path: {member.name}")
+    tf.extractall(dest)
+'@
+$env:ENVHEALTH_ARCHIVE = $tempArchive
+$env:ENVHEALTH_DEST = $LocalRecordDir
+& $python -c $extractCode
 if ($LASTEXITCODE -ne 0) {
     throw "Archive extraction failed with exit code $LASTEXITCODE"
 }
