@@ -16,6 +16,7 @@ from app.services.image_variants import get_display_image, get_thumb
 from app.state import (
     save_upload,
     save_output,
+    save_canvas_snapshot,
     get_session,
     create_session,
     export_sessions_csv,
@@ -406,6 +407,32 @@ def register_api_routes():
         return JSONResponse({
             'session_id': session_id,
             'image_url': f'/api/image/{Path(saved_path).name}',
+            'display_url': media_url(saved_path, display=True),
+            'thumbnail_url': media_url(saved_path, thumb=True),
+        })
+
+    @app.post('/api/canvas-snapshot')
+    async def upload_canvas_snapshot(request: Request):
+        data, error = await _json_payload(request)
+        if error:
+            return error
+        session_id = _clean_text(data.get('session_id', ''), 64)
+        data_url = data.get('data_url', '')
+        if not session_id or not get_session(session_id):
+            return JSONResponse({'error': 'invalid session'}, status_code=400)
+        if not isinstance(data_url, str) or not data_url.startswith('data:image/'):
+            return JSONResponse({'error': 'invalid canvas snapshot'}, status_code=400)
+        try:
+            saved_path = save_canvas_snapshot(session_id, data_url)
+        except ValueError as exc:
+            return JSONResponse({'error': str(exc)[:160]}, status_code=400)
+        except Exception:
+            logger.exception("canvas snapshot upload failed")
+            return JSONResponse({'error': 'canvas snapshot upload failed'}, status_code=500)
+        return JSONResponse({
+            'ok': True,
+            'path': saved_path,
+            'image_url': media_url(saved_path),
             'display_url': media_url(saved_path, display=True),
             'thumbnail_url': media_url(saved_path, thumb=True),
         })
@@ -857,4 +884,3 @@ def register_api_routes():
         return JSONResponse(get_export_summary())
 
     logger.info("API 路由注册完成")
-

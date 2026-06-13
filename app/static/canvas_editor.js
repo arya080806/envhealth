@@ -830,6 +830,20 @@ window.EnvCanvas = (function () {
       }
       return _canvas.toDataURL({ format: 'png', multiplier: multiplier });
     },
+    uploadCanvasSnapshot: async function(sessionId, maxMultiplier) {
+      var dataUrl = this.getCanvasDataURL(maxMultiplier);
+      if (!dataUrl) return JSON.stringify({ ok: false, error: 'empty canvas' });
+      var resp = await fetch('/api/canvas-snapshot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ session_id: sessionId, data_url: dataUrl }),
+      });
+      var data = await resp.json().catch(function() { return {}; });
+      if (!resp.ok) {
+        return JSON.stringify({ ok: false, error: data.error || ('HTTP ' + resp.status) });
+      }
+      return JSON.stringify(data);
+    },
     getObjectsJSON: function() {
       if (!_canvas) return '[]';
       return JSON.stringify({

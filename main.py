@@ -44,7 +44,7 @@ class UploadBodyPreReadMiddleware:
         if (
             scope['type'] == 'http'
             and scope.get('method', '') == 'POST'
-            and scope.get('path', '') == '/api/upload'
+            and scope.get('path', '') in ('/api/upload', '/api/canvas-snapshot')
         ):
             chunks = []
             total_size = 0

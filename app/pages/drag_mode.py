@@ -10,7 +10,7 @@ from nicegui import ui
 from app.components.icons import get_svg, icon_bench, icon_cabin, icon_pond, icon_sun, icon_tree
 from app.components.nav import bottom_nav, smooth_navigate
 from app.services.layout_snapshot import recover_drag_layout_snapshot
-from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_canvas_snapshot, save_output
+from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_output
 from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
 
@@ -810,11 +810,16 @@ def create_drag_page():
                 snapshot_saved = False
                 snapshot_note = ''
                 try:
-                    canvas_data_url = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getCanvasDataURL(2)) || ""', timeout=24.0)
-                    if canvas_data_url and canvas_data_url.startswith('data:image'):
-                        save_canvas_snapshot(sid, canvas_data_url)
+                    upload_result = await ui.run_javascript(
+                        f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 2)) || ""',
+                        timeout=45.0,
+                    )
+                    upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
+                    if upload_data.get('ok'):
                         snapshot_saved = True
                         saved_parts.append('\u5143\u7d20\u5e03\u5c40\u56fe')
+                    elif upload_data.get('error'):
+                        snapshot_note = str(upload_data.get('error'))[:120]
                 except Exception as exc:
                     snapshot_note = str(exc)[:120]
 
@@ -856,9 +861,14 @@ def create_drag_page():
                 ui.notify('请先放置至少一个元素', type='warning')
                 return
 
-            canvas_data_url = ''
+            snapshot_saved = False
             try:
-                canvas_data_url = await ui.run_javascript('EnvCanvas.getCanvasDataURL(2)', timeout=24.0)
+                upload_result = await ui.run_javascript(
+                    f'(window.EnvCanvas && EnvCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 2)) || ""',
+                    timeout=45.0,
+                )
+                upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
+                snapshot_saved = bool(upload_data.get('ok'))
             except Exception:
                 pass
 
@@ -868,12 +878,7 @@ def create_drag_page():
 
             session.mode_used = 'drag'
             session.placed_elements = elements
-            if canvas_data_url:
-                try:
-                    save_canvas_snapshot(sid, canvas_data_url)
-                except Exception:
-                    pass
-            else:
+            if not snapshot_saved:
                 try:
                     recover_drag_layout_snapshot(sid)
                 except Exception:
