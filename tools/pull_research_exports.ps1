@@ -25,15 +25,24 @@ if ($LASTEXITCODE -ne 0) {
     throw "Remote archive generation failed with exit code $LASTEXITCODE"
 }
 
+$tempArchiveName = "envhealth_research_exports.tar.gz"
+$tempArchive = Join-Path $env:TEMP $tempArchiveName
 $localArchive = Join-Path $LocalRecordDir "research_exports_latest.tar.gz"
+Remove-Item -LiteralPath $tempArchive -Force -ErrorAction SilentlyContinue
 Write-Host "Pulling archive to $LocalRecordDir..."
-& $scp -i $IdentityFile -o BatchMode=yes -o ConnectTimeout=20 "${remote}:$RemoteArchive" $localArchive
+Push-Location $env:TEMP
+try {
+    & $scp -i $IdentityFile -o BatchMode=yes -o ConnectTimeout=20 "${remote}:$RemoteArchive" $tempArchiveName
+} finally {
+    Pop-Location
+}
 if ($LASTEXITCODE -ne 0) {
     throw "Archive download failed with exit code $LASTEXITCODE"
 }
+Copy-Item -LiteralPath $tempArchive -Destination $localArchive -Force
 
 Write-Host "Extracting archive..."
-& tar -xzf $localArchive -C $LocalRecordDir
+& tar -xzf $tempArchive -C $LocalRecordDir
 if ($LASTEXITCODE -ne 0) {
     throw "Archive extraction failed with exit code $LASTEXITCODE"
 }
