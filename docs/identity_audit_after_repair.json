@@ -1,0 +1,1600 @@
+{
+  "generated_at": "2026-06-14T00:57:35",
+  "targets": [
+    "Arya",
+    "20260612-1",
+    "20260612-2"
+  ],
+  "local": {
+    "db_path": "D:\\SSH\\环境游戏程序\\healing-environment\\data\\healing.db",
+    "counts": {
+      "users": 13,
+      "hci_participants": 8,
+      "sessions": 715
+    },
+    "sequence": [
+      {
+        "id": 1,
+        "next_number": 129
+      }
+    ],
+    "target_users": [
+      {
+        "id": 8,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "gender": "女",
+        "created_at": 1780583531.921693,
+        "participant_id_normalized": "0002",
+        "display_name_key": "arya"
+      },
+      {
+        "id": 18,
+        "participant_id": "0127",
+        "display_name": "20260612-1",
+        "gender": "女",
+        "created_at": 1781369017.0503545,
+        "participant_id_normalized": "0127",
+        "display_name_key": "20260612-1"
+      },
+      {
+        "id": 19,
+        "participant_id": "0128",
+        "display_name": "20260612-2",
+        "gender": "女",
+        "created_at": 1781369017.0503545,
+        "participant_id_normalized": "0128",
+        "display_name_key": "20260612-2"
+      }
+    ],
+    "target_participants": [
+      {
+        "id": 5,
+        "user_id": 8,
+        "participant_code": "0002",
+        "registered_name": "Arya",
+        "gender": "女",
+        "created_at": 1780583531.921693,
+        "updated_at": 1781236475.3108063,
+        "participant_code_normalized": "0002",
+        "registered_name_key": "arya"
+      },
+      {
+        "id": 18,
+        "user_id": 18,
+        "participant_code": "0127",
+        "registered_name": "20260612-1",
+        "gender": "女",
+        "created_at": 1781369017.0503545,
+        "updated_at": 1781369017.0503545,
+        "participant_code_normalized": "0127",
+        "registered_name_key": "20260612-1"
+      },
+      {
+        "id": 19,
+        "user_id": 19,
+        "participant_code": "0128",
+        "registered_name": "20260612-2",
+        "gender": "女",
+        "created_at": 1781369017.0503545,
+        "updated_at": 1781369017.0503545,
+        "participant_code_normalized": "0128",
+        "registered_name_key": "20260612-2"
+      }
+    ],
+    "target_sessions": [
+      {
+        "session_id": "e51b08fa0317",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780586766.120583,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "5a523e22594e",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780586861.8095255,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "9cb1add8a86c",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780586869.8948514,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "041b9399f08c",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780586903.758441,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "8b71f0938b54",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780587043.649036,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "586749fd6de7",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780587095.3240168,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "f28154e05bbd",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780587185.3076146,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "9cec578bbfd2",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780588176.655355,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "69ed032b5caa",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780588465.4087887,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "d8b720919ee6",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780588552.1289048,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "e9cf9472eabd",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780719960.7736404,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "683fb2632931",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780719975.7639208,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "d16c4fbc38a4",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780720227.6341527,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "3df68d9b2663",
+        "user_id": 8,
+        "mode_used": "inspire",
+        "created_at": 1780720255.1019857,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "3cdb1857c861",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780728046.1814826,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "5aa4498e90d6",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780728275.9766283,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "1edaf6b5fcf7",
+        "user_id": 8,
+        "mode_used": "chat",
+        "created_at": 1780728362.5846086,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "c95cb67d91ba",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780730267.6628985,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "8bd5e1f6cf12",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780732865.8535106,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "def9692f8289",
+        "user_id": 8,
+        "mode_used": "chat",
+        "created_at": 1780734047.4936962,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "b2229ffe6aeb",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780734194.5141876,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "340b8fea2efe",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780734235.0882287,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "3a3066647c5f",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738160.2692697,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "7deacd798d89",
+        "user_id": 8,
+        "mode_used": "drag",
+        "created_at": 1780738240.6285384,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "2444628f4fe2",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738433.414098,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "65a8f1d275c4",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738436.1619678,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "66b6709fda6c",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738442.2634199,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "be6541afa985",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738498.3770087,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "af0dacc763c6",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780738972.5316472,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "d3b329232db4",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780739173.2783575,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "21ff07fc4e8e",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780739332.7513723,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "a8e0abd3ba99",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780739678.5847178,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "6254c425935b",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780739681.8196998,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "0d3c0c10b782",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780740523.3517225,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "bdbe4f1b5880",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780751195.725595,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "31b9a4b618b9",
+        "user_id": 8,
+        "mode_used": "inspire",
+        "created_at": 1780755164.6863837,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "32c51560d204",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780755241.5449376,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "047353a65c23",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780757985.5466506,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "660e87df68e9",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780757987.8554575,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "361979c75424",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780987201.6911616,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "a398ee31815e",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780988228.7709324,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "4f969e76381b",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780988232.628274,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "f0502dcd3d1d",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780988241.661532,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "9ffab502ffe7",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780996537.5913742,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "b1a555a865b9",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998505.7121432,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "5ee11bae3608",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998508.6196811,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "1a922203427a",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998520.186039,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "132b27b053e6",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998527.5863602,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "87f5621a4423",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998531.544716,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "4622362d5368",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998535.522229,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "7a1b60e4667b",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998546.3244631,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "c333fd6bcdce",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1780998932.3772788,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "2ecd4b88250d",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781001170.473914,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "0b8ed49d9627",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781002742.5053024,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "e8d13ef84786",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781002934.5355918,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "f660c7ffa6dd",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781003049.954216,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "3b11ddf3e2ee",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781004242.2032475,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "6c575ac42f77",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781004936.8679833,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "ff6ed35bf7bb",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781007184.1094112,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "24951bbbde0e",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781007703.0659895,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "4fecaa745f83",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781068761.2844996,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "8a17aa2c1fc3",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781147944.024831,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "5db59d181c82",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781161953.2037132,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "c581158a0ac8",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781188531.9623082,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "8dd70a95f9a8",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781189405.7445202,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "0c54015655f5",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781192732.2372983,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "2d1bd2298761",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781193936.5659654,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "53c80e847a05",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781194612.39878,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "bff3c28da7c3",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781194702.7397857,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "df93338d1961",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195627.510911,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "7311a62e9025",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195658.928907,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "d0c7a45f211d",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195686.464763,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "e04797a1af47",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195687.716559,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "6da15953b326",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195688.9354303,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "a4ce8b394239",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195690.171952,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "90fd4ab5cdeb",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195802.8290246,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "cb20abb01e67",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781195885.3299491,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "bf9fef987435",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781234895.9382656,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "f716e84cc3f3",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781236547.9347334,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "ecb680ad3dff",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781240339.924198,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "ebc266b108b2",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781358556.0580492,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "50a596d66ff7",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781359739.9839265,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "b7ea4ea412d1",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781366719.9528873,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      },
+      {
+        "session_id": "d0fd1d3842f0",
+        "user_id": 8,
+        "mode_used": "",
+        "created_at": 1781366842.67226,
+        "participant_id": "0002",
+        "display_name": "Arya",
+        "participant_code": "0002",
+        "registered_name": "Arya"
+      }
+    ],
+    "duplicates": {
+      "users_by_name_gender": [
+        {
+          "key": {
+            "display_name_key": "你好",
+            "gender": ""
+          },
+          "items": [
+            {
+              "id": 3,
+              "participant_id": "p002",
+              "display_name": "你好",
+              "gender": "",
+              "created_at": 1775611821.4555187,
+              "participant_id_normalized": "P002",
+              "display_name_key": "你好"
+            },
+            {
+              "id": 4,
+              "participant_id": "p001",
+              "display_name": "你好",
+              "gender": "",
+              "created_at": 1775612934.5237055,
+              "participant_id_normalized": "P001",
+              "display_name_key": "你好"
+            }
+          ]
+        }
+      ],
+      "users_by_participant_id": [
+        {
+          "key": {
+            "participant_id_normalized": "0001"
+          },
+          "items": [
+            {
+              "id": 5,
+              "participant_id": "0001",
+              "display_name": "1",
+              "gender": "",
+              "created_at": 1775612936.2291758,
+              "participant_id_normalized": "0001",
+              "display_name_key": "1"
+            },
+            {
+              "id": 7,
+              "participant_id": "HCI-0001",
+              "display_name": "FeishuSyncTest0604",
+              "gender": "其他/未填写",
+              "created_at": 1780574099.3214066,
+              "participant_id_normalized": "0001",
+              "display_name_key": "feishusynctest0604"
+            }
+          ]
+        }
+      ],
+      "participants_by_name_gender": [],
+      "participants_by_code": []
+    },
+    "integrity_issues": {
+      "mismatched_user_participant": [
+        {
+          "user_id": 6,
+          "participant_id": "U93667270",
+          "display_name": "用户9366",
+          "user_gender": "",
+          "participant_row_id": 6,
+          "participant_code": "0006",
+          "registered_name": "用户9366",
+          "participant_gender": "其他/未填写"
+        }
+      ],
+      "users_without_hci_participant": [
+        {
+          "user_id": 1,
+          "participant_id": "0111",
+          "display_name": "111",
+          "user_gender": "",
+          "participant_row_id": null,
+          "participant_code": null,
+          "registered_name": null,
+          "participant_gender": ""
+        },
+        {
+          "user_id": 2,
+          "participant_id": "0123",
+          "display_name": "123",
+          "user_gender": "",
+          "participant_row_id": null,
+          "participant_code": null,
+          "registered_name": null,
+          "participant_gender": ""
+        },
+        {
+          "user_id": 3,
+          "participant_id": "p002",
+          "display_name": "你好",
+          "user_gender": "",
+          "participant_row_id": null,
+          "participant_code": null,
+          "registered_name": null,
+          "participant_gender": ""
+        },
+        {
+          "user_id": 4,
+          "participant_id": "p001",
+          "display_name": "你好",
+          "user_gender": "",
+          "participant_row_id": null,
+          "participant_code": null,
+          "registered_name": null,
+          "participant_gender": ""
+        },
+        {
+          "user_id": 5,
+          "participant_id": "0001",
+          "display_name": "1",
+          "user_gender": "",
+          "participant_row_id": null,
+          "participant_code": null,
+          "registered_name": null,
+          "participant_gender": ""
+        }
+      ]
+    }
+  },
+  "feishu": {
+    "enabled": true,
+    "app_token": "JwEfb3HgTaopgysRBxycIKPSn7d",
+    "participants": {
+      "table_id": "tblOpqLdd7QB9GCS",
+      "field_count": 15,
+      "record_count": 20,
+      "unexpected_fields": [
+        "系统主列_忽略",
+        "备注"
+      ],
+      "missing_expected_fields": [],
+      "target_participants": [
+        {
+          "record_id": "recvlACkqO3dYX",
+          "participant_code": "0002",
+          "registered_name": "Arya",
+          "registered_name_key": "arya",
+          "gender": "女",
+          "user_id": "8",
+          "local_id": "5",
+          "updated_at": 1781236475000,
+          "raw_fields": {
+            "中心编号": "社区",
+            "创建时间": 1780583531000,
+            "参与者编号": "0002",
+            "年龄段": "30~39",
+            "性别": "女",
+            "教育层级": "未填写",
+            "更新时间": 1781236475000,
+            "本地参与者ID": "5",
+            "本地用户ID": "8",
+            "登记姓名": "Arya",
+            "研究阶段": "未填写",
+            "诊断大类": "其他/未填写"
+          }
+        },
+        {
+          "record_id": "recvmj3AZ8ZEJx",
+          "participant_code": "0127",
+          "registered_name": "20260612-1",
+          "registered_name_key": "20260612-1",
+          "gender": "女",
+          "user_id": "18",
+          "local_id": "18",
+          "updated_at": 1781323649000,
+          "raw_fields": {
+            "中心编号": "浦江",
+            "创建时间": 1781243829000,
+            "参与者编号": "0127",
+            "备注": "0612 女 看起来五六十岁 更喜欢清静 刚刚好\n[identity repair 2026-06-14] 0612 女 看起来五六十岁 更喜欢清静 刚刚好",
+            "年龄段": "50~59",
+            "性别": "女",
+            "教育层级": "本科",
+            "更新时间": 1781323649000,
+            "本地参与者ID": "18",
+            "本地用户ID": "18",
+            "登记姓名": "20260612-1",
+            "研究阶段": "未填写",
+            "诊断大类": "其他/未填写"
+          }
+        },
+        {
+          "record_id": "recvmkN4nwjW3a",
+          "participant_code": "0128",
+          "registered_name": "20260612-2",
+          "registered_name_key": "20260612-2",
+          "gender": "女",
+          "user_id": "19",
+          "local_id": "19",
+          "updated_at": 1781249316000,
+          "raw_fields": {
+            "创建时间": 1781249307000,
+            "参与者编号": "0128",
+            "备注": "[identity repair 2026-06-14] 三处花朵；0612 女 白头发 70 及以上 喜欢热闹 桌椅 树木 花朵 与个人经历相关（父亲 花园工作）",
+            "年龄段": "60~69",
+            "性别": "女",
+            "教育层级": "未填写",
+            "更新时间": 1781249316000,
+            "本地参与者ID": "19",
+            "本地用户ID": "19",
+            "登记姓名": "20260612-2",
+            "研究阶段": "未填写",
+            "诊断大类": "其他/未填写"
+          }
+        }
+      ],
+      "duplicates": {
+        "by_name": [],
+        "by_name_gender": [],
+        "by_code": [],
+        "by_local_user_id": [],
+        "by_local_participant_id": []
+      },
+      "missing_identity_fields": []
+    },
+    "downstream": {
+      "session_summary": {
+        "configured": true,
+        "table_id": "tblJ8uNrq1VbskhJ",
+        "field_count": 21,
+        "record_count": 1,
+        "unexpected_fields": [
+          "??ID"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvmoArUYkQRe",
+            "unique_value": "3c8a18bb9b2b",
+            "participant_code": "",
+            "display_name": "Arya",
+            "display_name_key": "arya",
+            "issue": "missing_participant_code"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmoArUYkQRe",
+            "unique_value": "3c8a18bb9b2b",
+            "participant_code": "",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          }
+        ]
+      },
+      "drag_element_summary": {
+        "configured": true,
+        "table_id": "tbl5rKD7pngR3JPT",
+        "field_count": 16,
+        "record_count": 10,
+        "unexpected_fields": [
+          "系统主列_忽略",
+          "备注"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvlAoOiSMpZ9",
+            "unique_value": "4448bb7bc544",
+            "participant_code": "U93667270",
+            "display_name": "用户9366",
+            "display_name_key": "用户9366",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmcF9iXiQoW",
+            "unique_value": "d4674bbf4d9a",
+            "participant_code": "",
+            "display_name": "",
+            "display_name_key": "",
+            "issue": "missing_participant_code"
+          },
+          {
+            "record_id": "recvmcF9iX8QKS",
+            "unique_value": "0cbd3f4d319e",
+            "participant_code": "",
+            "display_name": "",
+            "display_name_key": "",
+            "issue": "missing_participant_code"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvlKzqSllVDD",
+            "unique_value": "3df68d9b2663",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmcH8g6XQ3i",
+            "unique_value": "7deacd798d89",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmiNfLAPpfo",
+            "unique_value": "c9a8261e3962",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmjqAlv7Ntt",
+            "unique_value": "34dafa28e4e8",
+            "participant_code": "0127",
+            "display_name": "20260612-1",
+            "display_name_key": "20260612-1"
+          },
+          {
+            "record_id": "recvmkN3nyOHlL",
+            "unique_value": "abb35fe9eb0d",
+            "participant_code": "0128",
+            "display_name": "20260612-2",
+            "display_name_key": "20260612-2"
+          }
+        ]
+      },
+      "inspire_element_summary": {
+        "configured": true,
+        "table_id": "tblRHCZlil3gxHJP",
+        "field_count": 20,
+        "record_count": 9,
+        "unexpected_fields": [
+          "系统主列_忽略"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvlABRo9RsH6",
+            "unique_value": "82fb0696261a",
+            "participant_code": "U93667270",
+            "display_name": "用户9366",
+            "display_name_key": "用户9366",
+            "issue": "code_not_in_participant_table"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmcFqJSK0m9",
+            "unique_value": "31b9a4b618b9",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmcHGJyycBZ",
+            "unique_value": "3df68d9b2663",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmiOC7lnHy3",
+            "unique_value": "732b951723f0",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmiSJ8NGsDp",
+            "unique_value": "6c102ce49620",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmjqBxqSRSs",
+            "unique_value": "c02047060de3",
+            "participant_code": "0127",
+            "display_name": "20260612-1",
+            "display_name_key": "20260612-1"
+          }
+        ]
+      },
+      "chat_mode_summary": {
+        "configured": true,
+        "table_id": "tblZkSIqni3IjZ9J",
+        "field_count": 21,
+        "record_count": 22,
+        "unexpected_fields": [
+          "主键"
+        ],
+        "missing_expected_fields": [
+          "输入你的感受",
+          "原图路径"
+        ],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvmfKYb5WJhU",
+            "unique_value": "0c0fb222d460",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmfKYb5VHrw",
+            "unique_value": "3ab807fc377e",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmfKYb54ET7",
+            "unique_value": "6114860e0902",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmfKYb5dZoz",
+            "unique_value": "98808ba793ef",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmfKYb5tGVn",
+            "unique_value": "ef7a1bba952b",
+            "participant_code": "0111",
+            "display_name": "111",
+            "display_name_key": "111",
+            "issue": "code_not_in_participant_table"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmfKYb5q2I2",
+            "unique_value": "1edaf6b5fcf7",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          },
+          {
+            "record_id": "recvmfKYb5Xw6q",
+            "unique_value": "def9692f8289",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          }
+        ]
+      },
+      "slider_mode_summary": {
+        "configured": true,
+        "table_id": "tbl0b7OU7sommUqK",
+        "field_count": 17,
+        "record_count": 12,
+        "unexpected_fields": [
+          "主键"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvmfLfv9gWnO",
+            "unique_value": "0fd80d0eb0b5",
+            "participant_code": "0111",
+            "display_name": "111",
+            "display_name_key": "111",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmfLfv91FvS",
+            "unique_value": "62b45b710da5",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmoyL8dmG36",
+            "unique_value": "c5918f359480",
+            "participant_code": "0127",
+            "display_name": "20260612-1",
+            "display_name_key": "20260612-1"
+          },
+          {
+            "record_id": "recvmoyL8dRifZ",
+            "unique_value": "3ac341d0b345",
+            "participant_code": "0128",
+            "display_name": "20260612-2",
+            "display_name_key": "20260612-2"
+          }
+        ]
+      },
+      "mode_usage_count": {
+        "configured": true,
+        "table_id": "tblswhN4OsyWRZwj",
+        "field_count": 12,
+        "record_count": 11,
+        "unexpected_fields": [
+          "系统主列_忽略"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvmq5nC5IVPh",
+            "unique_value": "U93667270",
+            "participant_code": "U93667270",
+            "display_name": "用户9366",
+            "display_name_key": "用户9366",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5nC51kdo",
+            "unique_value": "P001",
+            "participant_code": "P001",
+            "display_name": "你好",
+            "display_name_key": "你好",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5nC5hcd9",
+            "unique_value": "0001",
+            "participant_code": "0001",
+            "display_name": "1",
+            "display_name_key": "1",
+            "issue": "code_name_mismatch"
+          },
+          {
+            "record_id": "recvmq5nC5JXOJ",
+            "unique_value": "P002",
+            "participant_code": "P002",
+            "display_name": "你好",
+            "display_name_key": "你好",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5nC5ow0r",
+            "unique_value": "0123",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5nC5zyp8",
+            "unique_value": "0111",
+            "participant_code": "0111",
+            "display_name": "111",
+            "display_name_key": "111",
+            "issue": "code_not_in_participant_table"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmq5nC5kKgl",
+            "unique_value": "0128",
+            "participant_code": "0128",
+            "display_name": "20260612-2",
+            "display_name_key": "20260612-2"
+          },
+          {
+            "record_id": "recvmq5nC5Plze",
+            "unique_value": "0127",
+            "participant_code": "0127",
+            "display_name": "20260612-1",
+            "display_name_key": "20260612-1"
+          },
+          {
+            "record_id": "recvmq5nC5jW77",
+            "unique_value": "0124",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          }
+        ]
+      },
+      "work_count_summary": {
+        "configured": true,
+        "table_id": "tblsa0bsFu7I1tHs",
+        "field_count": 14,
+        "record_count": 12,
+        "unexpected_fields": [
+          "系统主列_忽略"
+        ],
+        "missing_expected_fields": [],
+        "duplicate_unique_values": [],
+        "identity_mismatches": [
+          {
+            "record_id": "recvmq5ozImQBG",
+            "unique_value": "U93667270",
+            "participant_code": "U93667270",
+            "display_name": "用户9366",
+            "display_name_key": "用户9366",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5ozIXab8",
+            "unique_value": "P001",
+            "participant_code": "P001",
+            "display_name": "你好",
+            "display_name_key": "你好",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5ozIxo4x",
+            "unique_value": "0001",
+            "participant_code": "0001",
+            "display_name": "1",
+            "display_name_key": "1",
+            "issue": "code_name_mismatch"
+          },
+          {
+            "record_id": "recvmq5ozI1PqY",
+            "unique_value": "P002",
+            "participant_code": "P002",
+            "display_name": "你好",
+            "display_name_key": "你好",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5ozImPvy",
+            "unique_value": "0123",
+            "participant_code": "0123",
+            "display_name": "123",
+            "display_name_key": "123",
+            "issue": "code_not_in_participant_table"
+          },
+          {
+            "record_id": "recvmq5ozILsN6",
+            "unique_value": "0111",
+            "participant_code": "0111",
+            "display_name": "111",
+            "display_name_key": "111",
+            "issue": "code_not_in_participant_table"
+          }
+        ],
+        "target_records": [
+          {
+            "record_id": "recvmq5ozIO4z4",
+            "unique_value": "0128",
+            "participant_code": "0128",
+            "display_name": "20260612-2",
+            "display_name_key": "20260612-2"
+          },
+          {
+            "record_id": "recvmq5ozIsFR8",
+            "unique_value": "0127",
+            "participant_code": "0127",
+            "display_name": "20260612-1",
+            "display_name_key": "20260612-1"
+          },
+          {
+            "record_id": "recvmq5ozIKG8B",
+            "unique_value": "0124",
+            "participant_code": "0002",
+            "display_name": "Arya",
+            "display_name_key": "arya"
+          }
+        ]
+      }
+    }
+  }
+}

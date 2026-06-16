@@ -599,6 +599,24 @@ RESULT_LIGHTBOX_JS = '''
         }
     }
 
+    function removeHistoryGridItem(card, section) {
+        if (!card) return;
+        var grid = section && section.querySelector('.history-grid');
+        if (!grid) {
+            card.remove();
+            return;
+        }
+        var gridItem = card;
+        while (gridItem && gridItem.parentElement !== grid) {
+            gridItem = gridItem.parentElement;
+        }
+        if (gridItem && gridItem.parentElement === grid) {
+            gridItem.remove();
+        } else {
+            card.remove();
+        }
+    }
+
     document.addEventListener('click', function (event) {
         var deleteButton = event.target.closest('.history-delete-btn');
         if (deleteButton) {
@@ -618,7 +636,7 @@ RESULT_LIGHTBOX_JS = '''
                     if (!resp.ok) throw new Error('delete failed');
                     var card = deleteButton.closest('.history-card');
                     var section = card && card.closest('.result-section');
-                    if (card) card.remove();
+                    removeHistoryGridItem(card, section);
                     reindexCanvasHistory(section);
                 }).catch(function () {
                     deleteButton.disabled = false;

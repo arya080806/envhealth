@@ -51,7 +51,7 @@ NAV_NOTIFY_JS = '''
     if (!window.HealingDraftNotifier) {
         window.HealingDraftNotifier = { poll: pollDraftNotifications };
         pollDraftNotifications();
-        setInterval(pollDraftNotifications, 4000);
+        setInterval(pollDraftNotifications, 15000);
         document.addEventListener('visibilitychange', pollDraftNotifications);
         window.addEventListener('focus', pollDraftNotifications);
     } else {

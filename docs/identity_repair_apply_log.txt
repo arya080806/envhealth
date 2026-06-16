@@ -1,0 +1,22 @@
+Identity repair started at 2026-06-14T00:43:37
+Mode: APPLY
+Backed up SQLite to D:\SSH\环境游戏程序\healing-environment\data\healing.identity_repair_20260614_004337.db
+Import local participant 0127 20260612-1 女
+Import local participant 0128 20260612-2 女
+Ensure local participant sequence next_number >= 129
+Update Feishu tblOpqLdd7QB9GCS/recvmj3AZ8ZEJx: {"参与者编号": "0127", "登记姓名": "20260612-1", "性别": "女", "备注": "0612 女 看起来五六十岁 更喜欢清静 刚刚好\n[identity repair 2026-06-14] 0612 女 看起来五六十岁 更喜欢清静 刚刚好", "本地用户ID": 18, "本地参与者ID": 18}
+Update Feishu tblOpqLdd7QB9GCS/recvmkN4nwjW3a: {"参与者编号": "0128", "登记姓名": "20260612-2", "性别": "女", "备注": "[identity repair 2026-06-14] 三处花朵；0612 女 白头发 70 及以上 喜欢热闹 桌椅 树木 花朵 与个人经历相关（父亲 花园工作）", "本地用户ID": 19, "本地参与者ID": 19}
+Update Feishu tblOpqLdd7QB9GCS/recvmf6LSaWLvN: {"参与者编号": "ARCHIVED-0124", "登记姓名": "已归档-Arya-0124", "性别": "女", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：重复 Arya；canonical=0002"}
+Update Feishu tblOpqLdd7QB9GCS/recvmj3rIxfuJV: {"参与者编号": "ARCHIVED-0126", "登记姓名": "已归档-Arya-0126", "性别": "女", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：重复 Arya；canonical=0002"}
+Update Feishu tblOpqLdd7QB9GCS/recvmj3nFumCPD: {"参与者编号": "ARCHIVED-0125", "登记姓名": "已归档-20260612-1-0125", "性别": "女", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：重复 20260612-1；canonical=0127"}
+Update Feishu tblOpqLdd7QB9GCS/recvmk08Cu5qXs: {"参与者编号": "ARCHIVED-BLANK-20260612-2", "登记姓名": "已归档-20260612-2-空记录", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "0612 女 白头发 70 及以上 喜欢热闹 桌椅 树木 花朵 与个人经历相关（父亲 花园工作）\n[identity repair 2026-06-14] 已归档：无编号空记录；备注已合并到 canonical=0128"}
+Update Feishu tblOpqLdd7QB9GCS/recvmfsOrLYTEZ: {"参与者编号": "ARCHIVED-0004-DUP", "登记姓名": "已归档-Codex虚拟测试06112308-重复", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：重复 record；canonical=0004"}
+Update Feishu tblOpqLdd7QB9GCS/recvmiTqwXi9bN: {"参与者编号": "ARCHIVED-0005-DUP", "登记姓名": "已归档-ipad-debug-1781238168711-重复", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：重复 record；canonical=0005"}
+Update Feishu tblOpqLdd7QB9GCS/recvmf8K3z7cjc: {"参与者编号": "ARCHIVED-BLANK-01", "登记姓名": "已归档-空记录-01", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：空身份记录"}
+Update Feishu tblOpqLdd7QB9GCS/recvmfv25NSWmK: {"参与者编号": "ARCHIVED-BLANK-02", "登记姓名": "已归档-空记录-02", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：空身份记录"}
+Update Feishu tblOpqLdd7QB9GCS/recvmk0o8WAoGf: {"参与者编号": "ARCHIVED-BLANK-03", "登记姓名": "已归档-空记录-03", "性别": "其他/未填写", "本地用户ID": null, "本地参与者ID": null, "备注": "[identity repair 2026-06-14] 已归档：空身份记录"}
+Update Feishu tbl5rKD7pngR3JPT/recvmiNfLAPpfo: {"参与者编号": "0002", "登记姓名": "Arya"}
+Update Feishu tblRHCZlil3gxHJP/recvmiOC7lnHy3: {"参与者编号": "0002", "登记姓名": "Arya"}
+Update Feishu tblRHCZlil3gxHJP/recvmiSJ8NGsDp: {"参与者编号": "0002", "登记姓名": "Arya"}
+Update Feishu tblswhN4OsyWRZwj/recvmq5nC5jW77: {"参与者编号": "0002", "登记姓名": "Arya"}
+Update Feishu tblsa0bsFu7I1tHs/recvmq5ozIKG8B: {"参与者编号": "0002", "登记姓名": "Arya"}

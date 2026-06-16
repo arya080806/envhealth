@@ -298,6 +298,9 @@ def init_db():
         CREATE INDEX IF NOT EXISTS idx_hci_participants_user_id
             ON hci_participants(user_id);
 
+        CREATE INDEX IF NOT EXISTS idx_sessions_generation_notifications
+            ON sessions(generation_status, generation_finished_at, generation_seen_at);
+
         CREATE TABLE IF NOT EXISTS feishu_sync_jobs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             sync_type TEXT NOT NULL,
@@ -652,11 +655,35 @@ def _next_hci_participant_code(conn: sqlite3.Connection) -> str:
 
 
 def _participant_for_user(conn: sqlite3.Connection, user_id: int) -> dict | None:
+    rows = _participants_for_user(conn, user_id)
+    return rows[0] if rows else None
+
+
+def _participants_for_user(conn: sqlite3.Connection, user_id: int) -> list[dict]:
     row = conn.execute(
-        'SELECT * FROM hci_participants WHERE user_id = ? ORDER BY updated_at DESC LIMIT 1',
+        'SELECT * FROM hci_participants WHERE user_id = ? ORDER BY updated_at DESC, id DESC',
         (user_id,),
-    ).fetchone()
-    return dict(row) if row else None
+    ).fetchall()
+    return [dict(item) for item in row]
+
+
+def _hci_user_matches_by_code(conn: sqlite3.Connection, participant_code: str) -> list[dict]:
+    code = normalize_hci_participant_code(participant_code)
+    if not code.isdigit():
+        return []
+    legacy_code = _legacy_hci_participant_code(code)
+    rows = conn.execute(
+        '''
+        SELECT DISTINCT u.*
+        FROM users u
+        LEFT JOIN hci_participants hp ON hp.user_id = u.id
+        WHERE u.participant_id IN (?, ?)
+           OR hp.participant_code IN (?, ?)
+        ORDER BY u.id DESC
+        ''',
+        (code, legacy_code, code, legacy_code),
+    ).fetchall()
+    return [dict(row) for row in rows]
 
 
 def research_login_or_register(
@@ -682,32 +709,60 @@ def research_login_or_register(
         conn.execute('BEGIN IMMEDIATE')
 
         if not force_new:
-            existing = conn.execute(
-                '''
-                SELECT * FROM users
-                WHERE display_name = ? AND COALESCE(gender, '') = ?
-                ORDER BY id DESC
-                LIMIT 1
-                ''',
-                (name, gender),
-            ).fetchone()
-            if existing:
-                user = dict(existing)
-                participant = _participant_for_user(conn, int(user['id']))
+            lookup_code = normalize_hci_participant_code(name)
+            lookup_by_code = lookup_code.isdigit()
+            if lookup_by_code:
+                matches = _hci_user_matches_by_code(conn, lookup_code)
+            else:
+                matches = [
+                    dict(row) for row in conn.execute(
+                        '''
+                        SELECT * FROM users
+                        WHERE display_name = ? AND COALESCE(gender, '') = ?
+                        ORDER BY id DESC
+                        ''',
+                        (name, gender),
+                    ).fetchall()
+                ]
+            if len(matches) > 1:
+                conn.rollback()
+                return (
+                    None,
+                    None,
+                    False,
+                    '匹配到多个参与者，请输入参与者编号或联系研究员清理重复记录',
+                )
+            if matches:
+                user = matches[0]
+                participant_rows = _participants_for_user(conn, int(user['id']))
+                if len(participant_rows) > 1:
+                    conn.rollback()
+                    return (
+                        None,
+                        None,
+                        False,
+                        '该账号存在多个参与者编号，请联系研究员清理后再登录',
+                    )
+                participant = participant_rows[0] if participant_rows else None
                 if not participant:
                     user_code = normalize_hci_participant_code(user.get('participant_id'))
                     participant_code = user_code if user_code.isdigit() else _next_hci_participant_code(conn)
+                    profile_name = user.get('display_name') if lookup_by_code else name
+                    profile_gender = _clean_gender(user.get('gender')) if lookup_by_code else gender
                     conn.execute(
                         '''
                         INSERT INTO hci_participants
                             (user_id, participant_code, registered_name, gender, created_at, updated_at)
                         VALUES (?, ?, ?, ?, ?, ?)
                         ''',
-                        (user['id'], participant_code, name, gender, now, now),
+                        (user['id'], participant_code, profile_name, profile_gender, now, now),
                     )
                     participant = _participant_for_user(conn, int(user['id']))
                     sync_payload = (participant_code, _participant_sync_payload(participant))
-                elif participant.get('registered_name') != name or participant.get('gender') != gender:
+                elif (
+                    not lookup_by_code
+                    and (participant.get('registered_name') != name or participant.get('gender') != gender)
+                ):
                     conn.execute(
                         '''
                         UPDATE hci_participants
@@ -1946,6 +2001,56 @@ def get_all_sessions() -> list[dict]:
         d['canvas_history'] = json.loads(d.get('canvas_history') or '[]')
         results.append(d)
     return results
+
+
+def get_ready_generation_notifications(limit: int = 20) -> tuple[list[dict], int]:
+    """Return completed, unseen generations without scanning every session in Python."""
+    safe_limit = max(1, min(int(limit or 20), 100))
+    conn = _get_conn()
+    params = ('done',)
+    total_row = conn.execute(
+        '''
+        SELECT COUNT(*) AS c
+        FROM sessions
+        WHERE generation_status = ?
+          AND COALESCE(generation_finished_at, 0) > COALESCE(generation_seen_at, 0)
+          AND COALESCE(generated_image_path, '') != ''
+        ''',
+        params,
+    ).fetchone()
+    rows = conn.execute(
+        '''
+        SELECT id, record_title, mode_used, generation_finished_at, generated_image_path
+        FROM sessions
+        WHERE generation_status = ?
+          AND COALESCE(generation_finished_at, 0) > COALESCE(generation_seen_at, 0)
+          AND COALESCE(generated_image_path, '') != ''
+        ORDER BY generation_finished_at DESC
+        LIMIT ?
+        ''',
+        (*params, safe_limit),
+    ).fetchall()
+    conn.close()
+    return [dict(row) for row in rows], int(total_row['c'] if total_row else 0)
+
+
+def mark_ready_generation_notifications_seen(now: float | None = None) -> int:
+    """Mark completed, unseen generations as seen in one SQL update."""
+    seen_at = time.time() if now is None else float(now)
+    conn = _get_conn()
+    cur = conn.execute(
+        '''
+        UPDATE sessions
+        SET generation_seen_at = MAX(?, COALESCE(generation_finished_at, 0))
+        WHERE generation_status = 'done'
+          AND COALESCE(generation_finished_at, 0) > COALESCE(generation_seen_at, 0)
+        ''',
+        (seen_at,),
+    )
+    updated = cur.rowcount if cur.rowcount is not None else 0
+    conn.commit()
+    conn.close()
+    return int(updated)
 
 
 # ── Interaction Log 操作 ────────────────────────────────

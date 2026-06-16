@@ -4,6 +4,7 @@ from __future__ import annotations
 import asyncio
 import base64
 import json
+import logging
 
 from nicegui import ui
 
@@ -12,6 +13,8 @@ from app.components.nav import bottom_nav, smooth_navigate
 from app.services.layout_snapshot import recover_drag_layout_snapshot
 from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_output
 from app.theme import COLORS, COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
+
+logger = logging.getLogger(__name__)
 
 
 CATEGORIES = [
@@ -541,7 +544,7 @@ _CANVAS_CSS = '''<style>
 
 
 def _image_url(session) -> str:
-    return media_url(getattr(session, 'uploaded_image_path', '') if session else '')
+    return media_url(getattr(session, 'uploaded_image_path', '') if session else '', display=True)
 
 
 def _canvas_json_url(session) -> str:
@@ -658,7 +661,7 @@ def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_e
 
   loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
     .then(function() {{
-      var envCanvasVersion = 'drag-layout-restore-20260613';
+      var envCanvasVersion = 'drag-layout-persist-20260614';
       var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
       if (oldEnvScript && oldEnvScript.src.indexOf(envCanvasVersion) === -1) {{
         try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
@@ -803,25 +806,29 @@ def create_drag_page():
                 await asyncio.sleep(0.05)
                 session.mode_used = 'drag'
                 saved_parts = []
+                save_errors = []
 
                 try:
                     layout_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getLayoutJSON()) || "[]"', timeout=5.0)
                     raw_elements = json.loads(layout_json) if layout_json else []
                     session.placed_elements = raw_elements if isinstance(raw_elements, list) else []
                     saved_parts.append('\u5143\u7d20\u5750\u6807')
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.exception('drag layout save failed for session %s', sid)
+                    save_errors.append(f'\u5143\u7d20\u5750\u6807: {str(exc)[:80]}')
 
                 try:
                     objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=8.0)
                     if objects_json is not None:
                         save_canvas_json(sid, objects_json or '[]')
                         saved_parts.append('\u753b\u5e03JSON')
-                except Exception:
-                    pass
+                except Exception as exc:
+                    logger.exception('drag object json save failed for session %s', sid)
+                    save_errors.append(f'\u753b\u5e03JSON: {str(exc)[:80]}')
 
                 if not saved_parts:
-                    raise RuntimeError('\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e')
+                    detail = '\uff1b'.join(save_errors) if save_errors else '\u6ca1\u6709\u53ef\u4fdd\u5b58\u7684\u753b\u5e03\u6570\u636e'
+                    raise RuntimeError(detail)
                 _show_save_dialog('\u5df2\u4fdd\u5b58', '')
                 await asyncio.sleep(0.05)
 
@@ -839,6 +846,7 @@ def create_drag_page():
                     elif upload_data.get('error'):
                         snapshot_note = str(upload_data.get('error'))[:120]
                 except Exception as exc:
+                    logger.exception('drag snapshot upload failed for session %s', sid)
                     snapshot_note = str(exc)[:120]
 
                 if not snapshot_saved:
@@ -847,12 +855,18 @@ def create_drag_page():
                         if recovered_path:
                             saved_parts.append('\u6062\u590d\u7248\u5143\u7d20\u5e03\u5c40\u56fe')
                     except Exception as exc:
+                        logger.exception('drag recovered snapshot failed for session %s', sid)
                         snapshot_note = snapshot_note or str(exc)[:120]
 
                 if snapshot_note and not snapshot_saved:
-                    # Keep the fast success message visible; the structured draft is already saved.
-                    pass
+                    _show_save_dialog(
+                        '\u5df2\u4fdd\u5b58\u753b\u5e03\u6570\u636e',
+                        '\u5feb\u7167\u4fdd\u5b58\u5931\u8d25\uff0c\u4f46\u5750\u6807\u548c\u753b\u5e03JSON\u5df2\u4fdd\u5b58\uff1a' + snapshot_note,
+                    )
+                elif save_errors:
+                    _show_save_dialog('\u5df2\u90e8\u5206\u4fdd\u5b58', '\uff1b'.join(save_errors))
             except Exception as exc:
+                logger.exception('drag draft save failed for session %s', sid)
                 _show_save_dialog('\u4fdd\u5b58\u5931\u8d25', str(exc)[:160])
             finally:
                 save_btn.enable()
@@ -869,6 +883,7 @@ def create_drag_page():
                 from app.routers.api import _normalize_inpaint_elements
                 elements = _normalize_inpaint_elements(raw_elements)
             except Exception:
+                logger.exception('drag inpaint layout parse failed for session %s', sid)
                 ui.notify('画布数据解析失败，请重试', type='negative')
                 return
             if not elements:
@@ -884,7 +899,7 @@ def create_drag_page():
                 upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
                 snapshot_saved = bool(upload_data.get('ok'))
             except Exception:
-                pass
+                logger.exception('drag inpaint snapshot upload failed for session %s', sid)
 
             gen_btn.disable()
             loading_row.style('display:block')
@@ -896,14 +911,14 @@ def create_drag_page():
                 try:
                     recover_drag_layout_snapshot(sid)
                 except Exception:
-                    pass
+                    logger.exception('drag inpaint recovered snapshot failed for session %s', sid)
 
             try:
                 objects_json = await ui.run_javascript('(window.EnvCanvas && EnvCanvas.getObjectsJSON()) || "[]"', timeout=10.0)
                 if objects_json is not None:
                     save_canvas_json(sid, objects_json or '[]')
             except Exception:
-                pass
+                logger.exception('drag inpaint object json save failed for session %s', sid)
 
             try:
                 from app.routers.api import start_inpaint_generation_job

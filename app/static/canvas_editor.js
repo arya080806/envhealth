@@ -425,11 +425,21 @@ window.EnvCanvas = (function () {
     });
   }
 
+  function _syncElementOrderFromCanvas() {
+    if (!_canvas) return;
+    var objects = _canvas.getObjects().filter(function (obj) {
+      return obj && obj !== _bgImage && _elements.indexOf(obj) !== -1;
+    });
+    _elements = objects;
+  }
+
   function bringToFront() {
     var a = (_canvas && _canvas.getActiveObject()) || _lastSelected;
     if (a && a !== _bgImage) {
       _canvas.bringToFront(a);
+      _syncElementOrderFromCanvas();
       _canvas.renderAll();
+      _log('bring_to_front', _getData(a));
     }
   }
 
@@ -491,7 +501,8 @@ window.EnvCanvas = (function () {
     if (!_canvas || !_bgLoaded) return [];
     var bW = _origW * _bgScale || 1;
     var bH = _origH * _bgScale || 1;
-    return _elements.map(function (o) {
+    _syncElementOrderFromCanvas();
+    return _elements.map(function (o, index) {
       var b = o.getBoundingRect();
       var cx = b.left + b.width / 2;
       var cy = b.top + b.height / 2;

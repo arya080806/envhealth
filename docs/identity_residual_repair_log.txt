@@ -1,0 +1,7 @@
+session_summary tblJ8uNrq1VbskhJ updates=1
+drag_element_summary tbl5rKD7pngR3JPT updates=3
+inspire_element_summary tblRHCZlil3gxHJP updates=1
+chat_mode_summary tblZkSIqni3IjZ9J updates=5
+slider_mode_summary tbl0b7OU7sommUqK updates=2
+mode_usage_count tblswhN4OsyWRZwj updates=6
+work_count_summary tblsa0bsFu7I1tHs updates=6

@@ -25,7 +25,11 @@ from app.state import (
     media_url,
     media_filename,
 )
-from app.db import get_export_summary
+from app.db import (
+    get_export_summary,
+    get_ready_generation_notifications,
+    mark_ready_generation_notifications_seen,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -536,36 +540,21 @@ def register_api_routes():
 
     @app.get('/api/generation/notifications')
     async def generation_notifications():
-        from app.db import get_all_sessions
+        rows, count = get_ready_generation_notifications(limit=20)
         ready = []
-        for session in get_all_sessions():
-            finished_at = float(session.get('generation_finished_at') or 0)
-            seen_at = float(session.get('generation_seen_at') or 0)
-            if (
-                session.get('generation_status') == 'done'
-                and finished_at > seen_at
-                and session.get('generated_image_path')
-            ):
-                ready.append({
-                    'session_id': session['id'],
-                    'title': session.get('record_title') or '未命名草稿',
-                    'mode': session.get('mode_used') or '',
-                    'finished_at': finished_at,
-                    'image_url': media_url(session.get('generated_image_path') or '', thumb=True),
-                })
-        return JSONResponse({'ready': ready[:20], 'count': len(ready)})
+        for session in rows:
+            ready.append({
+                'session_id': session['id'],
+                'title': session.get('record_title') or '未命名草稿',
+                'mode': session.get('mode_used') or '',
+                'finished_at': float(session.get('generation_finished_at') or 0),
+                'image_url': media_url(session.get('generated_image_path') or '', thumb=True),
+            })
+        return JSONResponse({'ready': ready, 'count': count})
 
     @app.post('/api/generation/notifications/seen')
     async def mark_generation_notifications_seen():
-        from app.db import get_all_sessions, update_session
-        now = time.time()
-        updated = 0
-        for session in get_all_sessions():
-            finished_at = float(session.get('generation_finished_at') or 0)
-            seen_at = float(session.get('generation_seen_at') or 0)
-            if session.get('generation_status') == 'done' and finished_at > seen_at:
-                update_session(session['id'], generation_seen_at=max(now, finished_at))
-                updated += 1
+        updated = mark_ready_generation_notifications_seen(time.time())
         return JSONResponse({'ok': True, 'updated': updated})
 
     @app.post('/api/generate/slider')

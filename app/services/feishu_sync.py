@@ -522,6 +522,7 @@ class FeishuClient:
             return lookup.get(unique_value, '')
 
         lookup = {}
+        duplicates: dict[str, list[str]] = {}
         page_token = ''
         while True:
             data = self.get(
@@ -533,8 +534,16 @@ class FeishuClient:
                 value = str(fields.get(unique_field) or '')
                 record_id = str(item.get('record_id') or '')
                 if value and record_id:
+                    if value in lookup and lookup[value] != record_id:
+                        duplicates.setdefault(value, [lookup[value]]).append(record_id)
+                        continue
                     lookup[value] = record_id
             if not data.get('has_more') or not data.get('page_token'):
+                if unique_value in duplicates:
+                    record_ids = ', '.join(duplicates[unique_value])
+                    raise FeishuSyncError(
+                        f'Duplicate Feishu records for {unique_field}={unique_value}: {record_ids}'
+                    )
                 self._record_lookup_cache[cache_key] = lookup
                 return lookup.get(unique_value, '')
             page_token = data.get('page_token')
