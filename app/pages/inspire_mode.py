@@ -957,10 +957,12 @@ INSPIRE_CSS = """
 @media (min-width: 900px) and (orientation: landscape) {
     .inspire-shell {
         display: grid !important;
-        grid-template-columns: minmax(520px, 1fr) 340px;
-        gap: 14px 18px;
+        width: min(100%, 1520px);
+        margin: 0 auto;
+        grid-template-columns: minmax(720px, 1fr) 340px;
+        gap: 16px 28px;
         align-items: start !important;
-        padding: 20px 28px 122px;
+        padding: 20px clamp(16px, 1.8vw, 28px) 122px;
     }
 
     .inspire-brief {

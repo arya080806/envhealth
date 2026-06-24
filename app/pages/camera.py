@@ -7,46 +7,34 @@ from nicegui import app, ui
 from app.components.icons import get_svg
 from app.components.nav import bottom_nav, smooth_navigate
 from app.db import get_hci_participant_by_user_id
-from app.state import create_session, get_session, media_url, save_upload
+from app.state import create_session, get_session, media_url
 from app.theme import COLORS, COMMON_STYLE, META_VIEWPORT, PRIMARY_BTN_STYLE, TOP_BAR_STYLE
 
 
 PRESET_SCENES = [
     {
-        'title': '雨后口袋花园',
-        'subtitle': '城市边角里的清新绿意',
-        'image': 'pocket-garden.png',
+        'title': '公园绿地',
+        'subtitle': '开阔绿意',
+        'image': '公园.png',
         'scene_type': 'park',
     },
     {
-        'title': '庭院水厅',
-        'subtitle': '木色、树影与静水庭院',
-        'image': 'courtyard-water-lounge.png',
+        'title': '口袋花园',
+        'subtitle': '城市角落',
+        'image': '口袋花园.png',
+        'scene_type': 'park',
+    },
+    {
+        'title': '室内绿意',
+        'subtitle': '安静休憩',
+        'image': '室内.png',
         'scene_type': 'courtyard',
     },
     {
-        'title': '静谧竹庭',
-        'subtitle': '碎石、苔藓与晨间竹影',
-        'image': 'bamboo-courtyard.png',
-        'scene_type': 'courtyard',
-    },
-    {
-        'title': '社区花径',
-        'subtitle': '温暖、明亮、适合散步',
-        'image': 'community-flower-lane.png',
+        'title': '社区花园',
+        'subtitle': '邻里花径',
+        'image': '社区.png',
         'scene_type': 'urban',
-    },
-    {
-        'title': '山谷晨湖',
-        'subtitle': '晨光、溪流与开阔山景',
-        'image': 'mountain-lake-morning.png',
-        'scene_type': 'water',
-    },
-    {
-        'title': '日光疗愈室',
-        'subtitle': '木色、绿意与安静休憩',
-        'image': 'sunlit-healing-room.png',
-        'scene_type': 'courtyard',
     },
 ]
 
@@ -55,7 +43,16 @@ PRESET_DIR = Path(__file__).resolve().parent.parent / 'static' / 'images' / 'pre
 
 
 def _preset_url(filename: str) -> str:
-    return f'/api/preset-image/{filename}?display=1'
+    return media_url(PRESET_DIR / filename, display=True)
+
+
+def _preset_preload_html() -> str:
+    links = [
+        f'<link rel="preload" as="image" href="{_preset_url(scene["image"])}">'
+        for scene in PRESET_SCENES
+        if _preset_url(scene['image'])
+    ]
+    return '\n'.join(links)
 
 
 def _camera_page_css() -> str:
@@ -133,17 +130,16 @@ def _camera_page_css() -> str:
         min-height: 142px;
         overflow: hidden;
         border-radius: 8px;
-        border: 1px solid rgba(244,240,230,0.13);
-        background: rgba(16,29,22,0.78);
+        border: 0;
+        background: transparent;
         cursor: pointer;
-        box-shadow: 0 12px 28px rgba(0,0,0,0.20);
-        transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: none;
+        transition: transform 0.22s ease;
     }}
 
     .preset-card:hover {{
         transform: translateY(-2px);
-        border-color: rgba(183,242,126,0.34);
-        box-shadow: 0 16px 34px rgba(0,0,0,0.26);
+        box-shadow: none;
     }}
 
     .preset-card:active {{
@@ -159,10 +155,7 @@ def _camera_page_css() -> str:
     }}
 
     .preset-card::after {{
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(180deg, rgba(7,18,13,0.02) 22%, rgba(7,18,13,0.80) 100%);
+        content: none;
     }}
 
     .preset-meta {{
@@ -224,7 +217,6 @@ def _camera_page_css() -> str:
         }}
 
         .preset-grid {{
-            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 14px;
         }}
 
@@ -252,6 +244,7 @@ def create_camera_page():
         ui.add_head_html(META_VIEWPORT)
         ui.add_head_html(COMMON_STYLE)
         ui.add_head_html(_camera_page_css())
+        ui.add_head_html(_preset_preload_html())
 
         user = app.storage.user.get('user', None)
         if not user:
@@ -297,17 +290,13 @@ def create_camera_page():
                 ui.notify('预设场景图片不存在', type='negative')
                 return
 
-            saved_path = save_upload(
-                state['session_id'],
-                preset_path.read_bytes(),
-                scene['image'],
-            )
             session = get_session(state['session_id'])
             if session:
+                session.uploaded_image_path = str(preset_path)
                 session.scene_type = scene['scene_type']
 
             state['uploaded'] = True
-            display_url = media_url(saved_path, display=True)
+            display_url = _preset_url(scene['image'])
             preview_img.set_source(display_url)
             ui.run_javascript(f'new Image().src = {json.dumps(display_url)};')
             ui.timer(0.12, lambda: smooth_navigate(f'/mode-select?sid={state["session_id"]}'), once=True)

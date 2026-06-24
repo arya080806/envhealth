@@ -1039,7 +1039,7 @@ def _render_slider_detail(session) -> None:
         ('绿化程度', getattr(session, 'green_level', 50) or 50),
         ('人造元素', getattr(session, 'urban_level', 50) or 50),
         ('环境活力', getattr(session, 'vitality_level', 50) or 50),
-        ('光线温度', getattr(session, 'light_warmth', 50) or 50),
+        ('光线冷暖', getattr(session, 'light_warmth', 50) or 50),
     ]
     with ui.column().classes('result-section').style('gap:0'):
         ui.html('<div class="detail-section-title">调节参数</div>', sanitize=False)

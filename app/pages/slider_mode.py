@@ -1,4 +1,4 @@
-"""参数调节页面：合并智能推荐与手动滑杆。"""
+"""参数调节页面：手动调节安全环境参数。"""
 from __future__ import annotations
 
 import json
@@ -10,100 +10,38 @@ from app.state import get_session, media_url
 from app.theme import COMMON_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
 
-PRESETS = [
-    {
-        'id': 'natural_harmony',
-        'icon': '●',
-        'name': '自然和谐方案',
-        'summary': '中等绿化 + 低人造元素，模拟自然公园环境，最大化注意力恢复效果。',
-        'green': 55,
-        'urban': 25,
-        'vitality': 40,
-        'light': 62,
-        'evidence': '注意力恢复理论：自然环境通过柔性注意力促进认知恢复。',
-        'accent': '#2F7B58',
-    },
-    {
-        'id': 'urban_vitality',
-        'icon': '▥',
-        'name': '活力都市方案',
-        'summary': '中等绿化 + 中等人造元素 + 适度活力，适合城市街区更新。',
-        'green': 45,
-        'urban': 50,
-        'vitality': 55,
-        'light': 64,
-        'evidence': '倒 U 型效应：适度复杂度更可能优于极简或极繁环境。',
-        'accent': '#D7B46A',
-    },
-    {
-        'id': 'quiet_zen',
-        'icon': '◌',
-        'name': '宁静禅意方案',
-        'summary': '高绿化 + 低活力 + 柔和冷光，营造安静、内聚、低干扰的恢复场。',
-        'green': 72,
-        'urban': 18,
-        'vitality': 24,
-        'light': 44,
-        'evidence': '低刺激场景有助于降低认知负荷，适合放松和独处。',
-        'accent': '#7FA38D',
-    },
-    {
-        'id': 'sunlit_healing',
-        'icon': '✦',
-        'name': '暖光疗愈方案',
-        'summary': '较高绿化 + 柔暖光照 + 温和活力，提升亲近感和安全感。',
-        'green': 64,
-        'urban': 34,
-        'vitality': 42,
-        'light': 78,
-        'evidence': '温暖光线与自然材质共同强化舒适、亲和的空间体验。',
-        'accent': '#C98252',
-    },
-]
-
 SLIDERS = [
     {
         'key': 'green',
         'api': 'green_level',
-        'name': '绿化程度',
+        'name': '植物多一点还是少一点？',
         'icon': '●',
-        'low': '低',
-        'mid': '中',
-        'high': '高',
-        'desc': '树木、灌木、草坪与自然覆盖度',
+        'low': '较少',
+        'mid': '中等',
+        'high': '较多',
+        'desc': '',
         'accent': '#2F7B58',
     },
     {
         'key': 'urban',
         'api': 'urban_level',
-        'name': '人造元素',
+        'name': '座椅、小路、灯这些设施多一点还是少一点？',
         'icon': '▥',
-        'low': '自然',
-        'mid': '适度',
-        'high': '设施',
-        'desc': '座椅、路灯、铺装、公共设施强度',
+        'low': '少',
+        'mid': '中等',
+        'high': '多',
+        'desc': '',
         'accent': '#9A6F5F',
-    },
-    {
-        'key': 'vitality',
-        'api': 'vitality_level',
-        'name': '环境活力',
-        'icon': '✣',
-        'low': '宁静',
-        'mid': '适度',
-        'high': '热闹',
-        'desc': '开放感、活动感、人与空间的互动强度',
-        'accent': '#7896A0',
     },
     {
         'key': 'light',
         'api': 'light_warmth',
-        'name': '光线温度',
+        'name': '光线更加温暖一些还是更加清冷一些？',
         'icon': '☉',
         'low': '清冷',
         'mid': '自然',
         'high': '温暖',
-        'desc': '光照明暗、冷暖色调与空气透明度',
+        'desc': '',
         'accent': '#D7B46A',
     },
 ]
@@ -583,29 +521,12 @@ def _initial_values(session) -> dict[str, int]:
     return {
         'green': _clamp(getattr(session, 'green_level', 50) if session else 50),
         'urban': _clamp(getattr(session, 'urban_level', 50) if session else 50),
-        'vitality': _clamp(getattr(session, 'vitality_level', 50) if session else 50),
         'light': _clamp(getattr(session, 'light_warmth', 50) if session else 50),
     }
 
 
 def _image_url(session) -> str:
     return media_url(getattr(session, 'uploaded_image_path', '') if session else '', display=True)
-
-
-def _build_preset_html() -> str:
-    cards = []
-    for preset in PRESETS:
-        cards.append(
-            '<button type="button" class="preset-card" '
-            f'data-preset="{preset["id"]}" style="--preset-accent:{preset["accent"]}">'
-            '<div class="preset-top">'
-            f'<div class="preset-icon">{preset["icon"]}</div>'
-            f'<div class="preset-name">{preset["name"]}</div>'
-            '</div>'
-            f'<div class="preset-summary">{preset["summary"]}</div>'
-            '</button>'
-        )
-    return '<div class="preset-strip" id="preset-strip">' + ''.join(cards) + '</div>'
 
 
 def _build_controls_html(values: dict[str, int]) -> str:
@@ -617,7 +538,7 @@ def _build_controls_html(values: dict[str, int]) -> str:
             + '<div class="control-top">'
             + '<div>'
             + f'<div class="control-title"><span class="control-icon">{item["icon"]}</span>{item["name"]}</div>'
-            + f'<div class="control-desc">{item["desc"]}</div>'
+            + (f'<div class="control-desc">{item["desc"]}</div>' if item.get('desc') else '')
             + '</div>'
             + f'<div class="control-value" id="{item["key"]}-value">{value}%</div>'
             + '</div>'
@@ -648,16 +569,10 @@ def _build_page_html(values: dict[str, int], img_url: str = '') -> str:
                 <div>
                     <div class="param-kicker">AI PARAMETER CONSOLE</div>
                     <div class="param-title">智能参数</div>
-                    <div class="param-subtitle">选择推荐预设会自动调整下方滑杆；你也可以直接拖动滑杆微调。</div>
+                    <div class="param-subtitle">直接拖动右侧滑杆，调节植物、设施和光线的变化强度。</div>
                 </div>
             </div>
         </section>
-
-        <div class="section-head">
-            <div class="section-title">推荐预设</div>
-            <div class="section-meta">点击套用</div>
-        </div>
-        {_build_preset_html()}
     </div>
 
     <div class="param-control-stack">
@@ -688,16 +603,13 @@ def _build_page_html(values: dict[str, int], img_url: str = '') -> str:
 
 
 def _build_script(sid: str, values: dict[str, int]) -> str:
-    presets_json = json.dumps(PRESETS, ensure_ascii=False)
     values_json = json.dumps(values, ensure_ascii=False)
     sid_json = json.dumps(sid, ensure_ascii=False)
     return f'''
 <script>
 (function() {{
     var sid = {sid_json};
-    var presets = {presets_json};
     var values = {values_json};
-    var selectedPreset = '';
     var initAttempts = 0;
     var progressTimer = null;
     var progressValue = 0;
@@ -766,31 +678,23 @@ def _build_script(sid: str, values: dict[str, int]) -> str:
     }}
 
     function updateRadar() {{
-        var avg = Math.round((values.green + values.urban + values.vitality + values.light) / 4);
+        var avg = Math.round((values.green + values.urban + values.light) / 3);
         var el = document.getElementById('radar-value');
         if (el) el.textContent = String(avg);
     }}
 
     function syncAll() {{
-        ['green', 'urban', 'vitality', 'light'].forEach(function(key) {{
+        ['green', 'urban', 'light'].forEach(function(key) {{
             updateRange(key, values[key]);
         }});
         updateRadar();
-    }}
-
-    function markPreset(id) {{
-        selectedPreset = id || '';
-        document.querySelectorAll('.preset-card').forEach(function(card) {{
-            card.classList.toggle('selected', card.dataset.preset === selectedPreset);
-        }});
     }}
 
     function initSliderPage() {{
         initAttempts += 1;
         var button = document.getElementById('generate-slider-btn');
         var ranges = document.querySelectorAll('.param-range');
-        var presetCards = document.querySelectorAll('.preset-card');
-        if (!button || !ranges.length || !presetCards.length) {{
+        if (!button || !ranges.length) {{
             if (initAttempts < 60) setTimeout(initSliderPage, 100);
             return;
         }}
@@ -799,25 +703,8 @@ def _build_script(sid: str, values: dict[str, int]) -> str:
             if (input.dataset.paramBound === '1') return;
             input.dataset.paramBound = '1';
             input.addEventListener('input', function() {{
-                markPreset('');
                 updateRange(input.dataset.key, input.value);
                 updateRadar();
-                setError('');
-            }});
-        }});
-
-        presetCards.forEach(function(card) {{
-            if (card.dataset.paramBound === '1') return;
-            card.dataset.paramBound = '1';
-            card.addEventListener('click', function() {{
-                var preset = presets.find(function(item) {{ return item.id === card.dataset.preset; }});
-                if (!preset) return;
-                values.green = preset.green;
-                values.urban = preset.urban;
-                values.vitality = preset.vitality;
-                values.light = preset.light;
-                syncAll();
-                markPreset(preset.id);
                 setError('');
             }});
         }});
@@ -835,7 +722,6 @@ def _build_script(sid: str, values: dict[str, int]) -> str:
             button.querySelector('.generate-loading').style.display = 'inline-flex';
             startProgress();
             try {{
-                var preset = presets.find(function(item) {{ return item.id === selectedPreset; }});
                 var resp = await fetch('/api/generate/slider/background', {{
                     method: 'POST',
                     headers: {{ 'Content-Type': 'application/json' }},
@@ -843,9 +729,8 @@ def _build_script(sid: str, values: dict[str, int]) -> str:
                         session_id: sid,
                         green_level: values.green,
                         urban_level: values.urban,
-                        vitality_level: values.vitality,
                         light_warmth: values.light,
-                        selected_recommend: preset ? preset.name : ''
+                        selected_recommend: ''
                     }})
                 }});
                 var data = await resp.json().catch(function() {{ return {{}}; }});

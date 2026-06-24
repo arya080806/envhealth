@@ -11,6 +11,7 @@ from app.services.sd_service import (
     _quality_safety_requirements,
     _sanitize_user_design_text,
 )
+from app.services.safety_policy import apply_safety_to_prompt
 
 logger = logging.getLogger(__name__)
 
@@ -49,7 +50,13 @@ def _build_chat_prompt(mood_tags: list[str], extra_text: str) -> str:
     if extra_text and extra_text.strip():
         parts.insert(1, f'Additional feeling: {extra_text.strip()}')
 
-    return ' '.join(parts)
+    prompt = ' '.join(parts)
+    prompt_result = apply_safety_to_prompt(
+        prompt,
+        'chat',
+        {'mood_tags': mood_tags, 'has_extra_text': bool(extra_text)},
+    )
+    return prompt_result['prompt']
 
 
 def generate_from_chat(image_path: str, mood_tags: list[str], extra_text: str = '') -> tuple[bytes, str]:

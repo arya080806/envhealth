@@ -13,6 +13,12 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, FileResponse, Response
 
 from app.services.image_variants import get_display_image, get_thumb
+from app.services.safety_policy import (
+    SAFETY_POLICY_VERSION,
+    filter_element_name,
+    safety_log_from_actions,
+    sanitize_user_text_for_safe_environment,
+)
 from app.state import (
     save_upload,
     save_output,
@@ -155,6 +161,189 @@ def _mark_generation_failure(session_id: str, exc: Exception) -> None:
     session.generation_finished_at = time.time()
 
 
+def _write_safety_fields(session, safety_log: dict, final_prompt: str = '') -> None:
+    if not session:
+        return
+    session.safety_policy_version = safety_log.get('safety_policy_version') or SAFETY_POLICY_VERSION
+    session.safety_actions = safety_log.get('safety_actions') or []
+    session.blocked_or_reframed_items = safety_log.get('blocked_or_reframed_items') or []
+    session.risk_text_detected = 1 if safety_log.get('risk_text_detected') else 0
+    session.risk_text_reframed = safety_log.get('risk_text_reframed') or ''
+    if final_prompt:
+        session.final_safe_prompt = final_prompt
+    session.image_input_mode = safety_log.get('image_input_mode') or 'original_image_edit'
+    session.mask_used = 1 if safety_log.get('mask_used') else 0
+    session.guide_image_used = 1 if safety_log.get('guide_image_used') else 0
+
+
+def _safe_inpaint_elements(elements: list[dict]) -> tuple[list[dict], dict]:
+    safe_elements: list[dict] = []
+    actions: list[dict] = []
+    for item in elements:
+        if not isinstance(item, dict):
+            continue
+        original_name = str(item.get('name') or item.get('elemName') or '').strip()
+        safety = filter_element_name(original_name, item.get('category') or item.get('cat'))
+        safe_item = dict(item)
+        safe_item['original_name'] = original_name
+        safe_item['name'] = safety['safe_name']
+        safe_item['safe_name'] = safety['safe_name']
+        safe_item['safety_action'] = safety['action']
+        safe_elements.append(safe_item)
+        actions.append({
+            'kind': 'drag_element',
+            'original_name': original_name,
+            'safe_name': safety['safe_name'],
+            'action': safety['action'],
+            'reason': safety['reason'],
+            'prompt_note': safety['prompt_note'],
+        })
+    return safe_elements, safety_log_from_actions(actions, mode='drag')
+
+
+def _safe_sketch_payload(sketch_data: dict) -> tuple[dict, dict]:
+    safe_data = json.loads(json.dumps(sketch_data, ensure_ascii=False))
+    actions: list[dict] = []
+    risk_terms: list[str] = []
+    reframed_texts: list[str] = []
+
+    for item in safe_data.get('results', []) if isinstance(safe_data.get('results'), list) else []:
+        if not isinstance(item, dict):
+            continue
+        original = str(item.get('elemName') or item.get('name') or '').strip()
+        confidence = float(item.get('confidence') or 0)
+        if confidence and confidence < 0.5:
+            safe_name = '柔和自然层次或可停留空间'
+            safety = {
+                'safe_name': safe_name,
+                'action': 'caution_reframe',
+                'reason': '自动识别置信度较低，降级为柔和自然空间目标',
+                'prompt_note': '不要把低置信度识别当作强指令，只将该区域转化为柔和自然层次或可停留空间。',
+            }
+        else:
+            safety = filter_element_name(original)
+        item['original_elemName'] = original
+        item['elemName'] = safety['safe_name']
+        item['safe_name'] = safety['safe_name']
+        actions.append({
+            'kind': 'inspire_auto_label',
+            'original_name': original,
+            'safe_name': safety['safe_name'],
+            'confidence': confidence,
+            'action': safety['action'],
+            'reason': safety['reason'],
+            'prompt_note': safety['prompt_note'],
+            'auto_label_safety_reframed': safety['action'] != 'allow',
+        })
+
+    for item in safe_data.get('userAnnotations', []) if isinstance(safe_data.get('userAnnotations'), list) else []:
+        if not isinstance(item, dict):
+            continue
+        original = str(item.get('userLabel') or '').strip()
+        text_safety = sanitize_user_text_for_safe_environment(original)
+        if text_safety.get('risk_detected'):
+            risk_terms.extend(text_safety.get('risk_terms') or [])
+            reframed_texts.append(text_safety.get('safe_text') or '')
+            filtered = {
+                'safe_name': text_safety.get('safe_text') or '安全、安静、无威胁的自然环境',
+                'action': 'block_reframe',
+                'reason': text_safety.get('reason') or '用户文本包含风险词，已转译为安全环境目标',
+            }
+        else:
+            filtered = filter_element_name(original)
+        item['original_userLabel'] = original
+        item['userLabel'] = filtered['safe_name']
+        item['safe_userLabel'] = filtered['safe_name']
+        item['safetyReframedText'] = bool(text_safety.get('risk_detected'))
+        actions.append({
+            'kind': 'inspire_user_annotation',
+            'original_text': original,
+            'safe_text': filtered['safe_name'],
+            'action': 'block_reframe' if text_safety.get('risk_detected') else filtered['action'],
+            'reason': text_safety.get('reason') or filtered['reason'],
+            'risk_terms': text_safety.get('risk_terms') or [],
+            'user_annotation_safety_reframed': bool(text_safety.get('risk_detected')) or filtered['action'] != 'allow',
+        })
+
+    for item in safe_data.get('strokeLog', []) if isinstance(safe_data.get('strokeLog'), list) else []:
+        if not isinstance(item, dict):
+            continue
+        for key in ('autoLabel', 'userLabel'):
+            original = str(item.get(key) or '').strip()
+            if not original:
+                continue
+            text_safety = sanitize_user_text_for_safe_environment(original)
+            if text_safety.get('risk_detected'):
+                filtered = {
+                    'safe_name': text_safety.get('safe_text') or '安全、安静、无威胁的自然环境',
+                    'action': 'block_reframe',
+                    'reason': text_safety.get('reason') or '用户文本包含风险词，已转译为安全环境目标',
+                }
+            else:
+                filtered = filter_element_name(original)
+            item[f'original_{key}'] = original
+            item[key] = filtered['safe_name']
+            item[f'{key}SafetyReframedText'] = bool(text_safety.get('risk_detected'))
+            if text_safety.get('risk_detected'):
+                risk_terms.extend(text_safety.get('risk_terms') or [])
+                reframed_texts.append(text_safety.get('safe_text') or '')
+            actions.append({
+                'kind': f'inspire_stroke_{key}',
+                'original_text': original,
+                'safe_text': filtered['safe_name'],
+                'action': 'block_reframe' if text_safety.get('risk_detected') else filtered['action'],
+                'reason': text_safety.get('reason') or filtered['reason'],
+                'risk_terms': text_safety.get('risk_terms') or [],
+                'auto_label_safety_reframed': key == 'autoLabel' and (text_safety.get('risk_detected') or filtered['action'] != 'allow'),
+                'user_annotation_safety_reframed': key == 'userLabel' and (text_safety.get('risk_detected') or filtered['action'] != 'allow'),
+            })
+
+    risk_log = {
+        'risk_detected': bool(risk_terms),
+        'risk_terms': sorted(set(risk_terms)),
+        'safe_text': '；'.join(dict.fromkeys(text for text in reframed_texts if text)),
+    }
+    return safe_data, safety_log_from_actions(actions, risk_text=risk_log, mode='inspire')
+
+
+def _safe_chat_text(extra_text: str) -> tuple[str, dict]:
+    safety = sanitize_user_text_for_safe_environment(extra_text)
+    safe_text = safety.get('safe_text') if safety.get('risk_detected') else str(extra_text or '').strip()
+    actions = []
+    if safety.get('risk_detected'):
+        actions.append({
+            'kind': 'chat_extra_text',
+            'original_text': extra_text,
+            'safe_text': safe_text,
+            'action': 'block_reframe',
+            'reason': safety.get('reason'),
+            'risk_terms': safety.get('risk_terms') or [],
+        })
+    return safe_text or '', safety_log_from_actions(actions, risk_text=safety, mode='chat')
+
+
+def _safe_slider_log(green: float, urban: float, vitality: float, light: float) -> dict:
+    return safety_log_from_actions([
+        {
+            'kind': 'slider_vitality',
+            'original_value': vitality,
+            'safe_name': '安全活力表达',
+            'action': 'allow',
+            'reason': '活力仅通过开阔度、路径、设施完整度和植物状态表达，不生成拥挤人群或强活动',
+            'prompt_note': '高活力不得生成拥挤人群、强烈运动、商业噪声或复杂互动。',
+        }
+    ], mode='slider')
+
+
+def _slider_vitality_value(data: dict, green: float, urban: float) -> float:
+    if 'vitality_level' in data:
+        try:
+            return max(0.0, min(100.0, float(data.get('vitality_level', 50))))
+        except (TypeError, ValueError):
+            return 50.0
+    return max(20.0, min(60.0, (float(green) + float(urban)) / 2))
+
+
 def start_slider_generation_job(
     session_id: str,
     image_path: str,
@@ -163,6 +352,7 @@ def start_slider_generation_job(
     vitality: float,
     light: float,
     selected_recommend: str = '',
+    safety_log: dict | None = None,
 ) -> bool:
     session = get_session(session_id)
     if not session or _generation_running(session):
@@ -172,6 +362,8 @@ def start_slider_generation_job(
     session.vitality_level = vitality
     session.light_warmth = light
     session.selected_recommend = selected_recommend
+    safety_log = safety_log or _safe_slider_log(green, urban, vitality, light)
+    _write_safety_fields(session, safety_log)
     _mark_generation_start(session, 'slider')
 
     async def _runner() -> None:
@@ -184,6 +376,8 @@ def start_slider_generation_job(
             latest = get_session(session_id)
             if latest:
                 latest.llm_prompt = used_prompt
+                latest.final_safe_prompt = used_prompt
+                _write_safety_fields(latest, safety_log, used_prompt)
             save_output(session_id, result_bytes)
         except Exception as exc:
             logger.exception("后台滑杆生成失败")
@@ -198,12 +392,19 @@ def start_chat_generation_job(
     image_path: str,
     mood_tags: list[str],
     extra_text: str = '',
+    safety_log: dict | None = None,
+    prompt_extra_text: str | None = None,
 ) -> bool:
     session = get_session(session_id)
     if not session or _generation_running(session):
         return False
     session.chat_moods = mood_tags
     session.chat_extra = extra_text
+    if prompt_extra_text is None:
+        prompt_extra_text, default_safety_log = _safe_chat_text(extra_text)
+        safety_log = safety_log or default_safety_log
+    safety_log = safety_log or _safe_chat_text(extra_text)[1]
+    _write_safety_fields(session, safety_log)
     _mark_generation_start(session, 'chat')
 
     async def _runner() -> None:
@@ -211,11 +412,13 @@ def start_chat_generation_job(
             from app.services.chat_service import generate_from_chat
             result_bytes, used_prompt = await asyncio.to_thread(
                 generate_from_chat,
-                str(image_path), mood_tags, extra_text,
+                str(image_path), mood_tags, prompt_extra_text or '',
             )
             latest = get_session(session_id)
             if latest:
                 latest.llm_prompt = used_prompt
+                latest.final_safe_prompt = used_prompt
+                _write_safety_fields(latest, safety_log, used_prompt)
             save_output(session_id, result_bytes)
         except Exception as exc:
             logger.exception("后台对话生成失败")
@@ -225,11 +428,19 @@ def start_chat_generation_job(
     return True
 
 
-def start_inpaint_generation_job(session_id: str, image_path: str, elements: list[dict]) -> bool:
+def start_inpaint_generation_job(
+    session_id: str,
+    image_path: str,
+    elements: list[dict],
+    safety_log: dict | None = None,
+) -> bool:
     session = get_session(session_id)
     if not session or _generation_running(session):
         return False
+    if safety_log is None:
+        elements, safety_log = _safe_inpaint_elements(elements)
     session.placed_elements = elements
+    _write_safety_fields(session, safety_log)
     _mark_generation_start(session, 'drag')
 
     async def _runner() -> None:
@@ -242,6 +453,8 @@ def start_inpaint_generation_job(session_id: str, image_path: str, elements: lis
             latest = get_session(session_id)
             if latest:
                 latest.llm_prompt = used_prompt
+                latest.final_safe_prompt = used_prompt
+                _write_safety_fields(latest, safety_log, used_prompt)
             save_output(session_id, result_bytes)
         except Exception as exc:
             logger.exception("后台元素生成失败")
@@ -251,10 +464,17 @@ def start_inpaint_generation_job(session_id: str, image_path: str, elements: lis
     return True
 
 
-def start_sketch_generation_job(session_id: str, image_path: str, sketch_data: dict) -> bool:
+def start_sketch_generation_job(
+    session_id: str,
+    image_path: str,
+    sketch_data: dict,
+    safety_log: dict | None = None,
+) -> bool:
     session = get_session(session_id)
     if not session or _generation_running(session):
         return False
+    if safety_log is None:
+        sketch_data, safety_log = _safe_sketch_payload(sketch_data)
     session.sketch_data = sketch_data
     if sketch_data.get('type') == 'element':
         session.placed_elements = sketch_data.get('results', [])
@@ -264,6 +484,7 @@ def start_sketch_generation_job(session_id: str, image_path: str, sketch_data: d
         session.urban_level = mp.get('urban', 50)
         session.vitality_level = mp.get('vitality', 50)
         session.light_warmth = mp.get('light', 50)
+    _write_safety_fields(session, safety_log)
     _mark_generation_start(session, 'inspire')
 
     async def _runner() -> None:
@@ -277,6 +498,8 @@ def start_sketch_generation_job(session_id: str, image_path: str, sketch_data: d
             latest = get_session(session_id)
             if latest:
                 latest.llm_prompt = used_prompt
+                latest.final_safe_prompt = used_prompt
+                _write_safety_fields(latest, safety_log, used_prompt)
             save_output(session_id, result_bytes)
         except Exception as exc:
             logger.exception("后台灵感生成失败")
@@ -577,9 +800,10 @@ def register_api_routes():
 
         green = _param('green_level')
         urban = _param('urban_level')
-        vitality = _param('vitality_level')
+        vitality = _slider_vitality_value(data, green, urban)
         light = _param('light_warmth')
         selected_recommend = _clean_text(data.get('selected_recommend', ''), 80)
+        safety_log = _safe_slider_log(green, urban, vitality, light)
 
         session.green_level = green
         session.urban_level = urban
@@ -588,6 +812,7 @@ def register_api_routes():
         session.mode_used = 'slider'
         session.selected_recommend = selected_recommend
         session.generation_count = getattr(session, 'generation_count', 0) + 1
+        _write_safety_fields(session, safety_log)
 
         try:
             from app.services.sd_service import generate_from_sliders
@@ -596,6 +821,8 @@ def register_api_routes():
                 str(upload_path), green, urban, vitality, light,
             )
             session.llm_prompt = used_prompt
+            session.final_safe_prompt = used_prompt
+            _write_safety_fields(session, safety_log, used_prompt)
             out_path = save_output(session_id, result_bytes)
             return JSONResponse({
                 'generated_url': f'/api/image/{Path(out_path).name}',
@@ -629,18 +856,22 @@ def register_api_routes():
         if not mood_tags and not extra_text:
             return JSONResponse({'error': '请先输入一种感受，或选择至少一个情绪标签'}, status_code=400)
 
+        safe_extra_text, safety_log = _safe_chat_text(extra_text)
         session.mode_used = 'chat'
         session.chat_moods = mood_tags
         session.chat_extra = extra_text
         session.generation_count = getattr(session, 'generation_count', 0) + 1
+        _write_safety_fields(session, safety_log)
 
         try:
             from app.services.chat_service import generate_from_chat
             result_bytes, used_prompt = await asyncio.to_thread(
                 generate_from_chat,
-                str(upload_path), mood_tags, extra_text,
+                str(upload_path), mood_tags, safe_extra_text,
             )
             session.llm_prompt = used_prompt
+            session.final_safe_prompt = used_prompt
+            _write_safety_fields(session, safety_log, used_prompt)
             out_path = save_output(session_id, result_bytes)
             return JSONResponse({
                 'generated_url': f'/api/image/{Path(out_path).name}',
@@ -668,10 +899,12 @@ def register_api_routes():
             return JSONResponse({'error': 'elements 必须是数组'}, status_code=400)
         if not elements:
             return JSONResponse({'error': '请至少放置一个元素'}, status_code=400)
+        elements, safety_log = _safe_inpaint_elements(elements)
 
         session.placed_elements = elements
         session.mode_used = 'drag'
         session.generation_count = getattr(session, 'generation_count', 0) + 1
+        _write_safety_fields(session, safety_log)
 
         try:
             from app.services.sd_service import generate_inpainting
@@ -680,6 +913,8 @@ def register_api_routes():
                 str(upload_path), elements,
             )
             session.llm_prompt = used_prompt
+            session.final_safe_prompt = used_prompt
+            _write_safety_fields(session, safety_log, used_prompt)
             out_path = save_output(session_id, result_bytes)
             return JSONResponse({
                 'generated_url': f'/api/image/{Path(out_path).name}',
@@ -711,7 +946,7 @@ def register_api_routes():
             str(upload_path),
             _param('green_level'),
             _param('urban_level'),
-            _param('vitality_level'),
+            _slider_vitality_value(data, _param('green_level'), _param('urban_level')),
             _param('light_warmth'),
             _clean_text(data.get('selected_recommend', ''), 80),
         )
@@ -741,7 +976,15 @@ def register_api_routes():
         if not mood_tags and not extra_text:
             return JSONResponse({'error': '请先输入一种感受，或选择至少一个情绪标签'}, status_code=400)
 
-        started = start_chat_generation_job(session_id, str(upload_path), mood_tags, extra_text)
+        safe_extra_text, safety_log = _safe_chat_text(extra_text)
+        started = start_chat_generation_job(
+            session_id,
+            str(upload_path),
+            mood_tags,
+            extra_text,
+            safety_log,
+            safe_extra_text,
+        )
         if not started:
             return JSONResponse({'error': 'AI 已在后台生成中，请稍候。'}, status_code=409)
         return JSONResponse({'ok': True, 'status': 'running'})
@@ -762,8 +1005,9 @@ def register_api_routes():
             return JSONResponse({'error': 'elements 必须是数组'}, status_code=400)
         if not elements:
             return JSONResponse({'error': '请至少放置一个元素'}, status_code=400)
+        elements, safety_log = _safe_inpaint_elements(elements)
 
-        started = start_inpaint_generation_job(session_id, str(upload_path), elements)
+        started = start_inpaint_generation_job(session_id, str(upload_path), elements, safety_log)
         if not started:
             return JSONResponse({'error': 'AI 已在后台生成中，请稍候。'}, status_code=409)
         return JSONResponse({'ok': True, 'status': 'running'})
@@ -781,8 +1025,9 @@ def register_api_routes():
         sketch_data = data.get('sketch_data')
         if not isinstance(sketch_data, dict) or int(sketch_data.get('strokeCount') or 0) <= 0:
             return JSONResponse({'error': '请先在画布上画几笔'}, status_code=400)
+        sketch_data, safety_log = _safe_sketch_payload(sketch_data)
 
-        started = start_sketch_generation_job(session_id, str(upload_path), sketch_data)
+        started = start_sketch_generation_job(session_id, str(upload_path), sketch_data, safety_log)
         if not started:
             return JSONResponse({'error': 'AI 已在后台生成中，请稍候。'}, status_code=409)
         return JSONResponse({'ok': True, 'status': 'running'})

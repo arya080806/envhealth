@@ -7,6 +7,7 @@ import io
 import json
 from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Optional
+from urllib.parse import quote
 
 from PIL import Image, UnidentifiedImageError
 
@@ -24,9 +25,10 @@ from app.services.image_variants import warm_image_variants
 
 UPLOAD_DIR = Path(__file__).parent.parent / 'uploads'
 OUTPUT_DIR = Path(__file__).parent.parent / 'outputs'
+PRESET_DIR = Path(__file__).parent / 'static' / 'images' / 'presets'
 UPLOAD_DIR.mkdir(exist_ok=True)
 OUTPUT_DIR.mkdir(exist_ok=True)
-MEDIA_ROOTS = tuple(path.resolve() for path in (UPLOAD_DIR, OUTPUT_DIR))
+MEDIA_ROOTS = tuple(path.resolve() for path in (UPLOAD_DIR, OUTPUT_DIR, PRESET_DIR))
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
 MAX_CANVAS_JSON_BYTES = 2 * 1024 * 1024
 MAX_IMAGE_PIXELS = 24_000_000
@@ -80,7 +82,7 @@ def resolve_media_path(path_value: str | Path | None) -> Path | None:
         return None
     if name != Path(name).name or name != PureWindowsPath(name).name:
         return None
-    for directory in (UPLOAD_DIR, OUTPUT_DIR):
+    for directory in (UPLOAD_DIR, OUTPUT_DIR, PRESET_DIR):
         candidate = directory / name
         if candidate.exists() and _is_within_media_roots(candidate):
             return candidate
@@ -97,7 +99,7 @@ def media_url(path_value: str | Path | None, *, thumb: bool = False, display: bo
         suffix = '?display=1'
     else:
         suffix = ''
-    return f'/api/image/{path.name}{suffix}'
+    return f'/api/image/{quote(path.name)}{suffix}'
 
 
 class SessionProxy:
@@ -218,6 +220,15 @@ def save_output(session_id: str, image_bytes: bytes, suffix: str = '.png') -> st
         'mode': session.get('mode_used', ''),
         'prompt': session.get('llm_prompt', ''),
         'canvas_path': session.get('canvas_snapshot_path', ''),
+        'safety_policy_version': session.get('safety_policy_version', ''),
+        'safety_actions': session.get('safety_actions', []),
+        'blocked_or_reframed_items': session.get('blocked_or_reframed_items', []),
+        'risk_text_detected': bool(session.get('risk_text_detected')),
+        'risk_text_reframed': session.get('risk_text_reframed', ''),
+        'final_safe_prompt': session.get('final_safe_prompt') or session.get('llm_prompt', ''),
+        'image_input_mode': session.get('image_input_mode') or 'original_image_edit',
+        'mask_used': bool(session.get('mask_used')),
+        'guide_image_used': bool(session.get('guide_image_used')),
     })
     db_update_session(
         session_id,

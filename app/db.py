@@ -62,6 +62,15 @@ SESSION_COLUMNS = {
     'canvas_history',
     'canvas_json_path',
     'record_title',
+    'safety_policy_version',
+    'safety_actions',
+    'blocked_or_reframed_items',
+    'risk_text_detected',
+    'risk_text_reframed',
+    'final_safe_prompt',
+    'image_input_mode',
+    'mask_used',
+    'guide_image_used',
 }
 
 HCI_PARTICIPANT_COLUMNS = {
@@ -266,6 +275,15 @@ def init_db():
             generation_finished_at REAL,
             generation_seen_at REAL DEFAULT 0,
             generation_history TEXT DEFAULT '[]',
+            safety_policy_version TEXT DEFAULT '',
+            safety_actions TEXT DEFAULT '[]',
+            blocked_or_reframed_items TEXT DEFAULT '[]',
+            risk_text_detected INTEGER DEFAULT 0,
+            risk_text_reframed TEXT DEFAULT '',
+            final_safe_prompt TEXT DEFAULT '',
+            image_input_mode TEXT DEFAULT '',
+            mask_used INTEGER DEFAULT 0,
+            guide_image_used INTEGER DEFAULT 0,
             FOREIGN KEY (user_id) REFERENCES users(id)
         );
 
@@ -491,6 +509,15 @@ def init_db():
         ('generation_finished_at', 'REAL'),
         ('generation_seen_at', 'REAL DEFAULT 0'),
         ('generation_history', "TEXT DEFAULT '[]'"),
+        ('safety_policy_version', "TEXT DEFAULT ''"),
+        ('safety_actions', "TEXT DEFAULT '[]'"),
+        ('blocked_or_reframed_items', "TEXT DEFAULT '[]'"),
+        ('risk_text_detected', 'INTEGER DEFAULT 0'),
+        ('risk_text_reframed', "TEXT DEFAULT ''"),
+        ('final_safe_prompt', "TEXT DEFAULT ''"),
+        ('image_input_mode', "TEXT DEFAULT ''"),
+        ('mask_used', 'INTEGER DEFAULT 0'),
+        ('guide_image_used', 'INTEGER DEFAULT 0'),
     ]:
         try:
             conn.execute(f'ALTER TABLE sessions ADD COLUMN {col} {defn}')
@@ -1925,6 +1952,8 @@ def get_session(session_id: str) -> dict | None:
         result['sketch_data'] = json.loads(result.get('sketch_data') or '{}')
         result['generation_history'] = json.loads(result.get('generation_history') or '[]')
         result['canvas_history'] = json.loads(result.get('canvas_history') or '[]')
+        result['safety_actions'] = json.loads(result.get('safety_actions') or '[]')
+        result['blocked_or_reframed_items'] = json.loads(result.get('blocked_or_reframed_items') or '[]')
         return result
     return None
 
@@ -1936,7 +1965,10 @@ def update_session(session_id: str, **kwargs):
         if key not in SESSION_COLUMNS:
             conn.close()
             raise ValueError(f'unsupported session field: {key}')
-        if key in ('placed_elements', 'chat_moods', 'generation_history', 'canvas_history') and isinstance(value, list):
+        if key in (
+            'placed_elements', 'chat_moods', 'generation_history', 'canvas_history',
+            'safety_actions', 'blocked_or_reframed_items',
+        ) and isinstance(value, list):
             value = json.dumps(value, ensure_ascii=False)
         elif key in ('survey_answers',) and isinstance(value, dict):
             value = json.dumps(value, ensure_ascii=False)
@@ -1965,6 +1997,8 @@ def get_user_sessions(user_id: int) -> list[dict]:
         d['sketch_data'] = json.loads(d.get('sketch_data') or '{}')
         d['generation_history'] = json.loads(d.get('generation_history') or '[]')
         d['canvas_history'] = json.loads(d.get('canvas_history') or '[]')
+        d['safety_actions'] = json.loads(d.get('safety_actions') or '[]')
+        d['blocked_or_reframed_items'] = json.loads(d.get('blocked_or_reframed_items') or '[]')
         results.append(d)
     return results
 
@@ -1999,6 +2033,8 @@ def get_all_sessions() -> list[dict]:
         d['sketch_data'] = json.loads(d.get('sketch_data') or '{}')
         d['generation_history'] = json.loads(d.get('generation_history') or '[]')
         d['canvas_history'] = json.loads(d.get('canvas_history') or '[]')
+        d['safety_actions'] = json.loads(d.get('safety_actions') or '[]')
+        d['blocked_or_reframed_items'] = json.loads(d.get('blocked_or_reframed_items') or '[]')
         results.append(d)
     return results
 
@@ -2160,6 +2196,9 @@ def export_csv() -> str:
         'sketch_user_annotation_count', 'sketch_correction_count', 'sketch_round',
         'creative_lens', 'ai_agency', 'scene_intent_mood', 'scene_intent_complexity',
         'chat_moods', 'chat_extra', 'canvas_snapshot_path', 'canvas_json_path', 'llm_prompt',
+        'safety_policy_version', 'safety_actions', 'blocked_or_reframed_items',
+        'risk_text_detected', 'risk_text_reframed', 'final_safe_prompt',
+        'image_input_mode', 'mask_used', 'guide_image_used',
         'created_at', 'survey_completed_at', 'interaction_duration_seconds',
     ]
 
@@ -2214,6 +2253,15 @@ def export_csv() -> str:
             'canvas_snapshot_path': s.get('canvas_snapshot_path', ''),
             'canvas_json_path': s.get('canvas_json_path', ''),
             'llm_prompt': s.get('llm_prompt', ''),
+            'safety_policy_version': s.get('safety_policy_version', ''),
+            'safety_actions': json.dumps(s.get('safety_actions', []), ensure_ascii=False),
+            'blocked_or_reframed_items': json.dumps(s.get('blocked_or_reframed_items', []), ensure_ascii=False),
+            'risk_text_detected': int(bool(s.get('risk_text_detected'))),
+            'risk_text_reframed': s.get('risk_text_reframed', ''),
+            'final_safe_prompt': s.get('final_safe_prompt', ''),
+            'image_input_mode': s.get('image_input_mode', ''),
+            'mask_used': int(bool(s.get('mask_used'))),
+            'guide_image_used': int(bool(s.get('guide_image_used'))),
             'created_at': s.get('created_at', ''),
             'survey_completed_at': s.get('survey_completed_at', ''),
             'interaction_duration_seconds': duration or '',
@@ -2298,6 +2346,17 @@ def export_json() -> list[dict]:
                 'user_annotations': sketch.get('userAnnotations', []),
                 'hci_metrics': hci_metrics,
                 'llm_prompt': s.get('llm_prompt', ''),
+                'safety': {
+                    'safety_policy_version': s.get('safety_policy_version', ''),
+                    'safety_actions': s.get('safety_actions', []),
+                    'blocked_or_reframed_items': s.get('blocked_or_reframed_items', []),
+                    'risk_text_detected': bool(s.get('risk_text_detected')),
+                    'risk_text_reframed': s.get('risk_text_reframed', ''),
+                    'final_safe_prompt': s.get('final_safe_prompt', ''),
+                    'image_input_mode': s.get('image_input_mode', ''),
+                    'mask_used': bool(s.get('mask_used')),
+                    'guide_image_used': bool(s.get('guide_image_used')),
+                },
                 'canvas_snapshot_path': s.get('canvas_snapshot_path', ''),
                 'canvas_json_path': s.get('canvas_json_path', ''),
                 'interaction_logs': interaction_logs,

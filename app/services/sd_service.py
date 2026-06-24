@@ -21,6 +21,12 @@ import uuid
 
 from PIL import Image
 
+from app.services.safety_policy import (
+    apply_safety_to_prompt,
+    filter_element_name,
+    sanitize_user_text_for_safe_environment,
+)
+
 logger = logging.getLogger(__name__)
 
 API_URL = os.getenv('HEALING_IMAGE_API_URL', 'https://aihubmix.com/v1')
@@ -61,32 +67,32 @@ def _build_prompt(green: float, urban: float, vitality: float, light: float) -> 
     parts = ['请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，但改造结果必须与原图有肉眼可见差异，按以下要求修改环境：']
 
     if green > 70:
-        parts.append('- 大幅增加绿化：添加大量树木、灌木、藤蔓和草坪，让绿色植被覆盖大部分可用区域')
+        parts.append('- 植物较多：增加更多树木、灌木、草坪和低矮花池，让植物层次更丰富，但保持开阔视线和真实日常尺度')
     elif green > 40:
-        parts.append('- 适度绿化：添加一些树木和灌木丛，保持中等程度的植被覆盖')
+        parts.append('- 植物中等：适度增加树木、灌木和草坪，保持自然覆盖度适中、空间清楚易读')
     else:
-        parts.append('- 保持低绿化：仅保留少量植被，以硬质铺装和建筑为主')
+        parts.append('- 植物较少：仅保留少量整洁植物，避免杂乱密集，维持清晰路径和可停留空间')
 
     if urban > 70:
-        parts.append('- 丰富人造设施：添加多个公园长椅、路灯、雕塑、步道和装饰性围栏')
+        parts.append('- 设施较多：增加座椅、普通小路、自然铺装、柔和路灯和低矮花池边界等日常设施，设施完整但不过度装饰')
     elif urban > 40:
-        parts.append('- 适度人造元素：添加几把长椅和路灯，保持简洁')
+        parts.append('- 设施中等：适度添加座椅、小路、路灯或铺装，让空间更方便停留和通行，整体保持简洁')
     else:
-        parts.append('- 减少人工痕迹：尽量减少人造设施，保持自然原生状态')
+        parts.append('- 设施较少：减少座椅、小路、路灯等人造设施，只保留必要、低刺激、真实可用的基础设施')
 
     if vitality > 70:
-        parts.append('- 高活力氛围：用鲜活植被、明亮动线和少量平静活动痕迹营造生机，避免拥挤或嘈杂')
+        parts.append('- 高安全活力：通过明亮开阔的空间、完整设施、清晰路径和鲜活植物表现生机，不生成拥挤人群、强运动、商业噪声或复杂互动')
     elif vitality > 40:
-        parts.append('- 适度活力：场景中有少量行人，氛围平和')
+        parts.append('- 适度安全活力：增加少量可停留设施和清晰路径，保持平和有序，不出现明显人群')
     else:
         parts.append('- 安静宁静：场景中无人或极少人，营造宁静冥想的氛围')
 
     if light > 70:
-        parts.append('- 暖色光线：金色暖阳照射，色调偏暖黄，如傍晚黄金时刻')
+        parts.append('- 光线更温暖：使用柔和、温暖但不过度金黄的自然光，画面明亮稳定，不生成黑暗夜景或强烈阴影')
     elif light > 40:
-        parts.append('- 自然光线：明亮的日光，色调自然平衡')
+        parts.append('- 光线自然：保持明亮、柔和、冷暖平衡的自然日光，空气通透且不过度梦幻化')
     else:
-        parts.append('- 冷色光线：阴天柔和光线，色调偏蓝灰，氛围清冷')
+        parts.append('- 光线更清冷：使用柔和清冷的自然日光或阴天漫射光，色调略冷但不昏暗、不压抑')
 
     parts.append(_quality_safety_requirements('不要只调整亮度或色温，至少让绿化、设施、材质或空间层次产生清楚可比较的变化'))
     return '\n'.join(parts)
@@ -339,6 +345,8 @@ def _safe_element_name(name: str) -> str:
     clean = str(name or '').strip()
     if not clean:
         return clean
+    filtered = filter_element_name(clean)
+    clean = str(filtered.get('safe_name') or clean).strip()
     if clean in _SAFE_ELEMENT_PROMPTS:
         return clean
     if any(pattern in clean for pattern in _UNSAFE_LABEL_PATTERNS):
@@ -350,6 +358,9 @@ def _sanitize_user_design_text(text: str) -> str:
     clean = str(text or '').strip()
     if not clean:
         return ''
+    sanitized = sanitize_user_text_for_safe_environment(clean)
+    if sanitized.get('risk_detected'):
+        return str(sanitized.get('safe_text') or '安全、安静、无威胁的自然环境')
     if any(pattern in clean for pattern in _UNSAFE_LABEL_PATTERNS):
         return '希望保持安全、稳定、温和的疗愈环境，并用自然景观元素表达用户意图。'
     return clean
@@ -694,7 +705,8 @@ def _download_image(url: str) -> bytes:
 
 def _image_to_base64(image_path: str, max_size: int = 1024) -> str:
     """将图片转为 base64（缩放以控制大小）"""
-    img = Image.open(image_path).convert('RGB')
+    with Image.open(image_path) as original:
+        img = original.convert('RGB')
     w, h = img.size
     if max(w, h) > max_size:
         ratio = max_size / max(w, h)
@@ -707,10 +719,11 @@ def _image_to_base64(image_path: str, max_size: int = 1024) -> str:
 
 def _match_original_size(generated_bytes: bytes, original_path: str) -> bytes:
     """将生成的图片调整为与原图完全相同的尺寸，保持比例一致"""
-    original = Image.open(original_path)
-    orig_w, orig_h = original.size
+    with Image.open(original_path) as original:
+        orig_w, orig_h = original.size
 
-    generated = Image.open(io.BytesIO(generated_bytes)).convert('RGB')
+    with Image.open(io.BytesIO(generated_bytes)) as generated_original:
+        generated = generated_original.convert('RGB')
     gen_w, gen_h = generated.size
 
     if (gen_w, gen_h) == (orig_w, orig_h):
@@ -753,6 +766,17 @@ def generate_from_sliders(image_path: str, green: float, urban: float,
     vitality = max(0.0, min(100.0, _safe_float(vitality, 50)))
     light = max(0.0, min(100.0, _safe_float(light, 50)))
     prompt = _build_prompt(green, urban, vitality, light)
+    prompt_result = apply_safety_to_prompt(
+        prompt,
+        'slider',
+        {
+            'green_level': green,
+            'urban_level': urban,
+            'vitality_level': vitality,
+            'light_warmth': light,
+        },
+    )
+    prompt = prompt_result['prompt']
     logger.info(f'Prompt:\n{prompt}')
 
     image_ref = _call_image_edit(image_path, prompt)
@@ -770,7 +794,8 @@ def generate_inpainting(image_path: str, elements: list[dict]) -> tuple[bytes, s
 
     element_descriptions = []
     for el in elements:
-        name = _safe_element_name(el.get('name', ''))
+        safety = filter_element_name(el.get('name', ''), el.get('category', ''))
+        name = _safe_element_name(safety.get('safe_name', ''))
         x_pct = max(0.0, min(100.0, _safe_float(el.get('x'), 50)))
         y_pct = max(0.0, min(100.0, _safe_float(el.get('y'), 50)))
         scale = max(0.05, min(8.0, _safe_float(el.get('scale'), 1)))
@@ -782,13 +807,18 @@ def generate_inpainting(image_path: str, elements: list[dict]) -> tuple[bytes, s
             size_hint = '作为精致但能看清的局部点缀'
         else:
             size_hint = '作为明确可见的环境元素'
-        element_descriptions.append(f'在{spatial}位置按用户放置意图生成{desc}，{size_hint}，不要缩成难以察觉的小变化')
+        prompt_note = safety.get('prompt_note') or '保持真实、日常、低刺激的写实表达。'
+        element_descriptions.append(
+            f'在{spatial}位置按用户放置意图生成{desc}，{size_hint}，不要缩成难以察觉的小变化；{prompt_note}'
+        )
 
     prompt = (
         '请基于这张照片，生成一张改造后的场景图。保持原始构图和视角不变，但用户放置的元素必须形成肉眼可见的实际改造，按以下要求添加元素：\n'
         + '\n'.join(f'- {d}' for d in element_descriptions)
         + '\n' + _quality_safety_requirements('不要只做轻微调色，所有用户放置的元素都要在对应位置生成清楚、写实、可比较的环境变化')
     )
+    prompt_result = apply_safety_to_prompt(prompt, 'drag', {'element_count': len(elements)})
+    prompt = prompt_result['prompt']
     logger.info(f'Prompt:\n{prompt}')
 
     image_ref = _call_image_edit(image_path, prompt)
@@ -899,14 +929,22 @@ def _safe_float(value, default: float = 0.0) -> float:
 
 def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> list[dict]:
     """用户标注优先覆盖自动识别结果，支持 groupId 合并多笔为一条 prompt"""
-    merged = [
-        dict(
-            el,
-            elemName=_safe_element_name(el.get('elemName') or el.get('name', '')),
-            source=el.get('source', 'auto'),
+    merged = []
+    for el in (elements or []):
+        if not isinstance(el, dict):
+            continue
+        confidence = _safe_float(el.get('confidence'), 1)
+        elem_name = (
+            '柔和自然层次或可停留空间'
+            if confidence < 0.5
+            else _safe_element_name(el.get('elemName') or el.get('name', ''))
         )
-        for el in (elements or []) if isinstance(el, dict)
-    ]
+        merged.append(dict(
+            el,
+            elemName=elem_name,
+            source=el.get('source', 'auto'),
+            lowConfidenceSafetyReframed=confidence < 0.5,
+        ))
     if not annotations:
         return merged
 
@@ -931,8 +969,14 @@ def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> li
         is_group = ann.get('isGroup', False)
         stroke_ids = ann.get('strokeIds', [])
 
+        text_safety = sanitize_user_text_for_safe_environment(ann.get('userLabel', ''))
+        safe_label = (
+            text_safety.get('safe_text')
+            if text_safety.get('risk_detected')
+            else _safe_element_name(text_safety.get('safe_text', ''))
+        )
         merged_ann = {
-            'elemName': _safe_element_name(ann.get('userLabel', '')),
+            'elemName': safe_label,
             'icon': '✎',
             'confidence': 1.0,
             'x': ann_x,
@@ -947,6 +991,7 @@ def _merge_user_annotations(elements: list[dict], annotations: list[dict]) -> li
             'groupId': ann.get('groupId'),
             'isGroup': is_group,
             'strokeCount': len(stroke_ids),
+            'safetyReframedText': bool(text_safety.get('risk_detected')),
         }
 
         if best_idx is not None and best_dist <= 18:
@@ -1084,7 +1129,8 @@ def _build_sketch_prompt(
     used_stroke_indices: set[int] = set()
 
     for el in elements:
-        name = _safe_element_name(el.get('elemName') or el.get('name', ''))
+        raw_name = el.get('elemName') or el.get('name', '')
+        name = str(raw_name).strip() if el.get('safetyReframedText') else _safe_element_name(raw_name)
         x_pct = el.get('x', 50)
         y_pct = el.get('y', 50)
         tint = el.get('tint', '')
@@ -1166,6 +1212,7 @@ def _build_sketch_prompt(
             dominant_mood = label_obj.get('label', '')
 
     if dominant_mood:
+        dominant_mood = _sanitize_user_design_text(dominant_mood)
         lines.append(f'[氛围] 整体光影风格参考「{dominant_mood}」的意境：')
         if mood_params:
             light = _safe_float(mood_params.get('light'), 50)
@@ -1233,6 +1280,17 @@ def generate_from_sketch(image_path: str, sketch_data: dict) -> tuple[bytes, str
     )
 
     prompt = _build_sketch_prompt(elements, scene_intent, mood_params, complexity, stroke_log)
+    prompt_result = apply_safety_to_prompt(
+        prompt,
+        'inspire',
+        {
+            'sketch_type': sketch_type,
+            'annotation_count': len(annotations),
+            'stroke_count': len(stroke_log),
+            'complexity': complexity,
+        },
+    )
+    prompt = prompt_result['prompt']
     logger.info(f'Prompt:\n{prompt}')
 
     image_ref = _call_image_edit(image_path, prompt)
