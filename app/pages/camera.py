@@ -7,6 +7,7 @@ from nicegui import app, ui
 from app.components.icons import get_svg
 from app.components.nav import bottom_nav, smooth_navigate
 from app.db import get_hci_participant_by_user_id
+from app.services.image_variants import warm_image_variants
 from app.state import create_session, get_session, media_url
 from app.theme import COLORS, COMMON_STYLE, META_VIEWPORT, PRIMARY_BTN_STYLE, TOP_BAR_STYLE
 
@@ -295,6 +296,7 @@ def create_camera_page():
                 session.uploaded_image_path = str(preset_path)
                 session.scene_type = scene['scene_type']
 
+            warm_image_variants(preset_path)
             state['uploaded'] = True
             display_url = _preset_url(scene['image'])
             preview_img.set_source(display_url)

@@ -93,12 +93,17 @@ def media_url(path_value: str | Path | None, *, thumb: bool = False, display: bo
     path = resolve_media_path(path_value)
     if not path:
         return ''
+    params = []
     if thumb:
-        suffix = '?thumb=1'
+        params.append('thumb=1')
     elif display:
-        suffix = '?display=1'
-    else:
-        suffix = ''
+        params.append('display=1')
+    try:
+        stat = path.stat()
+        params.append(f'v={stat.st_size:x}-{stat.st_mtime_ns:x}')
+    except OSError:
+        pass
+    suffix = '?' + '&'.join(params) if params else ''
     return f'/api/image/{quote(path.name)}{suffix}'
 
 
