@@ -106,6 +106,8 @@ def recover_drag_layout_snapshot(session_id: str) -> str:
         'created_at': time.time(),
         'mode': 'drag',
         'recovered': True,
+        'elements': elements[:40],
+        'element_count': len(elements[:40]),
     })
     db_update_session(session_id, canvas_snapshot_path=str(output_path), canvas_history=history[-30:])
     return str(output_path)

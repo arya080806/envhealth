@@ -225,6 +225,7 @@ def save_output(session_id: str, image_bytes: bytes, suffix: str = '.png') -> st
         'mode': session.get('mode_used', ''),
         'prompt': session.get('llm_prompt', ''),
         'canvas_path': session.get('canvas_snapshot_path', ''),
+        'elements': _canvas_element_snapshot(session),
         'safety_policy_version': session.get('safety_policy_version', ''),
         'safety_actions': session.get('safety_actions', []),
         'blocked_or_reframed_items': session.get('blocked_or_reframed_items', []),
@@ -273,13 +274,92 @@ def save_canvas_snapshot(session_id: str, data_url: str) -> str:
     history = session.get('canvas_history') or []
     if not isinstance(history, list):
         history = []
+    elements = _canvas_element_snapshot(session)
     history.append({
         'path': str(path),
         'created_at': time.time(),
         'mode': session.get('mode_used', ''),
+        'elements': elements,
+        'element_count': len(elements),
     })
     db_update_session(session_id, canvas_snapshot_path=str(path), canvas_history=history[-30:])
     return str(path)
+
+
+def _canvas_element_snapshot(session: dict) -> list[dict]:
+    """Return the elements that belong to the canvas state being saved."""
+    mode = session.get('mode_used', '')
+    if mode == 'inspire':
+        sketch_data = session.get('sketch_data') or {}
+        if isinstance(sketch_data, dict):
+            annotation_elements = _inspire_annotation_elements(sketch_data)
+            if annotation_elements:
+                return annotation_elements[:40]
+            results = sketch_data.get('results')
+            if isinstance(results, list) and results:
+                return [item for item in results if isinstance(item, dict)][:40]
+    placed = session.get('placed_elements') or []
+    if isinstance(placed, list):
+        return [item for item in placed if isinstance(item, dict)][:40]
+    return []
+
+
+def _inspire_annotation_elements(sketch_data: dict) -> list[dict]:
+    """Return user-guided sketch labels as displayable element snapshots."""
+    items: list[dict] = []
+    annotations = sketch_data.get('userAnnotations')
+    if isinstance(annotations, list):
+        for item in annotations:
+            if not isinstance(item, dict):
+                continue
+            label = str(
+                item.get('safe_userLabel')
+                or item.get('userLabel')
+                or item.get('original_userLabel')
+                or item.get('label')
+                or ''
+            ).strip()
+            if not label:
+                continue
+            element = dict(item)
+            element['elemName'] = label
+            element.setdefault('source', 'user')
+            items.append(element)
+    if items:
+        return _dedupe_canvas_elements(items)
+
+    stroke_log = sketch_data.get('strokeLog')
+    if isinstance(stroke_log, list):
+        for item in stroke_log:
+            if not isinstance(item, dict):
+                continue
+            label = str(
+                item.get('safe_userLabel')
+                or item.get('userLabel')
+                or item.get('autoLabel')
+                or item.get('label')
+                or ''
+            ).strip()
+            if not label:
+                continue
+            element = dict(item)
+            element['elemName'] = label
+            element.setdefault('source', 'user' if item.get('userLabel') else 'auto')
+            items.append(element)
+    return _dedupe_canvas_elements(items)
+
+
+def _dedupe_canvas_elements(items: list[dict]) -> list[dict]:
+    seen = set()
+    unique: list[dict] = []
+    for item in items:
+        name = str(item.get('elemName') or item.get('name') or item.get('label') or '').strip()
+        key = (name, str(item.get('x') or ''), str(item.get('y') or ''))
+        if not name or key in seen:
+            continue
+        seen.add(key)
+        unique.append(item)
+    return unique[:40]
 
 
 def save_canvas_json(session_id: str, json_str: str) -> str:

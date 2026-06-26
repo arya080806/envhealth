@@ -176,6 +176,19 @@ def _write_safety_fields(session, safety_log: dict, final_prompt: str = '') -> N
     session.guide_image_used = 1 if safety_log.get('guide_image_used') else 0
 
 
+def _mark_masked_edit(safety_log: dict | None) -> dict:
+    log = dict(safety_log or {})
+    try:
+        from app.services.sd_service import mask_edit_available
+        if mask_edit_available():
+            log['image_input_mode'] = 'masked_image_edit'
+            log['mask_used'] = True
+            log['guide_image_used'] = False
+    except Exception:
+        logger.debug('Could not determine masked edit availability', exc_info=True)
+    return log
+
+
 def _safe_inpaint_elements(elements: list[dict]) -> tuple[list[dict], dict]:
     safe_elements: list[dict] = []
     actions: list[dict] = []
@@ -439,6 +452,7 @@ def start_inpaint_generation_job(
         return False
     if safety_log is None:
         elements, safety_log = _safe_inpaint_elements(elements)
+    safety_log = _mark_masked_edit(safety_log)
     session.placed_elements = elements
     _write_safety_fields(session, safety_log)
     _mark_generation_start(session, 'drag')
@@ -475,6 +489,7 @@ def start_sketch_generation_job(
         return False
     if safety_log is None:
         sketch_data, safety_log = _safe_sketch_payload(sketch_data)
+    safety_log = _mark_masked_edit(safety_log)
     session.sketch_data = sketch_data
     if sketch_data.get('type') == 'element':
         session.placed_elements = sketch_data.get('results', [])
@@ -581,6 +596,9 @@ def _normalize_inpaint_elements(raw_elements, *, limit: int = 20) -> list[dict]:
             'x': round(_number(item.get('x'), 50.0, 0.0, 100.0), 1),
             'y': round(_number(item.get('y'), 50.0, 0.0, 100.0), 1),
             'scale': round(_number(item.get('scale'), 1.0, 0.05, 8.0), 2),
+            'widthPct': round(_number(item.get('widthPct'), 0.0, 0.0, 100.0), 1),
+            'heightPct': round(_number(item.get('heightPct'), 0.0, 0.0, 100.0), 1),
+            'scaleToBg': round(_number(item.get('scaleToBg'), 0.0, 0.0, 20.0), 3),
             'rotation': round(_number(item.get('rotation'), 0.0, -360.0, 360.0)),
             'elemId': _text(item.get('elemId'), 80),
         })
@@ -900,6 +918,7 @@ def register_api_routes():
         if not elements:
             return JSONResponse({'error': '请至少放置一个元素'}, status_code=400)
         elements, safety_log = _safe_inpaint_elements(elements)
+        safety_log = _mark_masked_edit(safety_log)
 
         session.placed_elements = elements
         session.mode_used = 'drag'
@@ -1026,6 +1045,7 @@ def register_api_routes():
         if not isinstance(sketch_data, dict) or int(sketch_data.get('strokeCount') or 0) <= 0:
             return JSONResponse({'error': '请先在画布上画几笔'}, status_code=400)
         sketch_data, safety_log = _safe_sketch_payload(sketch_data)
+        safety_log = _mark_masked_edit(safety_log)
 
         started = start_sketch_generation_job(session_id, str(upload_path), sketch_data, safety_log)
         if not started:

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import re
 import time
 from html import escape
 
@@ -169,6 +170,13 @@ RESULT_CSS = '''
     border: 1px solid rgba(47,123,88,.12);
     background: rgba(255,255,248,.72);
 }
+.history-card[data-history-kind="canvas"] {
+    cursor: pointer;
+}
+.history-card[data-history-kind="canvas"].is-selected {
+    border-color: rgba(47,123,88,.38);
+    box-shadow: 0 0 0 2px rgba(47,123,88,.12);
+}
 .compare-mini-link,
 .history-link {
     display: block;
@@ -304,6 +312,12 @@ RESULT_CSS = '''
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+}
+.canvas-elements-empty {
+    color: rgba(23,49,38,.50);
+    font-size: 12px;
+    line-height: 1.35;
+    font-weight: 750;
 }
 .canvas-element-pill {
     max-width: 100%;
@@ -599,6 +613,78 @@ RESULT_LIGHTBOX_JS = '''
         }
     }
 
+    function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (ch) {
+            return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[ch];
+        });
+    }
+
+    function elementLabel(item) {
+        return String(
+            item.elemName || item.name || item.label || item.title || item.type || '\u5143\u7d20'
+        ).trim();
+    }
+
+    function elementMeta(item) {
+        var parts = [];
+        var zone = item.zone || item.category;
+        if (zone) parts.push(String(zone));
+        var confidence = item.confidence;
+        if (typeof confidence === 'number' && isFinite(confidence)) {
+            var value = confidence >= 0 && confidence <= 1 ? confidence * 100 : confidence;
+            parts.push(String(Math.round(value)) + '%');
+        }
+        var x = item.x;
+        var y = item.y;
+        if (typeof x === 'number' && typeof y === 'number' && isFinite(x) && isFinite(y)) {
+            parts.push(String(Math.round(x)) + '%, ' + String(Math.round(y)) + '%');
+        }
+        return parts.join(' / ');
+    }
+
+    function parseCanvasElements(card) {
+        if (!card) return [];
+        try {
+            var parsed = JSON.parse(card.dataset.elements || '[]');
+            return Array.isArray(parsed) ? parsed : [];
+        } catch (err) {
+            return [];
+        }
+    }
+
+    function renderCanvasElements(section, elements) {
+        var list = section && section.querySelector('.canvas-element-list');
+        if (!list) return;
+        if (!Array.isArray(elements) || !elements.length) {
+            list.innerHTML = '<div class="canvas-elements-empty">\u6682\u65e0\u521b\u4f5c\u5143\u7d20</div>';
+            return;
+        }
+        list.innerHTML = elements.map(function (item, index) {
+            item = item || {};
+            var icon = String(item.icon || item.emoji || '').trim();
+            var meta = elementMeta(item);
+            return [
+                '<span class="canvas-element-pill">',
+                '<span class="canvas-element-index">', index + 1, '</span>',
+                icon ? '<span>' + escapeHtml(icon) + '</span>' : '',
+                '<span>', escapeHtml(elementLabel(item)), '</span>',
+                meta ? '<span class="canvas-element-meta">' + escapeHtml(meta) + '</span>' : '',
+                '</span>'
+            ].join('');
+        }).join('');
+    }
+
+    function selectCanvasCard(card) {
+        if (!card) return;
+        var section = card.closest('.result-section');
+        if (!section) return;
+        section.querySelectorAll('.history-card[data-history-kind="canvas"].is-selected').forEach(function (node) {
+            node.classList.remove('is-selected');
+        });
+        card.classList.add('is-selected');
+        renderCanvasElements(section, parseCanvasElements(card));
+    }
+
     function removeHistoryGridItem(card, section) {
         if (!card) return;
         var grid = section && section.querySelector('.history-grid');
@@ -638,11 +724,23 @@ RESULT_LIGHTBOX_JS = '''
                     var section = card && card.closest('.result-section');
                     removeHistoryGridItem(card, section);
                     reindexCanvasHistory(section);
+                    var nextCard = section && section.querySelector('.history-card[data-history-kind="canvas"]');
+                    if (nextCard) {
+                        selectCanvasCard(nextCard);
+                    } else {
+                        renderCanvasElements(section, []);
+                    }
                 }).catch(function () {
                     deleteButton.disabled = false;
                     window.alert('\u5220\u9664\u5931\u8d25\uff0c\u8bf7\u7a0d\u540e\u518d\u8bd5\u3002');
                 });
             });
+            return;
+        }
+        var canvasCard = event.target.closest('.history-card[data-history-kind="canvas"]');
+        if (canvasCard && !event.target.closest('a.result-image-link, button, input')) {
+            event.preventDefault();
+            selectCanvasCard(canvasCard);
             return;
         }
         var link = event.target.closest('a.result-image-link');
@@ -749,19 +847,7 @@ def _json_value(value, fallback):
     return value if value is not None else fallback
 
 
-def _canvas_elements(session) -> list[dict]:
-    sketch_data = _json_value(getattr(session, 'sketch_data', {}) or {}, {})
-    placed_elements = _json_value(getattr(session, 'placed_elements', []) or [], [])
-    items: list[dict] = []
-
-    if isinstance(sketch_data, dict):
-        results = _json_value(sketch_data.get('results'), [])
-        if isinstance(results, list):
-            items.extend(item for item in results if isinstance(item, dict))
-
-    if not items and isinstance(placed_elements, list):
-        items.extend(item for item in placed_elements if isinstance(item, dict))
-
+def _dedupe_elements(items: list[dict]) -> list[dict]:
     seen = set()
     unique_items: list[dict] = []
     for item in items:
@@ -772,6 +858,133 @@ def _canvas_elements(session) -> list[dict]:
         seen.add(key)
         unique_items.append(item)
     return unique_items[:32]
+
+
+def _label_from_item(item: dict, keys: tuple[str, ...]) -> str:
+    for key in keys:
+        value = str(item.get(key) or '').strip()
+        if value:
+            return value
+    return ''
+
+
+def _element_from_label(label: str, source: str = 'user', base: dict | None = None) -> dict:
+    element = dict(base or {})
+    element['elemName'] = label
+    element.setdefault('source', source)
+    return element
+
+
+def _inspire_annotation_elements(sketch_data: dict) -> list[dict]:
+    annotation_items: list[dict] = []
+    annotations = _json_value(sketch_data.get('userAnnotations'), [])
+    if isinstance(annotations, list):
+        for item in annotations:
+            if not isinstance(item, dict):
+                continue
+            label = _label_from_item(item, ('safe_userLabel', 'userLabel', 'original_userLabel', 'label'))
+            if label:
+                annotation_items.append(_element_from_label(label, 'user', item))
+    if annotation_items:
+        return _dedupe_elements(annotation_items)
+
+    stroke_items: list[dict] = []
+    stroke_log = _json_value(sketch_data.get('strokeLog'), [])
+    if isinstance(stroke_log, list):
+        for item in stroke_log:
+            if not isinstance(item, dict):
+                continue
+            label = _label_from_item(item, ('safe_userLabel', 'userLabel', 'autoLabel', 'label'))
+            if label:
+                source = 'user' if item.get('userLabel') else 'auto'
+                stroke_items.append(_element_from_label(label, source, item))
+    return _dedupe_elements(stroke_items)
+
+
+def _history_generated_elements(history_item: dict) -> list[dict]:
+    """Infer per-operation canvas elements from the matching generation record."""
+    auto_items: list[dict] = []
+    user_items: list[dict] = []
+    for action in _json_value(history_item.get('safety_actions'), []):
+        if not isinstance(action, dict):
+            continue
+        kind = action.get('kind')
+        if kind == 'inspire_auto_label':
+            label = _label_from_item(action, ('safe_name', 'original_name'))
+            if label:
+                auto_items.append(_element_from_label(label, 'auto', {
+                    'confidence': action.get('confidence'),
+                }))
+        elif kind == 'inspire_user_annotation':
+            label = _label_from_item(action, ('safe_text', 'original_text'))
+            if label:
+                user_items.append(_element_from_label(label, 'user'))
+
+    prompt_text = str(history_item.get('final_safe_prompt') or history_item.get('prompt') or '')
+    for label in re.findall(r'按照用户指定内容生成([^，,\n；;。]+)', prompt_text):
+        clean = label.strip(' 「」"\'')
+        if clean:
+            user_items.append(_element_from_label(clean, 'user'))
+
+    direct = _json_value(history_item.get('elements'), [])
+    direct_items = _dedupe_elements([entry for entry in direct if isinstance(entry, dict)]) if isinstance(direct, list) else []
+
+    if user_items:
+        base_items = direct_items or _dedupe_elements(auto_items)
+        user_items = _dedupe_elements(user_items)
+        if not base_items or len(user_items) >= len(base_items):
+            return user_items
+        unchanged_count = max(0, len(base_items) - len(user_items))
+        return _dedupe_elements(base_items[:unchanged_count] + user_items)
+
+    auto_items = _dedupe_elements(auto_items)
+    if auto_items:
+        return auto_items
+
+    if direct_items:
+        return direct_items
+    return []
+
+
+def _canvas_elements(session) -> list[dict]:
+    sketch_data = _json_value(getattr(session, 'sketch_data', {}) or {}, {})
+    placed_elements = _json_value(getattr(session, 'placed_elements', []) or [], [])
+    items: list[dict] = []
+
+    if isinstance(sketch_data, dict):
+        items = _inspire_annotation_elements(sketch_data)
+        if items:
+            return items
+        results = _json_value(sketch_data.get('results'), [])
+        if isinstance(results, list):
+            items.extend(item for item in results if isinstance(item, dict))
+
+    if not items and isinstance(placed_elements, list):
+        items.extend(item for item in placed_elements if isinstance(item, dict))
+
+    return _dedupe_elements(items)
+
+
+def _canvas_item_elements(session, item: dict) -> list[dict]:
+    item_path = str(item.get('path') or '')
+    for history_item in _history(session):
+        if not isinstance(history_item, dict):
+            continue
+        if str(history_item.get('canvas_path') or '') != item_path:
+            continue
+        history_elements = _history_generated_elements(history_item)
+        if history_elements:
+            return history_elements
+
+    direct = _json_value(item.get('elements'), [])
+    if isinstance(direct, list) and direct:
+        return _dedupe_elements([entry for entry in direct if isinstance(entry, dict)])
+
+    return _canvas_elements(session)
+
+
+def _elements_data_attr(elements: list[dict]) -> str:
+    return escape(json.dumps(elements or [], ensure_ascii=False, separators=(',', ':')), quote=True)
 
 
 def _element_label(item: dict) -> str:
@@ -802,8 +1015,6 @@ def _element_meta(item: dict) -> str:
 
 
 def _render_canvas_elements(elements: list[dict]) -> None:
-    if not elements:
-        return
     pills = []
     for index, item in enumerate(elements, start=1):
         icon = escape(str(item.get('icon') or item.get('emoji') or '').strip())
@@ -815,10 +1026,11 @@ def _render_canvas_elements(elements: list[dict]) -> None:
             f'<span class="canvas-element-pill"><span class="canvas-element-index">{index}</span>'
             f'{icon_html}<span>{label}</span>{meta_html}</span>'
         )
+    list_html = ''.join(pills) if pills else '<div class="canvas-elements-empty">暂无创作元素</div>'
     ui.html(
         '<div class="canvas-elements">'
         '<div class="canvas-elements-title">创作元素</div>'
-        f'<div class="canvas-element-list">{"".join(pills)}</div>'
+        f'<div class="canvas-element-list">{list_html}</div>'
         '</div>',
         sanitize=False,
     )
@@ -982,7 +1194,7 @@ def _render_history(session) -> None:
 
 def _render_canvas_snapshot(session, mode: str) -> None:
     items = _canvas_history(session)
-    elements = _canvas_elements(session)
+    elements = _canvas_item_elements(session, items[0]) if items else _canvas_elements(session)
     if not items and not elements:
         return
     title = '\u5143\u7d20\u5e03\u5c40' if mode == 'drag' else '\u521b\u4f5c\u753b\u5e03'
@@ -1001,13 +1213,18 @@ def _render_canvas_snapshot(session, mode: str) -> None:
     with ui.column().classes('result-section').style('gap:0'):
         ui.html(f'<div class="detail-section-title">{escape(title)}</div>', sanitize=False)
         if len(items) == 1:
-            path_value = items[0].get('path')
+            item = items[0]
+            path_value = item.get('path')
             snap_url = _path_url(path_value)
+            item_elements = _canvas_item_elements(session, item)
             ui.html(
-                '<div class="history-card" data-history-kind="canvas">'
+                '<div class="history-card is-selected" data-history-kind="canvas" '
+                f"data-elements=\"{_elements_data_attr(item_elements)}\">"
                 f'<a class="history-link result-image-link" href="{snap_url}">'
                 f'<img class="canvas-snapshot" src="{snap_url}" alt="{escape(title)}" '
                 'loading="lazy" decoding="async"></a>'
+                f'<div class="history-label" data-stamp="{escape(_format_time(item.get("created_at")), quote=True)}">'
+                f'{escape(title)}</div>'
                 f'{_delete_button(path_value)}'
                 '</div>',
                 sanitize=False,
@@ -1023,11 +1240,14 @@ def _render_canvas_snapshot(session, mode: str) -> None:
                     display_url = _path_url(path_value, display=True)
                     label = f'\u7b2c {total - index} \u6b21\u64cd\u4f5c'
                     stamp = _format_time(item.get('created_at'))
+                    item_elements = _canvas_item_elements(session, item)
+                    selected_class = ' is-selected' if index == 0 else ''
                     ui.html(
-                        '<div class="history-card" data-history-kind="canvas">'
+                        f'<div class="history-card{selected_class}" data-history-kind="canvas" '
+                        f'data-elements="{_elements_data_attr(item_elements)}">'
                         f'<a class="history-link result-image-link" href="{full_url}">'
-                        f'<img src="{display_url or full_url}" alt="{escape(label)}">'
-                        f'<div class="history-label" data-stamp="{escape(stamp, quote=True)}">{escape(label)}<br>{escape(stamp)}</div></a>'
+                        f'<img src="{display_url or full_url}" alt="{escape(label)}"></a>'
+                        f'<div class="history-label" data-stamp="{escape(stamp, quote=True)}">{escape(label)}<br>{escape(stamp)}</div>'
                         f'{_delete_button(path_value)}'
                         '</div>',
                         sanitize=False,

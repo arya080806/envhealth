@@ -6,13 +6,15 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 
 from nicegui import ui
 
 from app.components.nav import bottom_nav, smooth_navigate
-from app.state import get_session, media_url, resolve_media_path, save_canvas_json, save_canvas_snapshot, save_output
+from app.state import get_session, media_url, resolve_media_path, save_canvas_json
 from app.theme import COMMON_STYLE, LIGHT_PRIMARY_BTN_STYLE, LIGHT_TOP_BAR_STYLE, META_VIEWPORT
 
+logger = logging.getLogger(__name__)
 
 INSPIRE_CSS = """
 <style>
@@ -1207,11 +1209,11 @@ def _build_inspire_bootstrap(init_payload: str) -> str:
     }}
 
     loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
-        .then(function() {{ return loadScriptOnce('/static/sketch_analyzer.js', 'SketchAnalyzer', 'sketch-analyzer'); }})
-        .then(function() {{ return loadScriptOnce('/static/sketch_composer.js', 'SketchComposer', 'sketch-composer'); }})
+        .then(function() {{ return loadScriptOnce('/static/sketch_analyzer.js?v=stroke-dot-threshold-20260626b', 'SketchAnalyzer', 'sketch-analyzer'); }})
+        .then(function() {{ return loadScriptOnce('/static/sketch_composer.js?v=stroke-dot-threshold-20260626b', 'SketchComposer', 'sketch-composer'); }})
         .then(function() {{
             return loadScriptOnce(
-                '/static/inspire_canvas.js?v=inspire-prompt-force-20260612',
+                '/static/inspire_canvas.js?v=inspire-snapshot-upload-20260626',
                 'InspireCanvas',
                 'inspire-canvas'
             );
@@ -1443,6 +1445,21 @@ def create_inspire_page():
             save_dialog_copy.set_text(copy)
             save_dialog.open()
 
+        async def _upload_canvas_snapshot() -> bool:
+            try:
+                upload_result = await ui.run_javascript(
+                    f'(window.InspireCanvas && InspireCanvas.uploadCanvasSnapshot({json.dumps(sid)}, 4)) || ""',
+                    timeout=45.0,
+                )
+                upload_data = json.loads(upload_result or '{}') if isinstance(upload_result, str) else {}
+                if upload_data.get('ok'):
+                    return True
+                if upload_data.get('error'):
+                    logger.warning('inspire snapshot upload failed for session %s: %s', sid, upload_data.get('error'))
+            except Exception:
+                logger.exception('inspire snapshot upload failed for session %s', sid)
+            return False
+
         async def save_draft():
             if not session:
                 _show_save_dialog('无法保存', '当前会话无效，请返回重新进入。')
@@ -1453,7 +1470,6 @@ def create_inspire_page():
                 session.mode_used = 'inspire'
                 submit_json = await ui.run_javascript('InspireCanvas.getSubmitData()', timeout=6.0)
                 paths_json = await ui.run_javascript('InspireCanvas.getPathsJSON()', timeout=8.0)
-                canvas_data_url = await ui.run_javascript('InspireCanvas.getCanvasDataURL()', timeout=8.0)
 
                 if submit_json and submit_json != 'null':
                     data = _normalize_sketch_payload(json.loads(submit_json))
@@ -1472,11 +1488,7 @@ def create_inspire_page():
                         save_canvas_json(sid, paths_json or '[]')
                     except Exception:
                         pass
-                if canvas_data_url and canvas_data_url.startswith('data:image'):
-                    try:
-                        save_canvas_snapshot(sid, canvas_data_url)
-                    except Exception:
-                        pass
+                await _upload_canvas_snapshot()
 
                 _show_save_dialog('已保存进度', '当前画布和画笔位置已同步到草稿箱。')
             except Exception as exc:
@@ -1511,7 +1523,6 @@ def create_inspire_page():
 
             try:
                 session.mode_used = 'inspire'
-                canvas_data_url = await ui.run_javascript('InspireCanvas.getCanvasDataURL()', timeout=8.0)
                 paths_json = await ui.run_javascript('InspireCanvas.getPathsJSON()', timeout=8.0)
 
                 session.sketch_data = data
@@ -1523,11 +1534,7 @@ def create_inspire_page():
                     session.urban_level = mp.get('urban', 50)
                     session.vitality_level = mp.get('vitality', 50)
                     session.light_warmth = mp.get('light', 50)
-                if canvas_data_url and canvas_data_url.startswith('data:image'):
-                    try:
-                        save_canvas_snapshot(sid, canvas_data_url)
-                    except Exception:
-                        pass
+                await _upload_canvas_snapshot()
                 if paths_json is not None:
                     try:
                         save_canvas_json(sid, paths_json or '[]')

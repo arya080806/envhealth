@@ -93,7 +93,12 @@ window.SketchAnalyzer = (function () {
    */
   function _classifyShape(f, pts, canvasW) {
     var maxDim = Math.max(f.bboxW, f.bboxH);
-    if (f.pointCount < 20 || maxDim < (canvasW || 400) * 0.07) {
+    var canvasRef = canvasW || 400;
+    var tinyDim = canvasRef * 0.035;
+    var smallDim = canvasRef * 0.07;
+    var pathLength = f.pathLength || 0;
+    var shortStroke = f.pointCount < 8 || pathLength < canvasRef * 0.10;
+    if (maxDim < tinyDim || (maxDim < smallDim && shortStroke)) {
       return SHAPE_DOT;
     }
 
@@ -390,6 +395,7 @@ window.SketchAnalyzer = (function () {
       topSharpness: topSharpness,
       topSpread: topSpread,
       pointCount: pts.length,
+      pathLength: perimeter,
       relativeHeight: 0,
       centerX: (minX + maxX) / 2,
       centerY: (minY + maxY) / 2,

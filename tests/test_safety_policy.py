@@ -135,6 +135,67 @@ class SafetyPolicyTests(unittest.TestCase):
         self.assertIn('不生成拥挤人群、强运动、商业噪声或复杂互动', prompt)
         self.assertNotIn('少量行人', prompt)
 
+    def test_masked_edits_send_soft_alpha_masks(self):
+        image_path = _temp_image_path()
+        captures = []
+
+        def fake_call(_image_path, prompt, *args, **kwargs):
+            mask_path = kwargs.get('mask_path')
+            capture = {'prompt': prompt, 'mask_path': mask_path}
+            self.assertTrue(mask_path and Path(mask_path).exists())
+            with Image.open(mask_path) as mask:
+                capture['mode'] = mask.mode
+                capture['size'] = mask.size
+                capture['alpha_extrema'] = mask.getchannel('A').getextrema()
+            captures.append(capture)
+            return 'fake-ref'
+
+        with patch.object(sd_service, '_call_image_edit', fake_call), \
+                patch.object(sd_service, '_generated_bytes_from_reference', lambda _ref: _png_bytes()), \
+                patch.object(sd_service, 'mask_edit_available', lambda: True):
+            sd_service.generate_inpainting(image_path, [
+                {'name': 'tree', 'category': 'plant', 'x': 50, 'y': 50, 'scale': 1, 'widthPct': 20, 'heightPct': 20},
+            ])
+            sd_service.generate_from_sketch(image_path, {
+                'type': 'element',
+                'results': [{'elemName': 'tree', 'confidence': 0.9, 'x': 70, 'y': 50, 'bboxW': 8, 'bboxH': 8}],
+                'userAnnotations': [{'userLabel': 'shrub', 'x': 70, 'y': 50, 'bboxW': 12, 'bboxH': 10}],
+                'strokeLog': [{'strokeId': 's1', 'autoLabel': 'tree', 'x': 70, 'y': 50, 'bboxW': 18, 'bboxH': 12, 'shapeType': 'wide'}],
+                'strokeCount': 1,
+                'sceneIntent': {'complexityLevel': 'medium', 'spatialPatterns': []},
+                'moodParams': {'green': 50, 'urban': 50, 'vitality': 50, 'light': 50},
+            })
+
+        self.assertEqual(len(captures), 2)
+        for capture in captures:
+            self.assertEqual(capture['mode'], 'RGBA')
+            self.assertEqual(capture['size'], (24, 16))
+            self.assertLess(capture['alpha_extrema'][0], 255)
+            self.assertEqual(capture['alpha_extrema'][1], 255)
+            self.assertFalse(Path(capture['mask_path']).exists())
+        self.assertIn('局部编辑', captures[0]['prompt'])
+        self.assertIn('笔画与 mask', captures[1]['prompt'])
+
+    def test_masked_edit_retries_without_mask_when_gateway_rejects_mask(self):
+        image_path = _temp_image_path()
+        calls = []
+
+        def fake_call(_image_path, _prompt, *args, **kwargs):
+            mask_path = kwargs.get('mask_path')
+            calls.append(bool(mask_path))
+            if mask_path:
+                raise ValueError('image edit API request failed (400): unsupported mask')
+            return 'fake-ref'
+
+        with patch.object(sd_service, '_call_image_edit', fake_call), \
+                patch.object(sd_service, '_generated_bytes_from_reference', lambda _ref: _png_bytes()), \
+                patch.object(sd_service, 'mask_edit_available', lambda: True):
+            sd_service.generate_inpainting(image_path, [
+                {'name': 'tree', 'category': 'plant', 'x': 50, 'y': 50, 'scale': 1, 'widthPct': 20, 'heightPct': 20},
+            ])
+
+        self.assertEqual(calls, [True, False])
+
     def test_filter_element_name_records_actions(self):
         result = filter_element_name('强围栏', '设施')
         self.assertEqual(result['action'], 'block_reframe')
@@ -164,6 +225,13 @@ class SafetyPolicyTests(unittest.TestCase):
         self.assertEqual(sketch['results'][0]['elemName'], '柔和自然层次或可停留空间')
         self.assertIn('安全、安静、无威胁', sketch['userAnnotations'][0]['userLabel'])
         self.assertTrue(inspire_log['blocked_or_reframed_items'])
+
+        normalized = api_routes._normalize_inpaint_elements([
+            {'name': 'tree', 'x': 30, 'y': 40, 'widthPct': 19.4, 'heightPct': 12.6, 'scaleToBg': 0.25},
+        ])
+        self.assertEqual(normalized[0]['widthPct'], 19.4)
+        self.assertEqual(normalized[0]['heightPct'], 12.6)
+        self.assertEqual(normalized[0]['scaleToBg'], 0.25)
 
         self.assertLessEqual(api_routes._slider_vitality_value({'green_level': 100}, 100, 100), 60)
 

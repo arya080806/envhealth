@@ -423,11 +423,10 @@ CHAT_MODE_CSS = '''
     line-height: 1.45;
 }
 .chat-action-wrap {
-    position: sticky;
-    bottom: 92px;
-    z-index: 40;
     width: 100%;
     padding-top: 2px;
+    margin-top: 6px;
+    margin-bottom: 18px;
 }
 .chat-generate-btn {
     width: 100%;
@@ -522,7 +521,7 @@ CHAT_MODE_CSS = '''
     }
 
     .chat-side-column {
-        gap: 12px;
+        gap: 10px;
     }
 
     .chat-source {
@@ -542,21 +541,22 @@ CHAT_MODE_CSS = '''
     }
 
     #chat-extra {
-        min-height: 132px;
+        min-height: 104px;
     }
 
     .mood-grid {
-        gap: 12px;
+        gap: 10px;
     }
 
     .mood-card {
-        min-height: 98px;
+        min-height: 76px;
+        padding: 11px 12px;
         border-radius: 20px;
     }
 
     .chat-action-wrap {
-        position: sticky;
-        bottom: 98px;
+        margin-top: 4px;
+        margin-bottom: 12px;
     }
 }
 @media (max-width: 360px) {

@@ -47,7 +47,8 @@ window.SketchComposer = (function () {
   function _pickIntent(intentList, strokeCount) {
     if (!intentList || intentList.length === 0) return { element: '', mood: '' };
     if (intentList.length === 1) return intentList[0];
-    var idx = (strokeCount || 0) % intentList.length;
+    var count = Math.max(1, Number(strokeCount || 1));
+    var idx = (count - 1) % intentList.length;
     return intentList[idx];
   }
 

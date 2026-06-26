@@ -1405,6 +1405,49 @@ window.InspireCanvas = (function () {
       }
     },
 
+    uploadCanvasSnapshot: async function (sessionId, maxMultiplier) {
+      var dataUrl = '';
+      var previousOpacity = bgImage ? bgImage.opacity : null;
+      try {
+        if (!canvas) return JSON.stringify({ ok: false, error: 'empty canvas' });
+        removeInlineLabel();
+        canvas.discardActiveObject();
+        if (bgImage) bgImage.set('opacity', 1);
+        canvas.renderAll();
+        maxMultiplier = Number(maxMultiplier || 4);
+        if (!isFinite(maxMultiplier) || maxMultiplier <= 0) maxMultiplier = 4;
+        var multiplier = 1;
+        if (bgOriginalWidth && canvas.getWidth && canvas.getWidth() > 0) {
+          multiplier = Math.max(1, Math.min(maxMultiplier, bgOriginalWidth / canvas.getWidth()));
+        } else if (bgScale > 0) {
+          multiplier = Math.max(1, Math.min(maxMultiplier, 1 / bgScale));
+        }
+        dataUrl = canvas.toDataURL({ format: 'png', multiplier: multiplier });
+      } catch (e) {
+        return JSON.stringify({ ok: false, error: (e && e.message) || 'canvas export failed' });
+      } finally {
+        if (bgImage && previousOpacity !== null) {
+          bgImage.set('opacity', previousOpacity);
+          canvas.renderAll();
+        }
+      }
+      if (!dataUrl) return JSON.stringify({ ok: false, error: 'empty canvas' });
+      try {
+        var resp = await fetch('/api/canvas-snapshot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ session_id: sessionId, data_url: dataUrl }),
+        });
+        var data = await resp.json().catch(function () { return {}; });
+        if (!resp.ok) {
+          return JSON.stringify({ ok: false, error: data.error || ('HTTP ' + resp.status) });
+        }
+        return JSON.stringify(data);
+      } catch (e) {
+        return JSON.stringify({ ok: false, error: (e && e.message) || 'snapshot upload failed' });
+      }
+    },
+
     getPathsJSON: function () {
       var data = strokes.map(function (s, idx) {
         return {

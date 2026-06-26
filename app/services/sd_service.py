@@ -18,8 +18,10 @@ import urllib.request
 import json
 import ssl
 import uuid
+import tempfile
+from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFilter
 
 from app.services.safety_policy import (
     apply_safety_to_prompt,
@@ -39,6 +41,14 @@ IMAGE_EDIT_MAX_SIZE = int(os.getenv('HEALING_IMAGE_EDIT_MAX_SIZE', '1536'))
 IMAGE_API_TIMEOUT = int(os.getenv('HEALING_IMAGE_TIMEOUT', '360'))
 MAX_REMOTE_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_INLINE_IMAGE_CHARS = 36 * 1024 * 1024
+
+
+def mask_edit_available() -> bool:
+    """Whether the active image endpoint can receive an edit mask."""
+    try:
+        return _generation_endpoint()[1] == 'edit'
+    except Exception:
+        return False
 
 
 def _quality_safety_requirements(visible_focus: str) -> str:
@@ -661,6 +671,234 @@ def _generated_bytes_from_reference(image_ref: str) -> bytes:
     return _download_image(image_ref)
 
 
+def _mask_number(value, default: float, min_value: float, max_value: float) -> float:
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        number = default
+    return max(min_value, min(max_value, number))
+
+
+def _mask_box_from_region(region: dict, width: int, height: int) -> tuple[int, int, int, int] | None:
+    x_pct = _mask_number(region.get('x'), 50.0, 0.0, 100.0)
+    y_pct = _mask_number(region.get('y'), 50.0, 0.0, 100.0)
+    bbox_w = _mask_number(
+        region.get('bboxW') or region.get('widthPct'),
+        _mask_number(region.get('defaultW'), 16.0, 6.0, 60.0),
+        2.0,
+        100.0,
+    )
+    bbox_h = _mask_number(
+        region.get('bboxH') or region.get('heightPct'),
+        _mask_number(region.get('defaultH'), 14.0, 6.0, 60.0),
+        2.0,
+        100.0,
+    )
+    pad = _mask_number(region.get('padPct'), 4.0, 0.0, 18.0)
+    bbox_w = max(_mask_number(region.get('minW'), 8.0, 1.0, 80.0), bbox_w) + pad * 2
+    bbox_h = max(_mask_number(region.get('minH'), 8.0, 1.0, 80.0), bbox_h) + pad * 2
+
+    left = int(round((x_pct - bbox_w / 2) / 100 * width))
+    top = int(round((y_pct - bbox_h / 2) / 100 * height))
+    right = int(round((x_pct + bbox_w / 2) / 100 * width))
+    bottom = int(round((y_pct + bbox_h / 2) / 100 * height))
+    left = max(0, min(width - 1, left))
+    top = max(0, min(height - 1, top))
+    right = max(left + 1, min(width, right))
+    bottom = max(top + 1, min(height, bottom))
+    if right <= left or bottom <= top:
+        return None
+    return left, top, right, bottom
+
+
+def _draw_mask_region(draw: ImageDraw.ImageDraw, box: tuple[int, int, int, int], region: dict) -> None:
+    shape = str(region.get('shapeType') or '').strip().lower()
+    if shape in {'round', 'dot', 'spiral', 'enclosure'}:
+        draw.ellipse(box, fill=0)
+        return
+    radius = max(2, min(box[2] - box[0], box[3] - box[1]) // 6)
+    try:
+        draw.rounded_rectangle(box, radius=radius, fill=0)
+    except AttributeError:
+        draw.rectangle(box, fill=0)
+
+
+def _create_soft_edit_mask(image_path: str, regions: list[dict]) -> str | None:
+    if not regions:
+        return None
+    try:
+        with Image.open(image_path) as original:
+            width, height = original.size
+        if width <= 0 or height <= 0:
+            return None
+
+        alpha = Image.new('L', (width, height), 255)
+        draw = ImageDraw.Draw(alpha)
+        drawn = 0
+        for region in regions[:80]:
+            if not isinstance(region, dict):
+                continue
+            box = _mask_box_from_region(region, width, height)
+            if not box:
+                continue
+            _draw_mask_region(draw, box, region)
+            drawn += 1
+        if not drawn:
+            return None
+
+        blur_radius = max(2, int(round(min(width, height) * 0.012)))
+        alpha = alpha.filter(ImageFilter.GaussianBlur(blur_radius))
+        mask = Image.new('RGBA', (width, height), (255, 255, 255, 255))
+        mask.putalpha(alpha)
+        mask_path = Path(tempfile.gettempdir()) / f'healing_edit_mask_{uuid.uuid4().hex}.png'
+        mask.save(mask_path, format='PNG')
+        return str(mask_path)
+    except Exception:
+        logger.warning('Failed to create edit mask; falling back to prompt-only edit', exc_info=True)
+        return None
+
+
+def _cleanup_temp_mask(mask_path: str | None) -> None:
+    if not mask_path:
+        return
+    try:
+        Path(mask_path).unlink(missing_ok=True)
+    except Exception:
+        logger.debug('Failed to remove temporary edit mask: %s', mask_path, exc_info=True)
+
+
+def _call_image_edit_with_optional_mask(image_path: str, prompt: str, mask_path: str | None) -> str:
+    if not mask_path:
+        return _call_image_edit(image_path, prompt)
+    try:
+        return _call_image_edit(image_path, prompt, mask_path=mask_path)
+    except ValueError as exc:
+        message = str(exc).lower()
+        likely_mask_issue = any(term in message for term in ('mask', 'unsupported', 'invalid', '400'))
+        if not likely_mask_issue:
+            raise
+        logger.warning(
+            'Masked image edit failed; retrying without mask. Error: %s',
+            str(exc)[:240],
+        )
+        return _call_image_edit(image_path, prompt)
+
+
+def _regions_from_inpaint_elements(elements: list[dict]) -> list[dict]:
+    regions: list[dict] = []
+    for item in elements[:20]:
+        if not isinstance(item, dict):
+            continue
+        scale = _mask_number(item.get('scale'), 1.0, 0.05, 8.0)
+        default_w = max(8.0, min(42.0, 13.0 * scale))
+        default_h = max(8.0, min(46.0, 15.0 * scale))
+        regions.append({
+            'x': item.get('x', 50),
+            'y': item.get('y', 50),
+            'bboxW': item.get('bboxW') or item.get('widthPct'),
+            'bboxH': item.get('bboxH') or item.get('heightPct'),
+            'defaultW': default_w,
+            'defaultH': default_h,
+            'minW': 8,
+            'minH': 8,
+            'padPct': 4.5,
+            'shapeType': item.get('shapeType') or 'round',
+        })
+    return regions
+
+
+def _nearest_stroke_geometry(annotation: dict, stroke_log: list[dict]) -> dict:
+    if not stroke_log:
+        return {}
+    stroke_ids = set(str(item) for item in annotation.get('strokeIds', []) if item)
+    if stroke_ids:
+        for stroke in stroke_log:
+            if isinstance(stroke, dict) and str(stroke.get('strokeId') or stroke.get('id') or '') in stroke_ids:
+                return stroke
+
+    ax = _mask_number(annotation.get('x'), 50.0, 0.0, 100.0)
+    ay = _mask_number(annotation.get('y'), 50.0, 0.0, 100.0)
+    best: dict = {}
+    best_dist = 9999.0
+    for stroke in stroke_log[:80]:
+        if not isinstance(stroke, dict):
+            continue
+        sx = _mask_number(stroke.get('x'), 50.0, 0.0, 100.0)
+        sy = _mask_number(stroke.get('y'), 50.0, 0.0, 100.0)
+        dist = ((sx - ax) ** 2 + (sy - ay) ** 2) ** 0.5
+        if dist < best_dist:
+            best_dist = dist
+            best = stroke
+    return best if best_dist <= 26 else {}
+
+
+def _annotation_region(annotation: dict, stroke_log: list[dict]) -> dict:
+    stroke = _nearest_stroke_geometry(annotation, stroke_log)
+    bbox_w = annotation.get('bboxW') or stroke.get('bboxW')
+    bbox_h = annotation.get('bboxH') or stroke.get('bboxH')
+    shape_type = annotation.get('shapeType') or stroke.get('shapeType') or 'free'
+    return {
+        'x': annotation.get('x', stroke.get('x', 50)),
+        'y': annotation.get('y', stroke.get('y', 50)),
+        'bboxW': bbox_w,
+        'bboxH': bbox_h,
+        'defaultW': 16,
+        'defaultH': 14,
+        'minW': 8,
+        'minH': 8,
+        'padPct': 5,
+        'shapeType': shape_type,
+    }
+
+
+def _regions_from_sketch_data(sketch_data: dict, elements: list[dict]) -> list[dict]:
+    stroke_log = sketch_data.get('strokeLog') if isinstance(sketch_data.get('strokeLog'), list) else []
+    annotations = sketch_data.get('userAnnotations') if isinstance(sketch_data.get('userAnnotations'), list) else []
+    regions: list[dict] = []
+
+    # User annotations are the semantic source of truth; nearby strokes fill in size/shape when labels are abstract.
+    if annotations:
+        for annotation in annotations[:80]:
+            if isinstance(annotation, dict):
+                regions.append(_annotation_region(annotation, stroke_log))
+        return regions
+
+    if stroke_log:
+        for stroke in stroke_log[:80]:
+            if not isinstance(stroke, dict):
+                continue
+            regions.append({
+                'x': stroke.get('x', 50),
+                'y': stroke.get('y', 50),
+                'bboxW': stroke.get('bboxW'),
+                'bboxH': stroke.get('bboxH'),
+                'defaultW': 15,
+                'defaultH': 13,
+                'minW': 7,
+                'minH': 7,
+                'padPct': 5,
+                'shapeType': stroke.get('shapeType') or 'free',
+            })
+        return regions
+
+    for item in elements[:40]:
+        if not isinstance(item, dict):
+            continue
+        regions.append({
+            'x': item.get('x', 50),
+            'y': item.get('y', 50),
+            'bboxW': item.get('bboxW'),
+            'bboxH': item.get('bboxH'),
+            'defaultW': 14,
+            'defaultH': 12,
+            'minW': 7,
+            'minH': 7,
+            'padPct': 5,
+            'shapeType': item.get('shapeType') or 'free',
+        })
+    return regions
+
+
 def _is_public_http_url(url: str) -> bool:
     try:
         parsed = urllib.parse.urlparse(url)
@@ -817,11 +1055,20 @@ def generate_inpainting(image_path: str, elements: list[dict]) -> tuple[bytes, s
         + '\n'.join(f'- {d}' for d in element_descriptions)
         + '\n' + _quality_safety_requirements('不要只做轻微调色，所有用户放置的元素都要在对应位置生成清楚、写实、可比较的环境变化')
     )
+    if mask_edit_available() and elements:
+        prompt += (
+            '\n[局部编辑] 已随原图提供柔边透明 mask；请优先只在 mask 透明区域生成用户放置的元素，'
+            '保留 mask 外的原图结构、透视、材质和光影连续性。'
+        )
     prompt_result = apply_safety_to_prompt(prompt, 'drag', {'element_count': len(elements)})
     prompt = prompt_result['prompt']
     logger.info(f'Prompt:\n{prompt}')
 
-    image_ref = _call_image_edit(image_path, prompt)
+    mask_path = _create_soft_edit_mask(image_path, _regions_from_inpaint_elements(elements)) if mask_edit_available() else None
+    try:
+        image_ref = _call_image_edit_with_optional_mask(image_path, prompt, mask_path)
+    finally:
+        _cleanup_temp_mask(mask_path)
     logger.info(f'生成图片引用: {image_ref[:120]}')
     raw_bytes = _generated_bytes_from_reference(image_ref)
     return _match_original_size(raw_bytes, image_path), prompt
@@ -1280,6 +1527,12 @@ def generate_from_sketch(image_path: str, sketch_data: dict) -> tuple[bytes, str
     )
 
     prompt = _build_sketch_prompt(elements, scene_intent, mood_params, complexity, stroke_log)
+    if mask_edit_available() and (annotations or stroke_log or elements):
+        prompt += (
+            '\n[笔画与 mask] 已随原图提供来自用户笔画/标注的柔边透明 mask。'
+            '如果患者画得抽象，请以用户标注语义为准，同时参考笔画所在位置、覆盖范围、方向和形态，'
+            '只在对应区域内自然转化为空间元素，保留区域外原图稳定。'
+        )
     prompt_result = apply_safety_to_prompt(
         prompt,
         'inspire',
@@ -1293,7 +1546,11 @@ def generate_from_sketch(image_path: str, sketch_data: dict) -> tuple[bytes, str
     prompt = prompt_result['prompt']
     logger.info(f'Prompt:\n{prompt}')
 
-    image_ref = _call_image_edit(image_path, prompt)
+    mask_path = _create_soft_edit_mask(image_path, _regions_from_sketch_data(sketch_data, elements)) if mask_edit_available() else None
+    try:
+        image_ref = _call_image_edit_with_optional_mask(image_path, prompt, mask_path)
+    finally:
+        _cleanup_temp_mask(mask_path)
     logger.info(f'生成图片引用: {image_ref[:120]}')
     raw_bytes = _generated_bytes_from_reference(image_ref)
     return _match_original_size(raw_bytes, image_path), prompt
