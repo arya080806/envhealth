@@ -320,3 +320,40 @@ sudo nginx -T | grep -E "envhealth.cn|listen|server_name" -n
 5. 域名是否为 `https://envhealth.cn` 和 `https://www.envhealth.cn`。
 6. 部署后必须验证 `/api/status`。
 
+---
+
+## 十三、2026-06-27 本地最新版本 Git 保存记录
+
+记录时间：2026-06-27 22:58:28 +08:00  
+项目目录：`D:\SSH\环境游戏程序\healing-environment`  
+GitHub 仓库：`git@github.com:arya080806/envhealth.git`  
+当前分支：`master`（推送到远端 `main`）
+
+| 项目 | 内容 |
+| --- | --- |
+| 保存提交短号 | `4bd46d4` |
+| 保存提交完整哈希 | `4bd46d43095955a739f289bf654ca0104d72503b` |
+| 提交时间 | `2026-06-27T22:58:19+08:00` |
+| 提交人 | `Codex <codex@local>` |
+| 提交说明 | `保存拖拽标注与安全策略快照` |
+
+本次保存内容：
+
+- 拖拽创作画布新增元素标注面板，支持对单个放置元素补充用户意图，并随画布 JSON/布局提交给后端。
+- 拖拽生成 API 会保留并安全转译元素标注，生成 prompt 优先参考用户标注，再结合基础元素描述。
+- 安全策略允许鸟、飞鸟、蝴蝶、彩虹等在用户明确选择时以真实、温和、低刺激方式出现。
+- 安全 prompt 增加现实物理约束，要求路灯、构筑物、树木、亭子、风车等实体落地或有合理支撑，避免悬空漂浮。
+- 调整拖拽元素库，移除萤火虫、月光等更易引发误生成的氛围项。
+- 新增和更新安全策略测试，覆盖元素标注优先、低刺激自然元素转译、物理约束提示和生成 prompt 内容。
+
+提交统计：
+
+- 变更文件：6 个
+- 新增行：496 行
+- 删除行：35 行
+
+校验记录：
+
+- `py -3 -m compileall app tests`
+- `uv run python -m compileall app tests`
+- `uv run python -m unittest tests.test_safety_policy`
