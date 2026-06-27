@@ -21,10 +21,41 @@ window.EnvCanvas = (function () {
   let _touchDragging = false;
   let _touchStartX = 0, _touchStartY = 0;
   let _touchDragCard = null;
+  let _annotationPanel = null;
   const MAX_ELEMENTS = 20;
   const TOUCH_DRAG_THRESHOLD = 12;
+  const ANNOTATION_MAX_CHARS = 80;
 
   // ───────────────── 初始化 ─────────────────
+
+  function _measureAvailableCanvasWidth(wrapper) {
+    var candidates = [];
+    function addWidth(node) {
+      if (!node) return;
+      var rect = null;
+      try { rect = node.getBoundingClientRect && node.getBoundingClientRect(); } catch (e) {}
+      var widths = [
+        rect && rect.width,
+        node.clientWidth,
+        node.offsetWidth,
+      ];
+      widths.forEach(function (value) {
+        value = Number(value);
+        if (isFinite(value) && value > 0) candidates.push(value);
+      });
+    }
+
+    addWidth(wrapper);
+    addWidth(wrapper && wrapper.parentElement);
+    addWidth(document.querySelector('.drag-stage'));
+    addWidth(document.querySelector('.drag-main-pane'));
+
+    var viewportCap = Math.max(280, Math.min(window.innerWidth - 40, window.innerWidth * 0.64));
+    candidates.push(viewportCap);
+    var measured = Math.max.apply(Math, candidates);
+    if (!isFinite(measured) || measured < 260) measured = viewportCap;
+    return Math.max(260, Math.round(measured));
+  }
 
   function init(canvasId, imgUrl, sessionId) {
     const wrapper = document.getElementById('canvas-wrapper');
@@ -41,7 +72,7 @@ window.EnvCanvas = (function () {
     _disposeCanvas();
     _sessionId = sessionId || '';
 
-    const w = wrapper.clientWidth || 440;
+    const w = _measureAvailableCanvasWidth(wrapper) || 440;
     const initialH = Math.round(Math.min(w * 0.58, window.innerHeight * 0.32));
 
     _canvas = new fabric.Canvas(canvasId, {
@@ -60,6 +91,8 @@ window.EnvCanvas = (function () {
 
     _canvas.allowTouchScrolling = false;
     _toolbar = document.getElementById('canvas-toolbar');
+    _ensureAnnotationPanel();
+    _updateAnnotationPanel(false);
 
     // 阻止工具栏点击/触摸导致canvas失去焦点取消选中
     if (_toolbar && !_toolbar.dataset.envToolbarBound) {
@@ -94,6 +127,10 @@ window.EnvCanvas = (function () {
     _elements = [];
     _lastSelected = null;
     _suppressClick = false;
+    if (_annotationPanel && _annotationPanel.parentNode) {
+      _annotationPanel.parentNode.removeChild(_annotationPanel);
+    }
+    _annotationPanel = null;
     var toolbar = document.getElementById('canvas-toolbar');
     if (toolbar) toolbar.style.display = 'none';
     _updateCount();
@@ -115,8 +152,7 @@ window.EnvCanvas = (function () {
       }
 
       var wrapper = document.getElementById('canvas-wrapper');
-      var stage = wrapper && wrapper.parentElement ? wrapper.parentElement : wrapper;
-      var availableW = (stage && stage.clientWidth) || (wrapper && wrapper.clientWidth) || _canvas.getWidth() || 440;
+      var availableW = _measureAvailableCanvasWidth(wrapper) || _canvas.getWidth() || 440;
       var isTabletLandscape = window.matchMedia && window.matchMedia('(min-width: 900px) and (orientation: landscape)').matches;
       var maxHByViewport = Math.round(window.innerHeight * (isTabletLandscape ? 0.56 : 0.38));
       var maxH = Math.max(170, Math.min(maxHByViewport, window.innerHeight - (isTabletLandscape ? 270 : 330)));
@@ -140,6 +176,12 @@ window.EnvCanvas = (function () {
         wrapper.style.maxWidth = '100%';
         wrapper.style.marginLeft = 'auto';
         wrapper.style.marginRight = 'auto';
+      }
+      var canvasContainer = _canvas.wrapperEl;
+      if (canvasContainer) {
+        canvasContainer.style.width = targetW + 'px';
+        canvasContainer.style.height = targetH + 'px';
+        canvasContainer.style.maxWidth = '100%';
       }
 
       _bgLeft = 0;
@@ -352,6 +394,7 @@ window.EnvCanvas = (function () {
         elemIcon: icon,
         elemName: name,
         elemCat: cat || '',
+        elemAnnotation: '',
         elemId: 'el_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
       });
       _applyInteractiveDefaults(g);
@@ -361,6 +404,7 @@ window.EnvCanvas = (function () {
       _lastSelected = g;
       _elements.push(g);
       _updateCount();
+      _updateAnnotationPanel(false);
       _animateIn(g);
       _log('place', _getData(g));
     });
@@ -398,6 +442,7 @@ window.EnvCanvas = (function () {
     _canvas.discardActiveObject();
     _canvas.renderAll();
     _updateCount();
+    _updateAnnotationPanel(false);
     if (_toolbar) _toolbar.style.display = 'none';
   }
 
@@ -412,6 +457,7 @@ window.EnvCanvas = (function () {
       c.set({
         left: a.left + 28, top: a.top + 28,
         elemIcon: a.elemIcon, elemName: a.elemName, elemCat: a.elemCat,
+        elemAnnotation: a.elemAnnotation || '',
         elemId: 'el_' + Date.now() + '_dup',
       });
       _applyInteractiveDefaults(c);
@@ -421,6 +467,7 @@ window.EnvCanvas = (function () {
       _elements.push(c);
       _refreshObject(c);
       _updateCount();
+      _updateAnnotationPanel(false);
       _log('duplicate', _getData(c));
     });
   }
@@ -450,6 +497,7 @@ window.EnvCanvas = (function () {
     _canvas.discardActiveObject();
     _canvas.renderAll();
     _updateCount();
+    _updateAnnotationPanel(false);
     if (_toolbar) _toolbar.style.display = 'none';
     document.querySelectorAll('.elem-card').forEach(function (c) {
       c.classList.remove('elem-selected');
@@ -493,6 +541,175 @@ window.EnvCanvas = (function () {
 
   // ───────────────── 布局序列化（提交给AI生成）─────────────────
 
+  function _escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, function (ch) {
+      return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[ch];
+    });
+  }
+
+  function _normalizeAnnotation(value) {
+    return String(value || '')
+      .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+      .slice(0, ANNOTATION_MAX_CHARS);
+  }
+
+  function _activeCanvasObject() {
+    var obj = (_canvas && _canvas.getActiveObject()) || _lastSelected;
+    return obj && obj !== _bgImage ? obj : null;
+  }
+
+  function _findElementById(elemId) {
+    elemId = String(elemId || '');
+    if (!elemId) return null;
+    return _elements.find(function (obj) { return obj && obj.elemId === elemId; }) || null;
+  }
+
+  function _ensureAnnotationPanel() {
+    var wrapper = document.getElementById('canvas-wrapper');
+    if (!wrapper) return null;
+    var panel = document.getElementById('canvas-annotation-panel');
+    if (!panel) {
+      panel = document.createElement('div');
+      panel.id = 'canvas-annotation-panel';
+      panel.className = 'canvas-annotation-panel';
+      panel.innerHTML = [
+        '<div class="canvas-annotation-editor" data-editor>',
+        '<div class="canvas-annotation-title">',
+        '<span id="canvas-annotation-target">\u5143\u7d20\u6807\u6ce8</span>',
+        '<button type="button" data-action="close" aria-label="close">&times;</button>',
+        '</div>',
+        '<textarea id="canvas-annotation-input" maxlength="' + ANNOTATION_MAX_CHARS + '" ',
+        'placeholder="\u4f8b\u5982\uff1a\u5ba4\u5185\u7684\u51c9\u4ead\u6784\u7b51\u7269\u88c5\u9970"></textarea>',
+        '<div class="canvas-annotation-actions">',
+        '<button type="button" class="secondary" data-action="clear">\u6e05\u7a7a</button>',
+        '<button type="button" class="primary" data-action="save">\u4fdd\u5b58\u6807\u6ce8</button>',
+        '</div>',
+        '</div>',
+        '<div class="canvas-annotation-list-wrap">',
+        '<div class="canvas-annotation-list-title">\u5df2\u6807\u6ce8\u5143\u7d20</div>',
+        '<div id="canvas-annotation-list" class="canvas-annotation-list"></div>',
+        '</div>',
+      ].join('');
+      wrapper.insertAdjacentElement('afterend', panel);
+      panel.addEventListener('click', function (event) {
+        var target = event.target;
+        if (!target) return;
+        var action = target.getAttribute('data-action');
+        if (action === 'close') {
+          panel.dataset.editingId = '';
+          _updateAnnotationPanel(false);
+        } else if (action === 'clear') {
+          var input = document.getElementById('canvas-annotation-input');
+          if (input) input.value = '';
+          _setAnnotationForActive('');
+        } else if (action === 'save') {
+          var inputEl = document.getElementById('canvas-annotation-input');
+          _setAnnotationForActive(inputEl ? inputEl.value : '');
+        } else if (action === 'edit') {
+          editAnnotationById(target.getAttribute('data-elem-id') || '');
+        }
+      });
+    }
+    _annotationPanel = panel;
+    return panel;
+  }
+
+  function _annotationItems() {
+    return _elements.filter(function (obj) {
+      return obj && _normalizeAnnotation(obj.elemAnnotation);
+    });
+  }
+
+  function _updateAnnotationPanel(showEditor) {
+    var panel = _ensureAnnotationPanel();
+    if (!panel) return;
+    var items = _annotationItems();
+    var obj = _activeCanvasObject();
+    var editor = panel.querySelector('[data-editor]');
+    var target = document.getElementById('canvas-annotation-target');
+    var input = document.getElementById('canvas-annotation-input');
+    var list = document.getElementById('canvas-annotation-list');
+    var shouldShowEditor = !!(showEditor && obj);
+
+    panel.classList.toggle('visible', shouldShowEditor || items.length > 0);
+    if (editor) editor.style.display = shouldShowEditor ? 'block' : 'none';
+    if (target && obj) target.textContent = '\u6807\u6ce8\uff1a' + (obj.elemName || '\u5143\u7d20');
+    if (input && obj && shouldShowEditor) input.value = _normalizeAnnotation(obj.elemAnnotation);
+    if (list) {
+      if (!items.length) {
+        list.innerHTML = '<div class="canvas-annotation-empty">\u6682\u65e0\u6807\u6ce8\u5143\u7d20</div>';
+      } else {
+        list.innerHTML = items.map(function (item) {
+          return [
+            '<div class="canvas-annotation-item">',
+            '<span class="canvas-annotation-name">', _escapeHtml(item.elemName || '\u5143\u7d20'), '</span>',
+            '<span class="canvas-annotation-text">', _escapeHtml(item.elemAnnotation), '</span>',
+            '<button type="button" class="canvas-annotation-edit" data-action="edit" data-elem-id="',
+            _escapeHtml(item.elemId || ''), '">\u7f16\u8f91</button>',
+            '</div>',
+          ].join('');
+        }).join('');
+      }
+    }
+  }
+
+  function _setAnnotationForActive(value) {
+    var panel = _ensureAnnotationPanel();
+    var obj = _findElementById(panel && panel.dataset ? panel.dataset.editingId : '') || _activeCanvasObject();
+    if (!obj) {
+      _toast('\u8bf7\u5148\u9009\u4e2d\u4e00\u4e2a\u5143\u7d20', 'warn');
+      return;
+    }
+    var text = _normalizeAnnotation(value);
+    obj.set('elemAnnotation', text);
+    _lastSelected = obj;
+    if (_canvas) {
+      _canvas.setActiveObject(obj);
+      _refreshObject(obj);
+    }
+    _log('annotate', _getData(obj));
+    _updateAnnotationPanel(false);
+    _toast(text ? '\u6807\u6ce8\u5df2\u4fdd\u5b58' : '\u6807\u6ce8\u5df2\u6e05\u7a7a', 'positive');
+  }
+
+  function annotateSelected() {
+    var obj = _activeCanvasObject();
+    if (!obj) {
+      _toast('\u8bf7\u5148\u9009\u4e2d\u4e00\u4e2a\u5143\u7d20', 'warn');
+      return;
+    }
+    var panel = _ensureAnnotationPanel();
+    if (panel) panel.dataset.editingId = obj.elemId || '';
+    _updateAnnotationPanel(true);
+    setTimeout(function () {
+      var input = document.getElementById('canvas-annotation-input');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 30);
+  }
+
+  function editAnnotationById(elemId) {
+    var obj = _findElementById(elemId);
+    if (!obj) return;
+    if (_canvas) _canvas.setActiveObject(obj);
+    _lastSelected = obj;
+    var panel = _ensureAnnotationPanel();
+    if (panel) panel.dataset.editingId = obj.elemId || '';
+    _onSelect(obj);
+    _updateAnnotationPanel(true);
+    setTimeout(function () {
+      var input = document.getElementById('canvas-annotation-input');
+      if (input) {
+        input.focus();
+        input.select();
+      }
+    }, 30);
+  }
+
   function getLayoutJSON() {
     return JSON.stringify(_buildLayout());
   }
@@ -510,6 +727,7 @@ window.EnvCanvas = (function () {
         icon: o.elemIcon || '',
         name: o.elemName || '',
         category: o.elemCat || '',
+        annotation: _normalizeAnnotation(o.elemAnnotation),
         x: Math.round((cx - _bgLeft) / bW * 1000) / 10,
         y: Math.round((cy - _bgTop) / bH * 1000) / 10,
         scale: Math.round((o.scaleX || 1) * 100) / 100,
@@ -534,6 +752,7 @@ window.EnvCanvas = (function () {
     var bH = _origH * _bgScale || 1;
     return {
       elemId: o.elemId || '', icon: o.elemIcon || '', name: o.elemName || '', category: o.elemCat || '',
+      annotation: _normalizeAnnotation(o.elemAnnotation),
       x_pct: Math.round((b.left + b.width / 2 - _bgLeft) / bW * 1000) / 10,
       y_pct: Math.round((b.top + b.height / 2 - _bgTop) / bH * 1000) / 10,
       scale: Math.round((o.scaleX || 1) * 100) / 100,
@@ -556,6 +775,7 @@ window.EnvCanvas = (function () {
     _canvas.discardActiveObject();
     if (_toolbar) _toolbar.style.display = 'none';
     _updateCount();
+    _updateAnnotationPanel(false);
   }
 
   function _findElementAsset(item) {
@@ -628,6 +848,7 @@ window.EnvCanvas = (function () {
           elemIcon: item.icon || data.icon || '',
           elemName: item.name || data.name || '',
           elemCat: item.category || data.cat || '',
+          elemAnnotation: _normalizeAnnotation(item.annotation || item.elemAnnotation),
           elemId: item.elemId || ('el_r_' + Date.now() + '_' + i),
         });
         _applyInteractiveDefaults(g);
@@ -648,6 +869,7 @@ window.EnvCanvas = (function () {
           });
           _canvas.renderAll();
           _updateCount();
+          _updateAnnotationPanel(false);
         }
       });
     });
@@ -833,6 +1055,7 @@ window.EnvCanvas = (function () {
     addElement: addElement,
     deleteSelected: deleteSelected,
     duplicateSelected: duplicateSelected,
+    annotateSelected: annotateSelected,
     bringToFront: bringToFront,
     clearAll: clearAll,
     requestClearAll: requestClearAll,
@@ -883,7 +1106,7 @@ window.EnvCanvas = (function () {
         },
         layout: _buildLayout(),
         objects: _elements.map(function(o) {
-          return o.toObject(['elemIcon', 'elemName', 'elemCat', 'elemId']);
+          return o.toObject(['elemIcon', 'elemName', 'elemCat', 'elemAnnotation', 'elemId']);
         }),
       });
     },
@@ -917,6 +1140,7 @@ window.EnvCanvas = (function () {
               elemIcon: raw.elemIcon || '',
               elemName: raw.elemName || '',
               elemCat: raw.elemCat || '',
+              elemAnnotation: _normalizeAnnotation(raw.elemAnnotation || (layout[i] && layout[i].annotation)),
               elemId: raw.elemId || ('el_r_' + Date.now() + '_' + i),
             });
             _applyInteractiveDefaults(obj);
@@ -926,6 +1150,7 @@ window.EnvCanvas = (function () {
           });
           _canvas.renderAll();
           _updateCount();
+          _updateAnnotationPanel(false);
         });
         return;
       }

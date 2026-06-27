@@ -197,10 +197,20 @@ def _safe_inpaint_elements(elements: list[dict]) -> tuple[list[dict], dict]:
             continue
         original_name = str(item.get('name') or item.get('elemName') or '').strip()
         safety = filter_element_name(original_name, item.get('category') or item.get('cat'))
+        original_annotation = str(item.get('annotation') or item.get('elemAnnotation') or '').strip()
+        annotation_safety = sanitize_user_text_for_safe_environment(original_annotation)
+        safe_annotation = (
+            annotation_safety.get('safe_text', '')
+            if annotation_safety.get('risk_detected')
+            else original_annotation
+        )
         safe_item = dict(item)
         safe_item['original_name'] = original_name
         safe_item['name'] = safety['safe_name']
         safe_item['safe_name'] = safety['safe_name']
+        safe_item['original_annotation'] = original_annotation
+        safe_item['annotation'] = safe_annotation
+        safe_item['safe_annotation'] = safe_annotation
         safe_item['safety_action'] = safety['action']
         safe_elements.append(safe_item)
         actions.append({
@@ -211,6 +221,15 @@ def _safe_inpaint_elements(elements: list[dict]) -> tuple[list[dict], dict]:
             'reason': safety['reason'],
             'prompt_note': safety['prompt_note'],
         })
+        if original_annotation:
+            actions.append({
+                'kind': 'drag_element_annotation',
+                'original_text': original_annotation,
+                'safe_text': safe_annotation,
+                'action': 'block_reframe' if annotation_safety.get('risk_detected') else 'allow',
+                'reason': annotation_safety.get('reason') or '用户元素标注用于解释摆放意图',
+                'risk_terms': annotation_safety.get('risk_terms') or [],
+            })
     return safe_elements, safety_log_from_actions(actions, mode='drag')
 
 
@@ -585,14 +604,24 @@ def _normalize_inpaint_elements(raw_elements, *, limit: int = 20) -> list[dict]:
         name = _text(item.get('name') or item.get('elemName'))
         icon = _text(item.get('icon') or item.get('elemIcon'), 32)
         category = _text(item.get('category') or item.get('cat') or item.get('elemCat'), 40)
+        annotation = _text(
+            item.get('annotation')
+            or item.get('elemAnnotation')
+            or item.get('note')
+            or '',
+            100,
+        )
         if _looks_like_prompt_injection(name):
             continue
+        if _looks_like_prompt_injection(annotation):
+            annotation = ''
         if not name and not icon:
             continue
         normalized.append({
             'icon': icon,
             'name': name,
             'category': category,
+            'annotation': annotation,
             'x': round(_number(item.get('x'), 50.0, 0.0, 100.0), 1),
             'y': round(_number(item.get('y'), 50.0, 0.0, 100.0), 1),
             'scale': round(_number(item.get('scale'), 1.0, 0.05, 8.0), 2),

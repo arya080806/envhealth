@@ -58,9 +58,7 @@ CATEGORIES = [
         ('🌸', '花瓣'),
         ('🕊️', '飞鸟'),
         ('🌈', '彩虹'),
-        ('✨bug', '萤火虫'),
         ('🦋', '蝴蝶'),
-        ('🌙', '月光'),
     ]),
     ('建筑', '🏠', icon_cabin, [
         ('🏠', '木屋'),
@@ -150,6 +148,9 @@ _CANVAS_HTML = (
     ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.duplicateSelected()"'
     ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.duplicateSelected()">复制</button>'
     '<button type="button" class="tb-btn"'
+    ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.annotateSelected()"'
+    ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.annotateSelected()">标注</button>'
+    '<button type="button" class="tb-btn"'
     ' onmousedown="event.preventDefault();event.stopPropagation();EnvCanvas.bringToFront()"'
     ' ontouchstart="event.preventDefault();event.stopPropagation();EnvCanvas.bringToFront()">置顶</button>'
     '</div>'
@@ -220,6 +221,134 @@ _CANVAS_CSS = '''<style>
 .tb-btn:active { background: rgba(255,255,255,0.28); }
 .tb-btn.tb-delete { background: rgba(231,111,81,0.4); }
 .tb-btn.tb-delete:active { background: rgba(231,111,81,0.6); }
+.canvas-annotation-panel {
+  width: min(100%, 760px);
+  margin: 10px auto 0;
+  display: none;
+  gap: 8px;
+  color: #173126;
+}
+.canvas-annotation-panel.visible {
+  display: grid;
+}
+.canvas-annotation-editor,
+.canvas-annotation-list-wrap {
+  border-radius: 8px;
+  background: rgba(255,253,244,.88);
+  border: 1px solid rgba(47,123,88,.14);
+  box-shadow: 0 10px 26px rgba(38,70,52,.08);
+}
+.canvas-annotation-editor {
+  padding: 10px;
+}
+.canvas-annotation-title,
+.canvas-annotation-list-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(23,49,38,.74);
+}
+.canvas-annotation-title button {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(47,123,88,.10);
+  color: #2F7B58;
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+#canvas-annotation-input {
+  width: 100%;
+  min-height: 58px;
+  margin-top: 8px;
+  padding: 10px 11px;
+  resize: vertical;
+  border-radius: 8px;
+  border: 1px solid rgba(47,123,88,.20);
+  background: rgba(255,255,255,.82);
+  color: #173126;
+  font-size: 13px;
+  line-height: 1.5;
+  outline: none;
+}
+#canvas-annotation-input:focus {
+  border-color: rgba(47,123,88,.58);
+  box-shadow: 0 0 0 3px rgba(47,123,88,.12);
+}
+.canvas-annotation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.canvas-annotation-actions button {
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.canvas-annotation-actions .secondary {
+  background: rgba(47,123,88,.10);
+  color: #2F7B58;
+}
+.canvas-annotation-actions .primary {
+  background: #2F7B58;
+  color: #FFFDF4;
+}
+.canvas-annotation-list-wrap {
+  padding: 10px;
+}
+.canvas-annotation-list {
+  display: grid;
+  gap: 6px;
+  margin-top: 8px;
+}
+.canvas-annotation-empty,
+.canvas-annotation-item {
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 12px;
+  line-height: 1.45;
+}
+.canvas-annotation-empty {
+  color: rgba(23,49,38,.48);
+  background: rgba(47,123,88,.06);
+}
+.canvas-annotation-item {
+  display: grid;
+  grid-template-columns: minmax(54px, auto) 1fr auto;
+  align-items: center;
+  gap: 8px;
+  background: rgba(47,123,88,.08);
+  border: 1px solid rgba(47,123,88,.10);
+}
+.canvas-annotation-name {
+  font-weight: 900;
+  color: #2F7B58;
+  white-space: nowrap;
+}
+.canvas-annotation-text {
+  min-width: 0;
+  color: rgba(23,49,38,.72);
+  overflow-wrap: anywhere;
+}
+.canvas-annotation-edit {
+  border: 0;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: rgba(255,255,255,.72);
+  color: #2F7B58;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
 .elem-picker {
   width: calc(100% - 24px);
   margin: 0 auto 0;
@@ -608,6 +737,15 @@ def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_e
       if (card && card.dataset.idx !== undefined && window.EnvCanvas) {{
         window.EnvCanvas.addByIndex(parseInt(card.dataset.idx, 10));
       }}
+      var toolbarButton = e.target.closest('#canvas-toolbar .tb-btn');
+      if (toolbarButton && window.EnvCanvas) {{
+        var actionText = (toolbarButton.textContent || '').trim();
+        if (actionText === '标注') {{
+          e.preventDefault();
+          e.stopPropagation();
+          EnvCanvas.annotateSelected();
+        }}
+      }}
     }};
     document.addEventListener('click', window.__envDragClickHandler);
   }}
@@ -659,13 +797,17 @@ def _build_drag_bootstrap(img_url: str, sid: str, canvas_json_url: str, placed_e
 
   loadScriptOnce('/static/vendor/fabric.min.js', 'fabric', 'fabric')
     .then(function() {{
-      var envCanvasVersion = 'drag-layout-persist-20260614';
+      var envCanvasVersion = 'drag-canvas-size-20260627';
       var oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
       if (oldEnvScript && oldEnvScript.src.indexOf(envCanvasVersion) === -1) {{
         try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
         oldEnvScript.remove();
       }}
-      if (window.EnvCanvas && (!window.EnvCanvas.requestClearAll || !window.EnvCanvas.uploadCanvasSnapshot)) {{
+      if (window.EnvCanvas && (
+        !window.EnvCanvas.requestClearAll ||
+        !window.EnvCanvas.uploadCanvasSnapshot ||
+        !window.EnvCanvas.annotateSelected
+      )) {{
         try {{ delete window.EnvCanvas; }} catch (e) {{ window.EnvCanvas = undefined; }}
         oldEnvScript = document.querySelector('script[data-env-loader="env-canvas"]');
         if (oldEnvScript) oldEnvScript.remove();

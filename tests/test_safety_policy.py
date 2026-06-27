@@ -35,7 +35,9 @@ class SafetyPolicyTests(unittest.TestCase):
         self.assertIn('结构化安全白名单与风险过滤规则', prompt)
         self.assertIn('稳定期精神分裂症患者', prompt)
         self.assertIn('禁止生成监控摄像头', prompt)
-        self.assertIn('动物、昆虫、夜景、强梦幻效果默认不生成', prompt)
+        self.assertIn('动物、昆虫仅在用户明确选择鸟、飞鸟、蝴蝶', prompt)
+        self.assertIn('遵守现实世界物理规则', prompt)
+        self.assertIn('不得悬空漂浮', prompt)
 
     def test_drag_reframes_blocked_elements_before_prompt(self):
         image_path = _temp_image_path()
@@ -60,13 +62,42 @@ class SafetyPolicyTests(unittest.TestCase):
         prompt = captured['prompt']
         self.assertIn('结构化安全白名单与风险过滤规则', prompt)
         self.assertIn('柔和路灯', prompt)
+        self.assertIn('柔和暖色光点', prompt)
+        self.assertIn('柔和、真实、低刺激的彩虹', prompt)
         self.assertIn('柔和自然光', prompt)
         self.assertIn('低矮花池边界', prompt)
         self.assertNotIn('生成摄像头', prompt)
         self.assertNotIn('生成黑夜', prompt)
         self.assertNotIn('生成萤火虫', prompt)
-        self.assertNotIn('生成彩虹', prompt)
         self.assertNotIn('生成强围栏', prompt)
+
+    def test_drag_annotation_takes_prompt_priority(self):
+        image_path = _temp_image_path()
+        captured = {}
+
+        def fake_call(_image_path, prompt, *args, **kwargs):
+            captured['prompt'] = prompt
+            return 'fake-ref'
+
+        elements = [
+            {
+                'name': '凉亭',
+                'category': '建筑',
+                'annotation': '室内的凉亭构筑物装饰',
+                'x': 35,
+                'y': 75,
+                'scale': 1.2,
+            },
+        ]
+
+        with patch.object(sd_service, '_call_image_edit', fake_call), \
+                patch.object(sd_service, '_generated_bytes_from_reference', lambda _ref: _png_bytes()):
+            sd_service.generate_inpainting(image_path, elements)
+
+        prompt = captured['prompt']
+        self.assertIn('优先按照用户标注', prompt)
+        self.assertIn('室内的凉亭构筑物装饰', prompt)
+        self.assertIn('基础元素为', prompt)
 
     def test_inspire_reframes_risk_user_annotations(self):
         image_path = _temp_image_path()
@@ -209,6 +240,31 @@ class SafetyPolicyTests(unittest.TestCase):
         self.assertEqual(elements[0]['original_name'], '摄像头')
         self.assertEqual(drag_log['safety_policy_version'], 'safety_policy_v1')
         self.assertTrue(drag_log['blocked_or_reframed_items'])
+
+        firefly_elements, _ = api_routes._safe_inpaint_elements([
+            {'name': '萤火虫', 'category': '氛围', 'x': 50, 'y': 20, 'scale': 1},
+        ])
+        self.assertEqual(firefly_elements[0]['name'], '柔和暖色光点')
+
+        rainbow_elements, _ = api_routes._safe_inpaint_elements([
+            {'name': '彩虹', 'category': '氛围', 'x': 50, 'y': 20, 'scale': 1},
+        ])
+        self.assertEqual(rainbow_elements[0]['name'], '柔和、真实、低刺激的彩虹')
+
+        bird_elements, _ = api_routes._safe_inpaint_elements([
+            {'name': '飞鸟', 'category': '氛围', 'x': 50, 'y': 20, 'scale': 1},
+        ])
+        self.assertIn('真实、温和的飞鸟', bird_elements[0]['name'])
+
+        butterfly_elements, _ = api_routes._safe_inpaint_elements([
+            {'name': '蝴蝶', 'category': '氛围', 'x': 50, 'y': 20, 'scale': 1},
+        ])
+        self.assertIn('真实、温和的蝴蝶', butterfly_elements[0]['name'])
+
+        windmill_elements, _ = api_routes._safe_inpaint_elements([
+            {'name': '风车', 'category': '设施', 'x': 50, 'y': 20, 'scale': 1},
+        ])
+        self.assertEqual(windmill_elements[0]['name'], '普通、低刺激、非游乐化的景观风车设施')
 
         safe_text, chat_log = api_routes._safe_chat_text('被监控 黑夜')
         self.assertIn('没有监控感', safe_text)

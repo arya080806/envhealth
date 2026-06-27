@@ -56,6 +56,8 @@ def _quality_safety_requirements(visible_focus: str) -> str:
         f'[安全与质量] {visible_focus}；整体必须安全、稳定、温和，适合精神分裂症患者使用。'
         '不要加入任何可能被患者感到威胁的高风险物件、惊吓感、暴力感、压迫感、'
         '破损失控的设施、高处风险、拥挤混乱人群或超现实扭曲画面。'
+        '遵守现实世界物理规则；路灯、构筑物、树木、亭子、风车等实体必须落地、附着或有合理支撑，不得悬空漂浮。'
+        '天空区域只适合云、柔和彩虹、远处飞鸟/蝴蝶、柔和光点等轻量自然现象。'
         '保持照片写实质量，光影方向、透视、材质颗粒、遮挡关系和景深都要与原图自然融合，无文字水印。'
     )
 
@@ -1039,6 +1041,11 @@ def generate_inpainting(image_path: str, elements: list[dict]) -> tuple[bytes, s
         scale = max(0.05, min(8.0, _safe_float(el.get('scale'), 1)))
         spatial = coords_to_spatial_language(x_pct, y_pct)
         desc = _get_element_desc(name)
+        annotation = _sanitize_user_design_text(
+            el.get('safe_annotation') or el.get('annotation') or el.get('elemAnnotation') or ''
+        )[:100]
+        if annotation:
+            desc = f'优先按照用户标注“{annotation}”理解该元素；基础元素为{name}，参考描述为{desc}'
         if scale >= 1.6:
             size_hint = '作为清晰可见的较大主体'
         elif scale <= 0.7:
